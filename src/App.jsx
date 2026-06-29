@@ -1495,6 +1495,7 @@ export default function App() {
   const catchupCheckedThisSessionRef = useRef(false);
   useEffect(() => {
     if (!cacheLoaded) return;
+    if (!entitlements) return;                // wait for entitlements — cap can't apply without them
     if (scanning) return;
     if (checking) return;
     if (catchupCheckedThisSessionRef.current) return;
@@ -1508,11 +1509,24 @@ export default function App() {
       return hasSource || hasSparkle;
     });
     if (stragglers.length === 0) return;
+
+    // Respect the trial cap: ensure the running total of checked plugins
+    // (auto-check + catch-up combined) never exceeds trialUpdateChecksCap.
+    const trialCap = entitlements.features ? entitlements.features.trialUpdateChecksCap : null;
+    const alreadyChecked = Object.keys(updates).length;
+    let cappedStragglers = stragglers;
+    if (typeof trialCap === 'number' && trialCap > 0) {
+      const remaining = Math.max(0, trialCap - alreadyChecked);
+      if (remaining === 0) return;            // trial cap already exhausted by auto-check
+      cappedStragglers = stragglers.slice(0, remaining);
+    }
+    if (cappedStragglers.length === 0) return;
+
     catchupCheckedThisSessionRef.current = true;
 
     (async () => {
       try {
-        const res = await api.checkUpdates(stragglers);
+        const res = await api.checkUpdates(cappedStragglers);
         if (res && res.ok && res.data && Array.isArray(res.data.results)) {
           setUpdates((prev) => {
             const next = { ...prev };
@@ -1524,7 +1538,7 @@ export default function App() {
       } catch { /* silent — user can manually re-check via the toolbar */ }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cacheLoaded, scanning, checking, displayedItems, updates]);
+  }, [cacheLoaded, scanning, checking, displayedItems, updates, entitlements]);
 
   // Subscribe to scan / update / discover-all progress streams.
   useEffect(() => {
