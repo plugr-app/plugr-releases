@@ -26,7 +26,7 @@ export const CHECKOUT_TIERS = [
     priceDisplay: '$7',
     cadence: 'per month',
     blurb: 'Try it for a month, cancel anytime.',
-    checkoutUrl: 'https://plugr.lemonsqueezy.com/checkout/buy/d6701527-5e5e-43a7-8679-c38a0d27bba7?enabled=1818415',
+    checkoutUrl: 'https://plugr.lemonsqueezy.com/checkout/buy/fb836312-b7ef-4185-a9ab-0ad3b974a1fa?enabled=1851090',
   },
   {
     id: 'annual',
@@ -35,7 +35,7 @@ export const CHECKOUT_TIERS = [
     cadence: 'per year',
     blurb: 'The default — save 40% vs monthly.',
     badge: 'Best value',
-    checkoutUrl: 'https://plugr.lemonsqueezy.com/checkout/buy/210ef268-bf58-4f49-976a-a39454f6f369?enabled=1818417',
+    checkoutUrl: 'https://plugr.lemonsqueezy.com/checkout/buy/3d0415fb-4bc3-4329-934b-a47635c517ac?enabled=1851103',
   },
   {
     id: 'lifetime',
@@ -43,7 +43,7 @@ export const CHECKOUT_TIERS = [
     priceDisplay: '$149',
     cadence: 'one-time',
     blurb: 'Pay once, own forever. All features available at purchase + future updates of those features.',
-    checkoutUrl: 'https://plugr.lemonsqueezy.com/checkout/buy/e4a0cf1b-81ca-4e2b-9406-28d66850a28a?enabled=1818418',
+    checkoutUrl: 'https://plugr.lemonsqueezy.com/checkout/buy/9831e89b-745f-4b0e-be3a-fa53280aac30?enabled=1851105',
   },
 ];
 

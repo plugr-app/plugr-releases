@@ -49,9 +49,9 @@ const LEMONSQUEEZY_API_BASE = 'https://api.lemonsqueezy.com/v1';
 // variant ID. Until you fill these in, every successful activation
 // returns the safe default tier 'monthly'.
 const PRODUCT_VARIANT_TO_TIER = {
-  '1818415': 'monthly',
-  '1818417': 'annual',
-  '1818418': 'lifetime',
+  '1851090': 'monthly',
+  '1851103': 'annual',
+  '1851105': 'lifetime',
 };
 
 // HMAC secret for signing the locally-cached license token. Same
