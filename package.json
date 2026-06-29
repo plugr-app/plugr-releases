@@ -1,0 +1,89 @@
+{
+  "name": "plugr",
+  "version": "0.2.1",
+  "description": "Plugr \u2014 a personal plugin & app library for macOS. Scan, organize, and update audio plugins (VST3/AU/VST2/AAX/CLAP) and Mac applications.",
+  "main": "electron/main.cjs",
+  "author": "Josh",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev:vite": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && electron .",
+    "dev": "concurrently -k -n vite,electron -c blue,green \"npm:dev:vite\" \"npm:dev:electron\"",
+    "build:renderer": "vite build",
+    "start": "npm run build:renderer && electron .",
+    "package:mac": "npm run build:renderer && electron-builder --mac --dir",
+    "dist:mac": "npm run build:renderer && electron-builder --mac",
+    "dist:mac:signed": "npm run build:renderer && electron-builder --mac --publish never",
+    "release:mac": "npm run build:renderer && electron-builder --mac --publish always",
+    "promote-cache": "node tools/promote-cache-additions.js"
+  },
+  "dependencies": {
+    "bplist-parser": "^0.3.2",
+    "electron-updater": "^6.8.9",
+    "plist": "^3.1.0",
+    "sax": "^1.4.1",
+    "semver": "^7.6.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "vite": "^5.4.0",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "co.plugr.app",
+    "productName": "Plugr",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**/*",
+      "dist/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.music",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": "universal"
+        }
+      ],
+      "icon": "build/icon.png",
+      "identity": "JOSHUA HOWARD ISAACS (C9G97WCSS3)",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": {
+        "teamId": "C9G97WCSS3"
+      }
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "plugr-app",
+      "repo": "plugr-releases",
+      "releaseType": "release"
+    }
+  }
+}
