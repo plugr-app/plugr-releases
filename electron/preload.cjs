@@ -121,6 +121,10 @@ contextBridge.exposeInMainWorld('pluginHub', {
   getBackgroundMode: () => ipcRenderer.invoke('app:getBackgroundMode'),
   setBackgroundMode: (patch) => ipcRenderer.invoke('app:setBackgroundMode', patch),
 
+  // Push the current outdated-plugin list to the tray so it can show
+  // a count badge and a live update list in the menu.
+  traySetUpdates: (outdatedList) => ipcRenderer.send('tray:setUpdates', outdatedList),
+
   // Support — fetch support URL + whether bug reports are wired up,
   // and submit a bug report.
   getSupportConfig: () => ipcRenderer.invoke('support:getConfig'),

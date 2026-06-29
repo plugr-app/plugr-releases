@@ -240,6 +240,7 @@ let mainWindow = null;
 let tray = null;
 let isQuitting = false;
 let backgroundPrefs = { runInMenuBar: false, launchAtLogin: false };
+let trayOutdatedItems = []; // cached from renderer; used to build the dynamic update list
 
 // Apply login-item registration. macOS-only — Windows/Linux fall back
 // to silently no-op'ing since Plugr is mac-first today. Wrapping in a
@@ -253,20 +254,53 @@ function applyLoginItem(launchAtLogin) {
   }
 }
 
-// Build (or rebuild) the tray's right-click menu. Called on
-// initialization and whenever an item label needs to change
-// (currently only static, but the structure keeps the option open).
+// Build (or rebuild) the tray context menu. When outdated plugin data
+// is available (pushed from the renderer after an update check), the
+// top of the menu shows a count header + up to 8 plugin rows so the
+// user can see what needs updating at a glance, MacUpdater-style.
 function buildTrayContextMenu() {
-  return Menu.buildFromTemplate([
-    { label: 'Open Plugr', click: showOrCreateWindow },
-    { label: 'My Deal Alerts…', click: () => {
-        showOrCreateWindow();
-        sendToRenderer('menu:openAlerts');
-      } },
-    { type: 'separator' },
-    { label: 'Quit Plugr', click: () => { isQuitting = true; app.quit(); } },
-  ]);
+  const template = [];
+
+  if (trayOutdatedItems.length > 0) {
+    const count = trayOutdatedItems.length;
+    template.push({ label: `${count} plugin update${count === 1 ? '' : 's'} available`, enabled: false });
+    template.push({ type: 'separator' });
+    const shown = trayOutdatedItems.slice(0, 8);
+    for (const p of shown) {
+      const from = p.from && p.from !== '?' ? p.from : '?';
+      const to   = p.to   && p.to   !== '?' ? p.to   : '?';
+      template.push({
+        label: `${p.name}  ${from} → ${to}`,
+        click: showOrCreateWindow,
+      });
+    }
+    if (count > 8) {
+      template.push({ label: `View all ${count} updates in Plugr…`, click: showOrCreateWindow });
+    }
+    template.push({ type: 'separator' });
+  }
+
+  template.push({ label: 'Open Plugr', click: showOrCreateWindow });
+  template.push({ label: 'My Deal Alerts…', click: () => {
+    showOrCreateWindow();
+    sendToRenderer('menu:openAlerts');
+  } });
+  template.push({ type: 'separator' });
+  template.push({ label: 'Quit Plugr', click: () => { isQuitting = true; app.quit(); } });
+
+  return Menu.buildFromTemplate(template);
 }
+
+// Renderer pushes an array of { name, from, to } objects after every
+// update check. We refresh the tray title (the count badge) and rebuild
+// the context menu so the list stays current without an app restart.
+ipcMain.on('tray:setUpdates', (_event, outdatedList) => {
+  trayOutdatedItems = Array.isArray(outdatedList) ? outdatedList : [];
+  if (!tray) return;
+  const count = trayOutdatedItems.length;
+  tray.setTitle(count > 0 ? String(count) : '');
+  tray.setContextMenu(buildTrayContextMenu());
+});
 
 function showOrCreateWindow() {
   if (!mainWindow) {

@@ -1536,9 +1536,25 @@ export default function App() {
           if (res.data.checkedAt) setUpdatesCheckedAt(res.data.checkedAt);
         }
       } catch { /* silent — user can manually re-check via the toolbar */ }
+      finally { setProgress(null); }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheLoaded, scanning, checking, displayedItems, updates, entitlements]);
+
+  // Keep the tray menu in sync with the current update results.
+  // Fires after every update check (auto, catch-up, or manual) and on
+  // cache load, so the count badge and plugin list are always current.
+  useEffect(() => {
+    if (!api.traySetUpdates) return;
+    const outdated = library.items
+      .filter((item) => updates[item.id]?.status === 'outdated')
+      .map((item) => ({
+        name: item.name,
+        from: item.version || '?',
+        to: updates[item.id].latestVersion || '?',
+      }));
+    api.traySetUpdates(outdated);
+  }, [updates, library.items]);
 
   // Subscribe to scan / update / discover-all progress streams.
   useEffect(() => {
