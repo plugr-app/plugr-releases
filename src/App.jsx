@@ -1448,6 +1448,7 @@ export default function App() {
   const autoCheckedThisSessionRef = useRef(false);
   useEffect(() => {
     if (!cacheLoaded) return;
+    if (!entitlements) return;                                  // wait for entitlements — cap can't apply without them
     if (scanning) return;                                       // wait for scan to finish
     if (autoCheckedThisSessionRef.current) return;              // only once per launch
     if (!library.items || library.items.length === 0) return;   // nothing to check
@@ -1477,7 +1478,7 @@ export default function App() {
     // defined inline above and changes every render. The ref guard
     // makes the dep list irrelevant for correctness.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cacheLoaded, scanning, library.items.length, checking, updatesCheckedAt]);
+  }, [cacheLoaded, scanning, library.items.length, checking, updatesCheckedAt, entitlements]);
 
   // Opportunistic catch-up check: when a plugin has an effective source
   // (registry-or-user-saved updateUrl + versionRegex, or a Sparkle
@@ -1731,7 +1732,7 @@ export default function App() {
         kind: 'info',
         title: `Trial check limited to ${trialCap} plugins`,
         message: `Plugr's free trial caps update checks at ${trialCap} plugins at a time. The remaining ${displayedItems.length - trialCap} will be skipped until you subscribe.`,
-        durationMs: 9000,
+        persistent: true,
         action: { label: 'Upgrade', onClick: () => setBuyDialogOpen(true) },
       });
     }
