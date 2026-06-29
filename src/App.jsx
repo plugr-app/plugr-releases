@@ -473,26 +473,25 @@ function applyCommunityAdditions(items, communityData) {
 }
 
 
-// Frozen — three behaviors based on the active transition:
+// Frozen — two behaviors based on the active transition:
 //   • inactive  → bail out (the tab isn't visible, no point re-rendering)
-//   • switching IN (inactive → active) → bail out, show cached output.
-//     This is the "tab cache" you experience as instant tab switching.
-//   • staying active → re-render normally. Data updates triggered by
-//     user actions while on the tab (adding a tag, rating a project,
-//     etc.) flow through as expected.
-// This gives instant tab switching AND working inline edits.
+//   • active (including switching IN) → let React reconcile normally.
+//     ProjectsView is wrapped in React.memo(projectsPropsEqual) which
+//     already skips the expensive 400-row render when only function
+//     refs changed. We removed the old "switching IN → bail" shortcut
+//     because it caused a bug: data that arrived while the tab was
+//     hidden (e.g. a project scan that completed on the Library tab)
+//     never flowed through to ProjectsViewInner, so the user saw a
+//     stale empty state until restart.
 const Frozen = React.memo(
   function Frozen({ children }) { return children; },
   (prev, next) => {
     // Tab is hidden — don't bother reconciling its subtree.
     if (!next.active) return true;
-    // Just became active — bail out so the user sees the cached
-    // output immediately. The cost of re-rendering ProjectsView's
-    // 400-row list on every tab return is the whole reason this
-    // wrapper exists.
-    if (!prev.active && next.active) return true;
-    // Active and staying active — let the re-render through so
-    // interactions inside the tab work normally.
+    // Active (or switching in) — let the re-render through.
+    // ProjectsView's own memo comparator (projectsPropsEqual) handles
+    // the "don't re-render if only handler refs changed" optimisation,
+    // so tab switching is still fast when no real data changed.
     return false;
   }
 );
