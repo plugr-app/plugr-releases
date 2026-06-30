@@ -30,6 +30,7 @@ protocol.registerSchemesAsPrivileged([
 const { scanLibrary } = require('./lib/scanners.cjs');
 const { checkUpdatesForItems } = require('./lib/updateChecker.cjs');
 const { loadCache, saveCache, clearCache, cacheFilePath } = require('./lib/cache.cjs');
+const { PluginWatcher } = require('./lib/pluginWatcher.cjs');
 const {
   loadProjectStore,
   patchProjectStore,
@@ -225,6 +226,102 @@ async function patchCache(patch) {
 const isDev = !app.isPackaged;
 
 let mainWindow = null;
+
+// ─── Plugin file watcher (MacUpdater-style auto-detection) ─────────────────
+// Watches standard plugin directories for bundle changes so that when the
+// user updates a plugin via its companion app (UJAM, Native Access, etc.),
+// Plugr clears the "outdated" badge automatically — no manual rescan needed.
+//
+// FDA note: system-level dirs (/Library/Audio/Plug-Ins/…) require Full Disk
+// Access on macOS. If we can't read them, we show a one-time toast with a
+// link to System Settings rather than silently failing.
+let pluginWatcher = null;
+
+function createPluginWatcher(customFolders) {
+  // Tear down any existing watcher before creating a new one (e.g. the
+  // user added a custom folder and triggered a restart).
+  if (pluginWatcher) { pluginWatcher.stop(); pluginWatcher = null; }
+
+  let fdaToastShown = false;
+
+  pluginWatcher = new PluginWatcher({
+    onChanged: async (updatedItems, { newPlugins }) => {
+      // updatedItems: library items whose version changed on disk.
+      // Patch the library cache + reconcile update statuses in one shot.
+      if (updatedItems.length > 0) {
+        try {
+          const semver = require('semver');
+          const existing = (await loadCache(userDataDir())) || {};
+
+          // 1. Splice updated versions into the cached library.
+          const libItems = (existing.library && existing.library.items) || [];
+          const versionPatch = {};
+          for (const u of updatedItems) versionPatch[u.id] = u.version;
+          const patchedItems = libItems.map((it) =>
+            versionPatch[it.id] ? { ...it, version: versionPatch[it.id] } : it
+          );
+          const patchedLibrary = existing.library
+            ? { ...existing.library, items: patchedItems }
+            : null;
+
+          // 2. Reconcile "outdated" cache entries against the new versions.
+          const updateMap = { ...(existing.updates || {}) };
+          let updateChanged = false;
+          for (const u of updatedItems) {
+            const cached = updateMap[u.id];
+            if (cached && cached.status === 'outdated' && cached.latestVersion) {
+              const sInst = semver.coerce(u.version);
+              const sLat  = semver.coerce(cached.latestVersion);
+              if (sInst && sLat && semver.compare(sInst, sLat) >= 0) {
+                const newStatus = semver.compare(sInst, sLat) > 0 ? 'ahead' : 'current';
+                updateMap[u.id] = { ...cached, status: newStatus };
+                updateChanged = true;
+              }
+            }
+          }
+
+          const patch = {};
+          if (patchedLibrary) patch.library = patchedLibrary;
+          if (updateChanged)  patch.updates  = updateMap;
+          if (Object.keys(patch).length > 0) await patchCache(patch);
+        } catch (e) {
+          console.warn('[plugin-watcher] cache patch failed:', e.message);
+        }
+
+        // Tell the renderer to refresh with the auto-detected versions.
+        sendToRenderer('plugins:autoUpdated', {
+          items: updatedItems,
+          newPluginPaths: newPlugins,
+        });
+      } else if (newPlugins.length > 0) {
+        // New plugin(s) installed that weren't in the library. Signal the
+        // renderer to offer a rescan.
+        sendToRenderer('plugins:autoUpdated', {
+          items: [],
+          newPluginPaths: newPlugins,
+        });
+      }
+    },
+
+    onFdaRequired: () => {
+      // Only show the FDA toast once per session — the user doesn't need
+      // a reminder every time a watched directory rejects our access.
+      if (fdaToastShown) return;
+      fdaToastShown = true;
+      // Push a special IPC event; the renderer surfaces the toast with
+      // an "Open Settings" button that deep-links to FDA in System Settings.
+      sendToRenderer('plugins:fdaRequired');
+    },
+  });
+
+  pluginWatcher.start(customFolders || []);
+}
+
+// Update the watcher's library-item list whenever a scan completes so
+// bundle-path matching stays current.
+function syncWatcherItems(items) {
+  if (pluginWatcher) pluginWatcher.setLibraryItems(items);
+}
 
 // ---------- Background / tray state ----------
 // Plugr can optionally run as a menu-bar app: the user opts in via
@@ -625,6 +722,21 @@ app.whenReady().then(async () => {
   try { autoUpdater.init(); }
   catch (err) { console.warn('auto-updater init failed:', err.message); }
 
+  // Start the plugin file watcher. Reads customFolders from the cache
+  // so user-added scan paths are watched too. Best-effort — a watcher
+  // failure is non-fatal; the user can still rescan manually.
+  try {
+    const watcherCache = (await loadCache(userDataDir())) || {};
+    const customFolders = Array.isArray(watcherCache.customFolders) ? watcherCache.customFolders : [];
+    createPluginWatcher(customFolders);
+    // Seed with cached library items so the first bundle-change event
+    // can do a path-match immediately (before the user triggers a scan).
+    const cachedItems = (watcherCache.library && watcherCache.library.items) || [];
+    syncWatcherItems(cachedItems);
+  } catch (err) {
+    console.warn('[plugin-watcher] startup failed:', err.message);
+  }
+
   // Apply persisted background prefs: tray icon + login item. Done
   // after window creation + auto-updater init so the tray menu shows
   // up against a fully-booted process. Best-effort — failures here
@@ -775,6 +887,37 @@ ipcMain.handle('library:scan', async (_event, options) => {
     // Persist library portion of the cache after every successful scan.
     try { await patchCache({ library: result }); }
     catch (e) { console.warn('cache save failed', e.message); }
+    // Keep the file watcher's item list current so path-matching works
+    // immediately after a rescan (new installs, moved bundles, etc.).
+    syncWatcherItems(result.items);
+    // Reconcile stale "outdated" cache entries against the newly-scanned
+    // installed versions. When the user updates a plugin and rescans, the
+    // installed version in result.items changes but the update cache may
+    // still say "outdated" from the previous check run. Re-derive status
+    // here so the badge clears immediately after rescan without needing a
+    // separate "Check for updates" pass.
+    //
+    // Example: Melda updated to v17.09, user rescans → result.items has
+    // version "17.09", but cache.updates[id].latestVersion is also "17.09"
+    // with status "outdated". semver.compare(17.09, 17.09) === 0 → 'current'.
+    try {
+      const semver = require('semver');
+      const updateMap = { ...(existing.updates || {}) };
+      let changed = false;
+      for (const item of result.items) {
+        const cached = updateMap[item.id];
+        if (cached && cached.status === 'outdated' && cached.latestVersion && item.version) {
+          const sInst = semver.coerce(item.version);
+          const sLat  = semver.coerce(cached.latestVersion);
+          if (sInst && sLat && semver.compare(sInst, sLat) >= 0) {
+            const newStatus = semver.compare(sInst, sLat) > 0 ? 'ahead' : 'current';
+            updateMap[item.id] = { ...cached, status: newStatus };
+            changed = true;
+          }
+        }
+      }
+      if (changed) await patchCache({ updates: updateMap });
+    } catch (e) { console.warn('post-scan update reconciliation failed:', e.message); }
     return { ok: true, data: result };
   } catch (err) {
     console.error('library:scan failed', err);
@@ -977,14 +1120,56 @@ ipcMain.handle('overrides:set', async (_event, { id, patch }) => {
 
 // Move a bundle to the user's Trash. Reversible — does NOT permanently
 // delete; the user can drag it back out of Trash if they change their mind.
+//
+// Two-stage approach:
+//   1. shell.trashItem() — works for plugins in the user's home folder
+//      and anywhere Plugr already has Full Disk Access.
+//   2. osascript fallback — if the file is in a system-protected folder
+//      (e.g. /Library/Audio/Plug-Ins/Components/), we re-try via
+//      AppleScript with `with administrator privileges`. macOS shows its
+//      standard password dialog; the user authenticates once and the
+//      file moves to Trash. Much friendlier than a cryptic permission error.
 ipcMain.handle('shell:trashItem', async (_event, fullPath) => {
+  if (!fullPath) return { ok: false, error: 'no path' };
+
+  // Stage 1: try the normal Electron API.
   try {
-    if (!fullPath) return { ok: false, error: 'no path' };
     await shell.trashItem(fullPath);
     return { ok: true };
-  } catch (err) {
-    return { ok: false, error: String(err && err.message || err) };
+  } catch (firstErr) {
+    // Only fall through to the admin-privileges path on permission errors.
+    // Any other error (bad path, network drive, etc.) we surface immediately.
+    const msg = String(firstErr && firstErr.message || firstErr);
+    const isPermission = /EACCES|EPERM|permission|not permitted/i.test(msg);
+    if (!isPermission) return { ok: false, error: msg };
   }
+
+  // Stage 2: re-try via osascript with administrator privileges.
+  // The script takes the path as an argv argument so AppleScript's
+  // `quoted form of` handles all special characters — no shell-quoting
+  // gymnastics needed on the JS side.
+  const { execFile } = require('node:child_process');
+  const adminScript = [
+    'on run argv',
+    '  do shell script "mv -f " & quoted form of (item 1 of argv) & " ~/.Trash/" with administrator privileges',
+    'end run',
+  ].join('\n');
+
+  return new Promise((resolve) => {
+    execFile('osascript', ['-e', adminScript, fullPath], (err) => {
+      if (err) {
+        // User cancelled the password dialog or it genuinely failed.
+        const cancelled = /(-128|User canceled|cancelled)/i.test(String(err));
+        if (cancelled) {
+          resolve({ ok: false, canceled: true, error: 'Cancelled by user' });
+        } else {
+          resolve({ ok: false, error: String(err.message || err) });
+        }
+      } else {
+        resolve({ ok: true });
+      }
+    });
+  });
 });
 
 // Look across the user's library (in-memory state via patchCache lookups)

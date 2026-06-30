@@ -21,6 +21,7 @@ export default function BulkEditPanel({
   knownTags,                   // string[] of every tag used anywhere in the library
   onClose,
   onApply,                     // (changes, items) => Promise<void>
+  onBulkTrash,                 // (items) => Promise<void> — move all selected to Trash
   onAddCustomCategory,         // (cat, sub?) => void
 }) {
   // Simple text input: blank = don't change, any text = set developer to
@@ -514,6 +515,25 @@ export default function BulkEditPanel({
           </ul>
         </div>
       </div>
+
+      {onBulkTrash && (
+        <div className="detail-section" style={{ borderTop: '1px solid var(--line)', paddingTop: 12 }}>
+          <div className="section-title" style={{ color: 'var(--danger, #c33)', marginBottom: 6 }}>Danger zone</div>
+          <button
+            className="btn btn-danger"
+            type="button"
+            disabled={busy}
+            onClick={() => onBulkTrash(items)}
+            style={{ width: '100%' }}
+          >
+            Move {items.length} plugin{items.length === 1 ? '' : 's'} to Trash…
+          </button>
+          <div className="muted micro" style={{ marginTop: 4 }}>
+            Reversible — files go to your Mac's Trash, not deleted permanently.
+            System-folder plugins (e.g. /Library/…) will prompt for your password.
+          </div>
+        </div>
+      )}
 
       <div className="bulk-actions">
         <button className="btn primary" onClick={commit} disabled={!canCommit}>

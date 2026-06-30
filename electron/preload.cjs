@@ -190,5 +190,28 @@ contextBridge.exposeInMainWorld('pluginHub', {
     return () => ipcRenderer.removeListener('alerts:matched', wrapper);
   },
 
+  // ── Plugin file watcher (MacUpdater-style auto-detection) ──────────
+  // Main process watches plugin directories for bundle changes and pushes
+  // two events:
+  //
+  //   plugins:autoUpdated  — one or more installed plugins changed on disk.
+  //     payload: { items: Item[], newPluginPaths: string[] }
+  //     `items` are updated library items (same shape as scan results, with
+  //     a new `version`). `newPluginPaths` are bundles that weren't in the
+  //     library (newly installed — caller should offer a rescan).
+  //
+  //   plugins:fdaRequired  — a system-level plugin dir is inaccessible.
+  //     No payload. Caller should show a toast explaining Full Disk Access
+  //     and offering to open System Settings.
+  onPluginsAutoUpdated: (cb) => {
+    const wrapper = (_e, payload) => cb(payload);
+    ipcRenderer.on('plugins:autoUpdated', wrapper);
+    return () => ipcRenderer.removeListener('plugins:autoUpdated', wrapper);
+  },
+  onPluginsFdaRequired: (cb) => {
+    const wrapper = () => cb();
+    ipcRenderer.on('plugins:fdaRequired', wrapper);
+    return () => ipcRenderer.removeListener('plugins:fdaRequired', wrapper);
+  },
 
 });

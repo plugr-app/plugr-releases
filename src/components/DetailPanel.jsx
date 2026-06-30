@@ -302,6 +302,26 @@ export default function DetailPanel({
         {update && update.message && update.status !== 'outdated' && (
           <span className="detail-status-text muted">{update.message}</span>
         )}
+        {/* "Edit source…" escape hatch for built-in registry sources that
+         * either failed OR returned a version that looks wrong. Shown for:
+         *   - check failures (parse-failed / error / fetch-failed)
+         *   - successful-but-wrong detections (outdated) — e.g. the scraper
+         *     picks up "v2.4.0" from a developer page but the user knows
+         *     that version number is incorrect
+         * User-added sources already have their own Edit / Remove buttons
+         * in the registryAddedByUser block below, so we skip this one for
+         * those to avoid doubling up. */}
+        {!noSource &&
+          !item.registryAddedByUser &&
+          update &&
+          (update.status === 'parse-failed' || update.status === 'error' || update.status === 'fetch-failed' || update.status === 'outdated') &&
+          onDiscover && (
+          <span className="detail-status-text muted">
+            <button type="button" className="linkish" onClick={onDiscover}>
+              Edit source…
+            </button>
+          </span>
+        )}
         {item.registryAddedByUser && (
           <span className="detail-status-text muted">
             Update source added by you ✓

@@ -4346,7 +4346,8 @@
         "com.waproduction.",
         "com.kshmrreverb",
         "com.waprod.",
-        "com.wa."
+        "com.wa.",
+        "com.w"
       ],
       "productMatchers": {
         "Babylon": {
@@ -4764,6 +4765,7 @@
     "Wavesfactory": {
       "homepage": "https://www.wavesfactory.com",
       "identifierPrefix": [
+        "wavesfactory.trackspacer",
         "com.wavesfactory."
       ],
       "productMatchers": {

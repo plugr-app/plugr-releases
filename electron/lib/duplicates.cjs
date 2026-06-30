@@ -109,7 +109,12 @@ function detectDuplicates(items) {
 
     for (const m of sorted) {
       const mVer = m.version || '';
-      const isNewestVersion = mVer === newestVer;
+      // Use semver comparison instead of raw string equality so that
+      // build-metadata suffixes don't cause false "superseded" flags.
+      // Example: "2.4.0.82a3f41" vs "2.4.0" — both coerce to 2.4.0, so
+      // compareSemver returns 0. Without this, the string "2.4.0.82a3f41"
+      // !== "2.4.0" would make the build-suffixed copy look older.
+      const isNewestVersion = mVer === newestVer || compareSemver(mVer, newestVer) >= 0;
 
       if (!isNewestVersion) {
         // Older version than the group's newest → superseded, regardless

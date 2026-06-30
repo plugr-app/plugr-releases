@@ -210,6 +210,24 @@ async function scanFormat(format) {
             .filter(Boolean);
         }
 
+        // Strip developer-name prefix when the plugin embeds it in its own
+        // display name (e.g. Acon Digital AU bundles ship as
+        // "Acon Digital Convolve" instead of just "Convolve"). Stripping
+        // brings the AU name in line with its VST3/AAX counterparts so that
+        // duplicate detection and registry lookups work correctly across
+        // formats. We only strip when:
+        //   • the developer is known (not "Unknown")
+        //   • the remainder is non-empty after stripping
+        //   • the match is case-insensitive (covers edge cases where bundle
+        //     casing differs from the inferred developer string)
+        if (developer && developer !== 'Unknown') {
+          const prefix = developer.toLowerCase() + ' ';
+          const lower = displayName.toLowerCase();
+          if (lower.startsWith(prefix) && displayName.length > prefix.length) {
+            displayName = displayName.slice(prefix.length).trimStart();
+          }
+        }
+
         items.push({
           id: makeId(found.path),
           name: displayName,
