@@ -8,6 +8,7 @@ import { TopPluginsChart, TopDevelopersChart, CategoryDonut } from './ProjectsCh
 import dawAbletonLogo  from '../assets/daw-ableton.png';
 import dawLogicLogo    from '../assets/daw-logic.png';
 import dawFlStudioLogo from '../assets/daw-flstudio.png';
+import ProjectsKanban  from './ProjectsKanban.jsx';
 
 // Same window.pluginHub bridge App.jsx uses. We keep a local
 // reference here so leaf components in this file (the bounce-row
@@ -450,6 +451,17 @@ function ProjectsViewInner({
     catch { /* tolerate quota / privacy mode */ }
   }, [chartsCollapsed]);
 
+  // View mode — 'list' (default table) or 'kanban' (drag-and-drop board).
+  // Persisted so the user's choice survives reloads.
+  const [viewMode, setViewMode] = useState(() => {
+    try { return localStorage.getItem('plugr.projects.viewMode') || 'list'; }
+    catch { return 'list'; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem('plugr.projects.viewMode', viewMode); }
+    catch {}
+  }, [viewMode]);
+
   // Click-to-filter from any of the three charts. Shape:
   //   { type: 'plugin',    itemId, label }
   //   { type: 'developer', value }   // canonical developer name
@@ -825,7 +837,7 @@ function ProjectsViewInner({
        *  them grow to fit content and completely defeats the
        *  `overflow: auto`. Without this, expanded rows push beyond
        *  the viewport with no way to scroll to them. */}
-      <div style={{ flex: 1, minHeight: 0, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, minHeight: 0, overflow: viewMode === 'kanban' ? 'hidden' : 'auto', display: 'flex', flexDirection: 'column' }}>
         {/* Charts row — collapsible via the toolbar toggle. When
          *  collapsed we skip rendering entirely so the project list
          *  can fill the viewport. Clicking any entry inside a chart
@@ -995,6 +1007,24 @@ function ProjectsViewInner({
             style={{ padding: '6px 10px', fontSize: '12px' }}
           >Manage statuses…</button>
 
+          {/* View mode toggle — list ☰ vs kanban ⊞ */}
+          <div style={{ display: 'flex', gap: 2, marginLeft: 2 }}>
+            <button
+              type="button"
+              className={`btn btn-small${viewMode === 'list' ? '' : ' btn-ghost'}`}
+              style={{ padding: '5px 9px', fontSize: '14px', lineHeight: 1 }}
+              title="List view"
+              onClick={() => setViewMode('list')}
+            >☰</button>
+            <button
+              type="button"
+              className={`btn btn-small${viewMode === 'kanban' ? '' : ' btn-ghost'}`}
+              style={{ padding: '5px 9px', fontSize: '14px', lineHeight: 1 }}
+              title="Kanban board"
+              onClick={() => setViewMode('kanban')}
+            >⊞</button>
+          </div>
+
           {/* Chart-driven filter chip — appears when the user has
            *  clicked a row in one of the three charts to drill in.
            *  Lives inside the sticky toolbar so it scrolls with it
@@ -1026,89 +1056,102 @@ function ProjectsViewInner({
           )}
         </div>
 
-        {/* Project list — SINGLE CSS Grid for the entire table.
-         *  Header cells + every row's 7 cells + every expanded panel
-         *  are all flat children of THIS grid, so column alignment
-         *  is impossible to break: there's only one grid context. */}
-        <div
-          style={{
-            margin: '0 20px 20px 20px',
-            border: '1px solid var(--border-color, rgba(127,127,127,0.18))',
-            borderRadius: '8px',
-            // overflow:hidden was here for rounded corners but combined
-            // with flex-shrink:1 (the default for flex children) it
-            // CLIPPED the expanded panel when total content exceeded
-            // the inner scrollable wrapper's available flex space.
-            // Now we use flexShrink:0 to keep the grid at its natural
-            // size — the wrapper above handles overflow via scroll.
-            background: 'var(--panel-bg, rgba(255,255,255,0.02))',
-            display: 'grid',
-            gridTemplateColumns: PROJECT_GRID_COLUMNS,
-            alignItems: 'stretch',
-            flexShrink: 0,
-          }}
-        >
-          {visibleProjects.length === 0 ? (
-            <div style={{ gridColumn: '1 / -1', padding: '40px 20px', textAlign: 'center', opacity: 0.6, fontSize: '13px' }}>
-              No projects match your filters.
-            </div>
-          ) : (
-            <>
-              {/* Header cells — direct grid children. Columns with a
-               *  sortKey are click-to-sort; the active column gets an
-               *  accent-tinted label and a small arrow. The plain #,
-               *  DAW-icon, and Actions columns are static (no useful
-               *  meaning to "sort by row number" or "sort by icon"). */}
-              <HeaderCell first align="right">#</HeaderCell>
-              <HeaderCell></HeaderCell>
-              <HeaderCell sortKey="name"        currentSort={sortBy} onSort={setSortBy}>Project</HeaderCell>
-              <HeaderCell sortKey="tempo"       currentSort={sortBy} onSort={setSortBy} align="right">Tempo</HeaderCell>
-              <HeaderCell sortKey="key"         currentSort={sortBy} onSort={setSortBy} align="center">Key</HeaderCell>
-              <HeaderCell sortKey="rating"      currentSort={sortBy} onSort={setSortBy} align="center">Rating</HeaderCell>
-              <HeaderCell sortKey="status"      currentSort={sortBy} onSort={setSortBy}>Status</HeaderCell>
-              <HeaderCell sortKey="tagged"      currentSort={sortBy} onSort={setSortBy}>Tags</HeaderCell>
-              <HeaderCell last align="right">Actions</HeaderCell>
-              {/* One Fragment per project, emitting 8 cells + optional expanded panel */}
-              {visibleProjects.map((p, idx) => (
-                <ProjectRowCells
-                  key={p.id}
-                  project={p}
-                  rowIndex={idx + 1}
-                  zebra={idx % 2 === 1}
-                  tags={(projectTags && projectTags[p.id]) || PRC_EMPTY_TAGS}
-                  knownTags={knownTags}
-                  notes={(projectNotes && projectNotes[p.id]) || ''}
-                  bounceOverrides={(projectBounceOverrides && projectBounceOverrides[p.id]) || PRC_EMPTY_BOUNCE_OVERRIDES}
-                  rating={(projectRatings && projectRatings[p.id]) || null}
-                  status={(projectStatuses && projectStatuses[p.id]) || null}
-                  statuses={effectiveStatuses}
-                  statusById={statusById}
-                  expanded={expandedIds.has(p.id)}
-                  libraryItems={libraryItems}
-                  onToggleExpand={() => setExpandedIds((s) => {
-                    const next = new Set(s);
-                    if (next.has(p.id)) next.delete(p.id); else next.add(p.id);
-                    return next;
-                  })}
-                  onSetTags={(tags) => onSetTags && onSetTags(p.id, tags)}
-                  onSetNotes={(text) => onSetNotes && onSetNotes(p.id, text)}
-                  onAddManualBounce={() => onAddManualBounce && onAddManualBounce(p)}
-                  onDropBounces={(paths) => onDropBouncesOnProject && onDropBouncesOnProject(p, paths)}
-                  onDismissAutoBounce={(bouncePath) => onDismissAutoBounce && onDismissAutoBounce(p, bouncePath)}
-                  onRemoveManualBounce={(bouncePath) => onRemoveManualBounce && onRemoveManualBounce(p, bouncePath)}
-                  onRevealBounce={(bouncePath) => onRevealInFinder && onRevealInFinder(bouncePath)}
-                  onSetRating={(r) => onSetRating && onSetRating(p.id, r)}
-                  onSetStatus={(s) => onSetStatus && onSetStatus(p.id, s)}
-                  onSetKeyOverride={(k) => onSetKeyOverride && onSetKeyOverride(p.id, k)}
-                  onOpenManageStatuses={() => setManageStatusesOpen(true)}
-                  onOpenInDAW={() => onOpenInDAW && onOpenInDAW(p.path)}
-                  onRevealInFinder={() => onRevealInFinder && onRevealInFinder(p.path)}
-                  onJumpToPluginInLibrary={onJumpToPluginInLibrary}
-                />
-              ))}
-            </>
-          )}
-        </div>
+        {/* Project list — either table grid (list view) or kanban board */}
+        {viewMode === 'kanban' ? (
+          <ProjectsKanban
+            projects={visibleProjects}
+            statuses={effectiveStatuses}
+            projectStatuses={projectStatuses}
+            projectTags={projectTags}
+            projectRatings={projectRatings}
+            onSetStatus={onSetStatus}
+            onOpenInDAW={onOpenInDAW}
+            onRevealInFinder={onRevealInFinder}
+          />
+        ) : (
+          /* SINGLE CSS Grid for the entire table. Header cells + every
+           * row's 8 cells + every expanded panel are all flat children
+           * of THIS grid, so column alignment is impossible to break. */
+          <div
+            style={{
+              margin: '0 20px 20px 20px',
+              border: '1px solid var(--border-color, rgba(127,127,127,0.18))',
+              borderRadius: '8px',
+              // overflow:hidden was here for rounded corners but combined
+              // with flex-shrink:1 (the default for flex children) it
+              // CLIPPED the expanded panel when total content exceeded
+              // the inner scrollable wrapper's available flex space.
+              // Now we use flexShrink:0 to keep the grid at its natural
+              // size — the wrapper above handles overflow via scroll.
+              background: 'var(--panel-bg, rgba(255,255,255,0.02))',
+              display: 'grid',
+              gridTemplateColumns: PROJECT_GRID_COLUMNS,
+              alignItems: 'stretch',
+              flexShrink: 0,
+            }}
+          >
+            {visibleProjects.length === 0 ? (
+              <div style={{ gridColumn: '1 / -1', padding: '40px 20px', textAlign: 'center', opacity: 0.6, fontSize: '13px' }}>
+                No projects match your filters.
+              </div>
+            ) : (
+              <>
+                {/* Header cells — direct grid children. Columns with a
+                 *  sortKey are click-to-sort; the active column gets an
+                 *  accent-tinted label and a small arrow. The plain #,
+                 *  DAW-icon, and Actions columns are static (no useful
+                 *  meaning to "sort by row number" or "sort by icon"). */}
+                <HeaderCell first align="right">#</HeaderCell>
+                <HeaderCell></HeaderCell>
+                <HeaderCell sortKey="name"        currentSort={sortBy} onSort={setSortBy}>Project</HeaderCell>
+                <HeaderCell sortKey="tempo"       currentSort={sortBy} onSort={setSortBy} align="right">Tempo</HeaderCell>
+                <HeaderCell sortKey="key"         currentSort={sortBy} onSort={setSortBy} align="center">Key</HeaderCell>
+                <HeaderCell sortKey="rating"      currentSort={sortBy} onSort={setSortBy} align="center">Rating</HeaderCell>
+                <HeaderCell sortKey="status"      currentSort={sortBy} onSort={setSortBy}>Status</HeaderCell>
+                <HeaderCell sortKey="tagged"      currentSort={sortBy} onSort={setSortBy}>Tags</HeaderCell>
+                <HeaderCell last align="right">Actions</HeaderCell>
+                {/* One Fragment per project, emitting 8 cells + optional expanded panel */}
+                {visibleProjects.map((p, idx) => (
+                  <ProjectRowCells
+                    key={p.id}
+                    project={p}
+                    rowIndex={idx + 1}
+                    zebra={idx % 2 === 1}
+                    tags={(projectTags && projectTags[p.id]) || PRC_EMPTY_TAGS}
+                    knownTags={knownTags}
+                    notes={(projectNotes && projectNotes[p.id]) || ''}
+                    bounceOverrides={(projectBounceOverrides && projectBounceOverrides[p.id]) || PRC_EMPTY_BOUNCE_OVERRIDES}
+                    rating={(projectRatings && projectRatings[p.id]) || null}
+                    status={(projectStatuses && projectStatuses[p.id]) || null}
+                    statuses={effectiveStatuses}
+                    statusById={statusById}
+                    expanded={expandedIds.has(p.id)}
+                    libraryItems={libraryItems}
+                    onToggleExpand={() => setExpandedIds((s) => {
+                      const next = new Set(s);
+                      if (next.has(p.id)) next.delete(p.id); else next.add(p.id);
+                      return next;
+                    })}
+                    onSetTags={(tags) => onSetTags && onSetTags(p.id, tags)}
+                    onSetNotes={(text) => onSetNotes && onSetNotes(p.id, text)}
+                    onAddManualBounce={() => onAddManualBounce && onAddManualBounce(p)}
+                    onDropBounces={(paths) => onDropBouncesOnProject && onDropBouncesOnProject(p, paths)}
+                    onDismissAutoBounce={(bouncePath) => onDismissAutoBounce && onDismissAutoBounce(p, bouncePath)}
+                    onRemoveManualBounce={(bouncePath) => onRemoveManualBounce && onRemoveManualBounce(p, bouncePath)}
+                    onRevealBounce={(bouncePath) => onRevealInFinder && onRevealInFinder(bouncePath)}
+                    onSetRating={(r) => onSetRating && onSetRating(p.id, r)}
+                    onSetStatus={(s) => onSetStatus && onSetStatus(p.id, s)}
+                    onSetKeyOverride={(k) => onSetKeyOverride && onSetKeyOverride(p.id, k)}
+                    onOpenManageStatuses={() => setManageStatusesOpen(true)}
+                    onOpenInDAW={() => onOpenInDAW && onOpenInDAW(p.path)}
+                    onRevealInFinder={() => onRevealInFinder && onRevealInFinder(p.path)}
+                    onJumpToPluginInLibrary={onJumpToPluginInLibrary}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+        )}
       </div>
       {manageStatusesOpen && (
         <ManageStatusesDialog

@@ -1,6 +1,6 @@
 {
   "name": "plugr",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Plugr — a personal plugin & app library for macOS. Scan, organize, and update audio plugins (VST3/AU/VST2/AAX/CLAP) and Mac applications.",
   "main": "electron/main.cjs",
   "author": "Josh",
