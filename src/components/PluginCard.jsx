@@ -23,6 +23,9 @@ function dupTitle(d) {
 export default function PluginCard({ item, update, selected, onClick, onContextMenu, onToggleFavorite, onDragStart, projectUsage }) {
   const dup = item.duplicate;
   const cat = (item.category || 'other').toLowerCase();
+  // Suppress the OLD badge when the user has acknowledged format lag for this version.
+  const formatLagAcknowledged = !!(update && update.latestVersion &&
+    item.formatLagAcknowledgedAt === update.latestVersion);
   return (
     <button
       type="button"
@@ -30,13 +33,13 @@ export default function PluginCard({ item, update, selected, onClick, onContextM
       onContextMenu={onContextMenu}
       draggable={!!onDragStart}
       onDragStart={onDragStart}
-      className={`card ${selected ? 'selected' : ''} ${dup && dup.status ? `dup-${dup.status}` : ''}`}
-      title={`${item.name} — ${item.developer}${dupTitle(dup) ? '\n' + dupTitle(dup) : ''}`}
+      className={`card ${selected ? 'selected' : ''} ${dup && dup.status && !formatLagAcknowledged ? `dup-${dup.status}` : ''}`}
+      title={`${item.name} — ${item.developer}${dupTitle(dup) && !formatLagAcknowledged ? '\n' + dupTitle(dup) : ''}`}
     >
       <div className={`card-strip cat-${cat}`}>
         <span className={`fmt-text fmt-${item.format.toLowerCase()}`}>{item.format}</span>
         <span className="card-strip-cat">{displaySubcategory(item) || item.category}</span>
-        {dup && dup.status && (
+        {dup && dup.status && !formatLagAcknowledged && (
           <span className={`dup-pill dup-${dup.status} on-strip`} title={dupTitle(dup)}>
             {dup.status === 'duplicate' ? 'duplicate' : 'old'}
           </span>

@@ -50,6 +50,21 @@ export default function DetailPanel({
     ? allItems.filter((x) => x.duplicate && x.duplicate.groupId === dup.groupId && x.id !== item.id)
     : [];
 
+  // Format lag: this plugin is outdated but sibling formats are already at the latest version.
+  // Happens when developers release AU/VST3 before AAX (Avid certification takes time).
+  // The user can acknowledge this to suppress the OLD badge and update CTA.
+  const lagSiblings = (update && update.status === 'outdated' && update.latestVersion && groupMembers.length > 0)
+    ? groupMembers.filter((m) => m.version === update.latestVersion)
+    : [];
+  const isFormatLag = lagSiblings.length > 0;
+  const formatLagAcknowledged = isFormatLag && item.formatLagAcknowledgedAt === update.latestVersion;
+  const lagSiblingFormats = lagSiblings.map((m) => m.format);
+  const lagFormatsLabel = lagSiblingFormats.length === 1
+    ? lagSiblingFormats[0]
+    : lagSiblingFormats.slice(0, -1).join(', ') + ' and ' + lagSiblingFormats[lagSiblingFormats.length - 1];
+  const lagVersionWord = lagSiblings.length === 1 ? 'version' : 'versions';
+  const lagIsAre = lagSiblings.length === 1 ? 'is' : 'are';
+
   // Update detection can come from three places:
   //   1. A registry/user-saved updateUrl + versionRegex pair
   //   2. A Sparkle appcast URL declared in the bundle (most reliable)
@@ -510,6 +525,44 @@ export default function DetailPanel({
               ))}
             </div>
           )}
+          {isFormatLag && (
+            <div style={{
+              marginTop: 10,
+              padding: '8px 10px',
+              borderRadius: 6,
+              background: 'color-mix(in srgb, var(--accent) 6%, transparent)',
+              border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
+              fontSize: 12,
+              color: 'var(--text-muted, rgba(127,127,127,0.85))',
+            }}>
+              {formatLagAcknowledged ? (
+                <span>
+                  <span style={{ opacity: 0.65 }}>{item.format} marked as current</span>
+                  {' · '}
+                  <button
+                    type="button"
+                    className="linkish"
+                    onClick={() => onSetOverride({ formatLagAcknowledgedAt: null })}
+                  >Undo</button>
+                </span>
+              ) : (
+                <>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 7 }}>
+                    <span style={{ flexShrink: 0, opacity: 0.5, lineHeight: '1.5' }}>ℹ</span>
+                    <span style={{ lineHeight: '1.5' }}>
+                      The {lagFormatsLabel} {lagVersionWord} of this plugin {lagIsAre} already on v{update.latestVersion}, but the {item.format} is still on v{item.version}. Developers sometimes release formats at different times — if there is no {item.format} update available yet, you can mark it as current.
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="linkish"
+                    style={{ marginLeft: 16 }}
+                    onClick={() => onSetOverride({ formatLagAcknowledgedAt: update.latestVersion })}
+                  >Mark {item.format} as current</button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -519,7 +572,7 @@ export default function DetailPanel({
         {/* When an update is available AND the developer has a companion
          * app, promote that companion app as the primary CTA — that's
          * almost always where the user actually applies the update. */}
-        {reg.companionApp && update && update.status === 'outdated' ? (
+        {reg.companionApp && update && update.status === 'outdated' && !formatLagAcknowledged ? (
           <button
             className="btn primary companion-btn update-cta"
             onClick={() => onOpenCompanionApp && onOpenCompanionApp(reg.companionApp)}
@@ -572,7 +625,7 @@ export default function DetailPanel({
         {/* If there's no companion app and we have a direct update URL, that
          * becomes the primary update CTA when an update is available. */}
         {hasUpdateSource && reg.updateUrl && (
-          update && update.status === 'outdated' && !reg.companionApp ? (
+          update && update.status === 'outdated' && !reg.companionApp && !formatLagAcknowledged ? (
             <button className="btn primary update-cta" onClick={() => onOpenHomepage(reg.updateUrl)}>
               Update available — Get v{update.latestVersion}
             </button>
