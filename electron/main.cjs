@@ -30,7 +30,6 @@ protocol.registerSchemesAsPrivileged([
 const { scanLibrary } = require('./lib/scanners.cjs');
 const { checkUpdatesForItems } = require('./lib/updateChecker.cjs');
 const { loadCache, saveCache, clearCache, cacheFilePath } = require('./lib/cache.cjs');
-const { PluginWatcher } = require('./lib/pluginWatcher.cjs');
 const {
   loadProjectStore,
   patchProjectStore,
@@ -227,102 +226,6 @@ const isDev = !app.isPackaged;
 
 let mainWindow = null;
 
-// ─── Plugin file watcher (MacUpdater-style auto-detection) ─────────────────
-// Watches standard plugin directories for bundle changes so that when the
-// user updates a plugin via its companion app (UJAM, Native Access, etc.),
-// Plugr clears the "outdated" badge automatically — no manual rescan needed.
-//
-// FDA note: system-level dirs (/Library/Audio/Plug-Ins/…) require Full Disk
-// Access on macOS. If we can't read them, we show a one-time toast with a
-// link to System Settings rather than silently failing.
-let pluginWatcher = null;
-
-function createPluginWatcher(customFolders) {
-  // Tear down any existing watcher before creating a new one (e.g. the
-  // user added a custom folder and triggered a restart).
-  if (pluginWatcher) { pluginWatcher.stop(); pluginWatcher = null; }
-
-  let fdaToastShown = false;
-
-  pluginWatcher = new PluginWatcher({
-    onChanged: async (updatedItems, { newPlugins }) => {
-      // updatedItems: library items whose version changed on disk.
-      // Patch the library cache + reconcile update statuses in one shot.
-      if (updatedItems.length > 0) {
-        try {
-          const semver = require('semver');
-          const existing = (await loadCache(userDataDir())) || {};
-
-          // 1. Splice updated versions into the cached library.
-          const libItems = (existing.library && existing.library.items) || [];
-          const versionPatch = {};
-          for (const u of updatedItems) versionPatch[u.id] = u.version;
-          const patchedItems = libItems.map((it) =>
-            versionPatch[it.id] ? { ...it, version: versionPatch[it.id] } : it
-          );
-          const patchedLibrary = existing.library
-            ? { ...existing.library, items: patchedItems }
-            : null;
-
-          // 2. Reconcile "outdated" cache entries against the new versions.
-          const updateMap = { ...(existing.updates || {}) };
-          let updateChanged = false;
-          for (const u of updatedItems) {
-            const cached = updateMap[u.id];
-            if (cached && cached.status === 'outdated' && cached.latestVersion) {
-              const sInst = semver.coerce(u.version);
-              const sLat  = semver.coerce(cached.latestVersion);
-              if (sInst && sLat && semver.compare(sInst, sLat) >= 0) {
-                const newStatus = semver.compare(sInst, sLat) > 0 ? 'ahead' : 'current';
-                updateMap[u.id] = { ...cached, status: newStatus };
-                updateChanged = true;
-              }
-            }
-          }
-
-          const patch = {};
-          if (patchedLibrary) patch.library = patchedLibrary;
-          if (updateChanged)  patch.updates  = updateMap;
-          if (Object.keys(patch).length > 0) await patchCache(patch);
-        } catch (e) {
-          console.warn('[plugin-watcher] cache patch failed:', e.message);
-        }
-
-        // Tell the renderer to refresh with the auto-detected versions.
-        sendToRenderer('plugins:autoUpdated', {
-          items: updatedItems,
-          newPluginPaths: newPlugins,
-        });
-      } else if (newPlugins.length > 0) {
-        // New plugin(s) installed that weren't in the library. Signal the
-        // renderer to offer a rescan.
-        sendToRenderer('plugins:autoUpdated', {
-          items: [],
-          newPluginPaths: newPlugins,
-        });
-      }
-    },
-
-    onFdaRequired: () => {
-      // Only show the FDA toast once per session — the user doesn't need
-      // a reminder every time a watched directory rejects our access.
-      if (fdaToastShown) return;
-      fdaToastShown = true;
-      // Push a special IPC event; the renderer surfaces the toast with
-      // an "Open Settings" button that deep-links to FDA in System Settings.
-      sendToRenderer('plugins:fdaRequired');
-    },
-  });
-
-  pluginWatcher.start(customFolders || []);
-}
-
-// Update the watcher's library-item list whenever a scan completes so
-// bundle-path matching stays current.
-function syncWatcherItems(items) {
-  if (pluginWatcher) pluginWatcher.setLibraryItems(items);
-}
-
 // ---------- Background / tray state ----------
 // Plugr can optionally run as a menu-bar app: the user opts in via
 // Preferences → "Run in menu bar". When enabled:
@@ -337,7 +240,6 @@ function syncWatcherItems(items) {
 let tray = null;
 let isQuitting = false;
 let backgroundPrefs = { runInMenuBar: false, launchAtLogin: false };
-let trayOutdatedItems = []; // cached from renderer; used to build the dynamic update list
 
 // Apply login-item registration. macOS-only — Windows/Linux fall back
 // to silently no-op'ing since Plugr is mac-first today. Wrapping in a
@@ -351,54 +253,6 @@ function applyLoginItem(launchAtLogin) {
   }
 }
 
-// Build (or rebuild) the tray context menu. When outdated plugin data
-// is available (pushed from the renderer after an update check), the
-// top of the menu shows a count header + up to 8 plugin rows so the
-// user can see what needs updating at a glance, MacUpdater-style.
-function buildTrayContextMenu() {
-  const template = [];
-
-  if (trayOutdatedItems.length > 0) {
-    const count = trayOutdatedItems.length;
-    template.push({ label: `${count} plugin update${count === 1 ? '' : 's'} available`, enabled: false });
-    template.push({ type: 'separator' });
-    const shown = trayOutdatedItems.slice(0, 8);
-    for (const p of shown) {
-      const from = p.from && p.from !== '?' ? p.from : '?';
-      const to   = p.to   && p.to   !== '?' ? p.to   : '?';
-      template.push({
-        label: `${p.name}  ${from} → ${to}`,
-        click: showOrCreateWindow,
-      });
-    }
-    if (count > 8) {
-      template.push({ label: `View all ${count} updates in Plugr…`, click: showOrCreateWindow });
-    }
-    template.push({ type: 'separator' });
-  }
-
-  template.push({ label: 'Open Plugr', click: showOrCreateWindow });
-  template.push({ label: 'My Deal Alerts…', click: () => {
-    showOrCreateWindow();
-    sendToRenderer('menu:openAlerts');
-  } });
-  template.push({ type: 'separator' });
-  template.push({ label: 'Quit Plugr', click: () => { isQuitting = true; app.quit(); } });
-
-  return Menu.buildFromTemplate(template);
-}
-
-// Renderer pushes an array of { name, from, to } objects after every
-// update check. We refresh the tray title (the count badge) and rebuild
-// the context menu so the list stays current without an app restart.
-ipcMain.on('tray:setUpdates', (_event, outdatedList) => {
-  trayOutdatedItems = Array.isArray(outdatedList) ? outdatedList : [];
-  if (!tray) return;
-  const count = trayOutdatedItems.length;
-  tray.setTitle(count > 0 ? String(count) : '');
-  tray.setContextMenu(buildTrayContextMenu());
-});
-
 function showOrCreateWindow() {
   if (!mainWindow) {
     createWindow();
@@ -406,6 +260,85 @@ function showOrCreateWindow() {
   }
   if (!mainWindow.isVisible()) mainWindow.show();
   mainWindow.focus();
+}
+
+// Build a static fallback tray menu (used when cache load fails).
+function buildTrayContextMenu() {
+  return Menu.buildFromTemplate([
+    { label: 'Open Plugr', click: showOrCreateWindow },
+    { label: 'My Deal Alerts…', click: () => {
+        showOrCreateWindow();
+        sendToRenderer('menu:openAlerts');
+      } },
+    { type: 'separator' },
+    { label: 'Quit Plugr', click: () => { isQuitting = true; app.quit(); } },
+  ]);
+}
+
+// Build and pop up a dynamic tray menu that lists available software
+// updates (plugins + apps) — similar to how MacUpdater surfaces them
+// in its menu-bar icon. Loads the latest cache on every call so the
+// list is always fresh without requiring a re-scan first.
+async function showTrayUpdateMenu() {
+  try {
+    const data   = (await loadCache(userDataDir())) || {};
+    const items  = (data.library && Array.isArray(data.library.items)) ? data.library.items : [];
+    const updates = data.updates || {};
+
+    // Collect outdated entries, sorted by name.
+    const outdated = items
+      .filter((it) => updates[it.id] && updates[it.id].status === 'outdated')
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+
+    const MAX_VISIBLE = 18;
+    const template = [];
+
+    if (outdated.length === 0) {
+      template.push({ label: 'All plugins up to date ✓', enabled: false });
+    } else {
+      template.push({
+        label: `${outdated.length} update${outdated.length === 1 ? '' : 's'} available`,
+        enabled: false,
+      });
+      template.push({ type: 'separator' });
+
+      for (const it of outdated.slice(0, MAX_VISIBLE)) {
+        const upd     = updates[it.id];
+        const from    = it.version || '?';
+        const to      = upd.latestVersion || '?';
+        const arrow   = `${from} → ${to}`;
+        // Show format tag for plugins that have multiple formats
+        // (AU, VST3, AAX…) so the user can tell them apart.
+        const fmtTag  = it.format ? ` [${it.format}]` : '';
+        template.push({
+          label: `${it.name || it.identifier || 'Unknown'}${fmtTag}  ${arrow}`,
+          click: showOrCreateWindow,
+        });
+      }
+
+      if (outdated.length > MAX_VISIBLE) {
+        template.push({
+          label: `  +${outdated.length - MAX_VISIBLE} more…`,
+          click: showOrCreateWindow,
+          enabled: true,
+        });
+      }
+    }
+
+    template.push({ type: 'separator' });
+    template.push({ label: 'Open Plugr', click: showOrCreateWindow });
+    template.push({
+      label: 'My Deal Alerts…',
+      click: () => { showOrCreateWindow(); sendToRenderer('menu:openAlerts'); },
+    });
+    template.push({ type: 'separator' });
+    template.push({ label: 'Quit Plugr', click: () => { isQuitting = true; app.quit(); } });
+
+    if (tray) tray.popUpContextMenu(Menu.buildFromTemplate(template));
+  } catch (err) {
+    console.warn('[tray] update menu failed:', err.message);
+    if (tray) tray.popUpContextMenu(buildTrayContextMenu());
+  }
 }
 
 function createTray() {
@@ -437,11 +370,13 @@ function createTray() {
     }
     tray = new Tray(icon);
     tray.setToolTip('Plugr');
-    tray.setContextMenu(buildTrayContextMenu());
-    // Left-click on macOS shows the context menu by default; we also
-    // map a plain click to "open the main window" so users can just
-    // tap the icon to bring Plugr forward.
-    tray.on('click', showOrCreateWindow);
+    // No static context menu — both left- and right-click build a
+    // fresh menu from the cache so the update list is always current.
+    // setContextMenu(null) prevents Electron from auto-showing a stale
+    // menu on right-click before our async handler fires.
+    tray.setContextMenu(null);
+    tray.on('click',       () => showTrayUpdateMenu());
+    tray.on('right-click', () => showTrayUpdateMenu());
   } catch (err) {
     console.warn('[tray] create failed:', err.message);
     tray = null;
@@ -722,21 +657,6 @@ app.whenReady().then(async () => {
   try { autoUpdater.init(); }
   catch (err) { console.warn('auto-updater init failed:', err.message); }
 
-  // Start the plugin file watcher. Reads customFolders from the cache
-  // so user-added scan paths are watched too. Best-effort — a watcher
-  // failure is non-fatal; the user can still rescan manually.
-  try {
-    const watcherCache = (await loadCache(userDataDir())) || {};
-    const customFolders = Array.isArray(watcherCache.customFolders) ? watcherCache.customFolders : [];
-    createPluginWatcher(customFolders);
-    // Seed with cached library items so the first bundle-change event
-    // can do a path-match immediately (before the user triggers a scan).
-    const cachedItems = (watcherCache.library && watcherCache.library.items) || [];
-    syncWatcherItems(cachedItems);
-  } catch (err) {
-    console.warn('[plugin-watcher] startup failed:', err.message);
-  }
-
   // Apply persisted background prefs: tray icon + login item. Done
   // after window creation + auto-updater init so the tray menu shows
   // up against a fully-booted process. Best-effort — failures here
@@ -887,37 +807,6 @@ ipcMain.handle('library:scan', async (_event, options) => {
     // Persist library portion of the cache after every successful scan.
     try { await patchCache({ library: result }); }
     catch (e) { console.warn('cache save failed', e.message); }
-    // Keep the file watcher's item list current so path-matching works
-    // immediately after a rescan (new installs, moved bundles, etc.).
-    syncWatcherItems(result.items);
-    // Reconcile stale "outdated" cache entries against the newly-scanned
-    // installed versions. When the user updates a plugin and rescans, the
-    // installed version in result.items changes but the update cache may
-    // still say "outdated" from the previous check run. Re-derive status
-    // here so the badge clears immediately after rescan without needing a
-    // separate "Check for updates" pass.
-    //
-    // Example: Melda updated to v17.09, user rescans → result.items has
-    // version "17.09", but cache.updates[id].latestVersion is also "17.09"
-    // with status "outdated". semver.compare(17.09, 17.09) === 0 → 'current'.
-    try {
-      const semver = require('semver');
-      const updateMap = { ...(existing.updates || {}) };
-      let changed = false;
-      for (const item of result.items) {
-        const cached = updateMap[item.id];
-        if (cached && cached.status === 'outdated' && cached.latestVersion && item.version) {
-          const sInst = semver.coerce(item.version);
-          const sLat  = semver.coerce(cached.latestVersion);
-          if (sInst && sLat && semver.compare(sInst, sLat) >= 0) {
-            const newStatus = semver.compare(sInst, sLat) > 0 ? 'ahead' : 'current';
-            updateMap[item.id] = { ...cached, status: newStatus };
-            changed = true;
-          }
-        }
-      }
-      if (changed) await patchCache({ updates: updateMap });
-    } catch (e) { console.warn('post-scan update reconciliation failed:', e.message); }
     return { ok: true, data: result };
   } catch (err) {
     console.error('library:scan failed', err);
@@ -1120,56 +1009,14 @@ ipcMain.handle('overrides:set', async (_event, { id, patch }) => {
 
 // Move a bundle to the user's Trash. Reversible — does NOT permanently
 // delete; the user can drag it back out of Trash if they change their mind.
-//
-// Two-stage approach:
-//   1. shell.trashItem() — works for plugins in the user's home folder
-//      and anywhere Plugr already has Full Disk Access.
-//   2. osascript fallback — if the file is in a system-protected folder
-//      (e.g. /Library/Audio/Plug-Ins/Components/), we re-try via
-//      AppleScript with `with administrator privileges`. macOS shows its
-//      standard password dialog; the user authenticates once and the
-//      file moves to Trash. Much friendlier than a cryptic permission error.
 ipcMain.handle('shell:trashItem', async (_event, fullPath) => {
-  if (!fullPath) return { ok: false, error: 'no path' };
-
-  // Stage 1: try the normal Electron API.
   try {
+    if (!fullPath) return { ok: false, error: 'no path' };
     await shell.trashItem(fullPath);
     return { ok: true };
-  } catch (firstErr) {
-    // Only fall through to the admin-privileges path on permission errors.
-    // Any other error (bad path, network drive, etc.) we surface immediately.
-    const msg = String(firstErr && firstErr.message || firstErr);
-    const isPermission = /EACCES|EPERM|permission|not permitted/i.test(msg);
-    if (!isPermission) return { ok: false, error: msg };
+  } catch (err) {
+    return { ok: false, error: String(err && err.message || err) };
   }
-
-  // Stage 2: re-try via osascript with administrator privileges.
-  // The script takes the path as an argv argument so AppleScript's
-  // `quoted form of` handles all special characters — no shell-quoting
-  // gymnastics needed on the JS side.
-  const { execFile } = require('node:child_process');
-  const adminScript = [
-    'on run argv',
-    '  do shell script "mv -f " & quoted form of (item 1 of argv) & " ~/.Trash/" with administrator privileges',
-    'end run',
-  ].join('\n');
-
-  return new Promise((resolve) => {
-    execFile('osascript', ['-e', adminScript, fullPath], (err) => {
-      if (err) {
-        // User cancelled the password dialog or it genuinely failed.
-        const cancelled = /(-128|User canceled|cancelled)/i.test(String(err));
-        if (cancelled) {
-          resolve({ ok: false, canceled: true, error: 'Cancelled by user' });
-        } else {
-          resolve({ ok: false, error: String(err.message || err) });
-        }
-      } else {
-        resolve({ ok: true });
-      }
-    });
-  });
 });
 
 // Look across the user's library (in-memory state via patchCache lookups)

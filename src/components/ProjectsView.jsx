@@ -1007,22 +1007,36 @@ function ProjectsViewInner({
             style={{ padding: '6px 10px', fontSize: '12px' }}
           >Manage statuses…</button>
 
-          {/* View mode toggle — list ☰ vs kanban ⊞ */}
+          {/* View mode toggle — list vs kanban */}
           <div style={{ display: 'flex', gap: 2, marginLeft: 2 }}>
             <button
               type="button"
               className={`btn btn-small${viewMode === 'list' ? '' : ' btn-ghost'}`}
-              style={{ padding: '5px 9px', fontSize: '14px', lineHeight: 1 }}
+              style={{ padding: '5px 9px', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}
               title="List view"
               onClick={() => setViewMode('list')}
-            >☰</button>
+            >
+              {/* Hamburger list icon */}
+              <svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor" aria-hidden="true">
+                <rect x="0" y="0" width="14" height="2" rx="1"/>
+                <rect x="0" y="5" width="14" height="2" rx="1"/>
+                <rect x="0" y="10" width="14" height="2" rx="1"/>
+              </svg>
+            </button>
             <button
               type="button"
               className={`btn btn-small${viewMode === 'kanban' ? '' : ' btn-ghost'}`}
-              style={{ padding: '5px 9px', fontSize: '14px', lineHeight: 1 }}
+              style={{ padding: '5px 9px', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}
               title="Kanban board"
               onClick={() => setViewMode('kanban')}
-            >⊞</button>
+            >
+              {/* Three-column kanban icon */}
+              <svg width="13" height="12" viewBox="0 0 13 12" fill="currentColor" aria-hidden="true">
+                <rect x="0"   y="0" width="3.2" height="12" rx="1"/>
+                <rect x="4.9" y="0" width="3.2" height="12" rx="1"/>
+                <rect x="9.8" y="0" width="3.2" height="12" rx="1"/>
+              </svg>
+            </button>
           </div>
 
           {/* Chart-driven filter chip — appears when the user has
@@ -1064,7 +1078,12 @@ function ProjectsViewInner({
             projectStatuses={projectStatuses}
             projectTags={projectTags}
             projectRatings={projectRatings}
+            projectNotes={projectNotes}
+            knownTags={knownTags}
             onSetStatus={onSetStatus}
+            onSetTags={onSetTags}
+            onSetNotes={onSetNotes}
+            onSetRating={onSetRating}
             onOpenInDAW={onOpenInDAW}
             onRevealInFinder={onRevealInFinder}
           />
