@@ -837,7 +837,7 @@ function ProjectsViewInner({
        *  them grow to fit content and completely defeats the
        *  `overflow: auto`. Without this, expanded rows push beyond
        *  the viewport with no way to scroll to them. */}
-      <div style={{ flex: 1, minHeight: 0, overflow: viewMode === 'kanban' ? 'hidden' : 'auto', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, minHeight: 0, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
         {/* Charts row — collapsible via the toolbar toggle. When
          *  collapsed we skip rendering entirely so the project list
          *  can fill the viewport. Clicking any entry inside a chart
@@ -1011,30 +1011,45 @@ function ProjectsViewInner({
           <div style={{ display: 'flex', gap: 2, marginLeft: 2 }}>
             <button
               type="button"
-              className={`btn btn-small${viewMode === 'list' ? '' : ' btn-ghost'}`}
-              style={{ padding: '5px 9px', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}
+              style={{
+                padding: '3px 8px', fontSize: 17, lineHeight: 1,
+                display: 'inline-flex', alignItems: 'center',
+                borderRadius: 5, border: '1px solid', cursor: 'pointer',
+                background: viewMode === 'list'
+                  ? 'color-mix(in srgb, var(--accent, #6ec1ff) 20%, transparent)'
+                  : 'transparent',
+                borderColor: viewMode === 'list'
+                  ? 'var(--accent, #6ec1ff)'
+                  : 'rgba(127,127,127,0.2)',
+                color: viewMode === 'list' ? 'var(--accent, #6ec1ff)' : 'inherit',
+                opacity: viewMode === 'list' ? 1 : 0.5,
+              }}
               title="List view"
               onClick={() => setViewMode('list')}
-            >
-              {/* Hamburger list icon */}
-              <svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor" aria-hidden="true">
-                <rect x="0" y="0" width="14" height="2" rx="1"/>
-                <rect x="0" y="5" width="14" height="2" rx="1"/>
-                <rect x="0" y="10" width="14" height="2" rx="1"/>
-              </svg>
-            </button>
+            >☰</button>
             <button
               type="button"
-              className={`btn btn-small${viewMode === 'kanban' ? '' : ' btn-ghost'}`}
-              style={{ padding: '5px 9px', lineHeight: 1, display: 'inline-flex', alignItems: 'center' }}
+              style={{
+                padding: '5px 8px', lineHeight: 1,
+                display: 'inline-flex', alignItems: 'center',
+                borderRadius: 5, border: '1px solid', cursor: 'pointer',
+                background: viewMode === 'kanban'
+                  ? 'color-mix(in srgb, var(--accent, #6ec1ff) 20%, transparent)'
+                  : 'transparent',
+                borderColor: viewMode === 'kanban'
+                  ? 'var(--accent, #6ec1ff)'
+                  : 'rgba(127,127,127,0.2)',
+                color: viewMode === 'kanban' ? 'var(--accent, #6ec1ff)' : 'inherit',
+                opacity: viewMode === 'kanban' ? 1 : 0.5,
+              }}
               title="Kanban board"
               onClick={() => setViewMode('kanban')}
             >
-              {/* Three-column kanban icon */}
-              <svg width="13" height="12" viewBox="0 0 13 12" fill="currentColor" aria-hidden="true">
-                <rect x="0"   y="0" width="3.2" height="12" rx="1"/>
-                <rect x="4.9" y="0" width="3.2" height="12" rx="1"/>
-                <rect x="9.8" y="0" width="3.2" height="12" rx="1"/>
+              {/* Three columns at different heights — classic kanban icon */}
+              <svg width="14" height="12" viewBox="0 0 14 12" fill="currentColor" aria-hidden="true">
+                <rect x="0"    y="0" width="3.5" height="12" rx="1.2"/>
+                <rect x="5.2"  y="3" width="3.5" height="9"  rx="1.2"/>
+                <rect x="10.5" y="6" width="3.5" height="6"  rx="1.2"/>
               </svg>
             </button>
           </div>
@@ -1079,6 +1094,7 @@ function ProjectsViewInner({
             projectTags={projectTags}
             projectRatings={projectRatings}
             projectNotes={projectNotes}
+            projectBounceOverrides={projectBounceOverrides}
             knownTags={knownTags}
             onSetStatus={onSetStatus}
             onSetTags={onSetTags}

@@ -14,6 +14,11 @@ function dawLabel(t) {
 const __kanbanIconUrls = { ableton: null, logic: null, flstudio: null };
 let __kanbanIconFetchStarted = false;
 const __kanbanIconSubs = new Set();
+
+// Module-level drag tracker — avoids the stale-closure bug where
+// dragProjectId React state hasn't re-rendered by the time the drop
+// event fires. dataTransfer is a fallback; _kanbanDragId is primary.
+let _kanbanDragId = null;
 function fetchKanbanIconsOnce() {
   if (__kanbanIconFetchStarted) return;
   __kanbanIconFetchStarted = true;
@@ -189,10 +194,9 @@ function KanbanColumn({
               draggable
               onDragStart={(e) => {
                 e.dataTransfer.effectAllowed = 'move';
-                // Store via both dataTransfer (robust across closure reflows)
-                // and state (for the "dimmed card" visual while dragging).
                 e.dataTransfer.setData('text/plain', p.id);
-                onCardDragStart(p.id);
+                _kanbanDragId = p.id;    // module-level: survives any closure/pooling issue
+                onCardDragStart(p.id);   // for the "dimmed card" visual while dragging
               }}
               onClick={(e) => { e.stopPropagation(); onCardClick(p.id); }}
             >
@@ -218,7 +222,7 @@ function KanbanColumn({
 
 // ─── Detail side panel ───────────────────────────────────────────────────────
 function KanbanDetailPanel({
-  project, tags, notes, rating, status,
+  project, tags, notes, rating, status, bounceOverrides,
   statuses, knownTags,
   onSetTags, onSetNotes, onSetRating, onSetStatus,
   onOpenInDAW, onRevealInFinder,
@@ -409,6 +413,46 @@ function KanbanDetailPanel({
         />
       </div>
 
+      {/* Bounce previews — slim HTML5 audio players */}
+      {(() => {
+        const autoBounces = project.bounces || [];
+        const overrides = bounceOverrides || {};
+        const dismissed = new Set(overrides.dismissed || []);
+        const manual = overrides.manualBounces || [];
+        // Auto bounces minus dismissed, then manual bounces not already in auto list
+        const effective = [
+          ...autoBounces.filter((b) => !dismissed.has(b)),
+          ...manual.filter((b) => !autoBounces.includes(b)),
+        ];
+        if (!effective.length) return null;
+        return (
+          <div style={{ flexShrink: 0 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+              letterSpacing: '0.5px', opacity: 0.55, marginBottom: 7 }}>
+              Bounces ({effective.length})
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+              {effective.map((bouncePath, i) => {
+                const name = bouncePath.split('/').pop() || bouncePath;
+                return (
+                  <div key={i}>
+                    <div style={{ fontSize: 10, opacity: 0.5, overflow: 'hidden',
+                      textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 2 }}
+                      title={bouncePath}>{name}</div>
+                    <audio
+                      controls
+                      preload="metadata"
+                      src={`file://${bouncePath}`}
+                      style={{ width: '100%', height: 28, display: 'block' }}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Plugin list */}
       {pluginCount > 0 && (
         <div style={{ flexShrink: 0 }}>
@@ -437,7 +481,7 @@ function KanbanDetailPanel({
 // ─── Board ────────────────────────────────────────────────────────────────────
 export default function ProjectsKanban({
   projects, statuses, projectStatuses,
-  projectTags, projectRatings, projectNotes, knownTags,
+  projectTags, projectRatings, projectNotes, projectBounceOverrides, knownTags,
   onSetStatus, onSetTags, onSetNotes, onSetRating,
   onOpenInDAW, onRevealInFinder,
 }) {
@@ -456,9 +500,10 @@ export default function ProjectsKanban({
   }
 
   function handleDrop(e, targetColId) {
-    // Read the project id from dataTransfer — avoids React stale-closure
-    // issues where dragProjectId state hasn't updated by drop time.
-    const projectId = e.dataTransfer.getData('text/plain');
+    // Primary source: module-level var set synchronously on dragstart.
+    // Fallback: dataTransfer (may be empty in some Electron/Chrome builds).
+    const projectId = _kanbanDragId || e.dataTransfer.getData('text/plain');
+    _kanbanDragId = null;
     if (!projectId) return;
     onSetStatus && onSetStatus(projectId, targetColId);
     setDragProjectId(null);
@@ -474,7 +519,11 @@ export default function ProjectsKanban({
     : null;
 
   return (
-    <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'row', overflow: 'hidden' }}>
+    // minHeight keeps the board at full viewport-minus-chrome height even when
+    // charts are open above it. The outer scroll container in ProjectsView.jsx
+    // (overflow: auto) lets the user scroll down past the charts to reach the
+    // board at its natural size — same number of cards visible as charts-closed.
+    <div style={{ flex: 1, minHeight: 'calc(100vh - 96px)', display: 'flex', flexDirection: 'row', overflow: 'hidden' }}>
       {/* Scrollable columns area */}
       <div
         style={{ flex: 1, minWidth: 0, overflowX: 'auto', overflowY: 'hidden',
@@ -484,7 +533,7 @@ export default function ProjectsKanban({
           // Clicking the empty board area (not a card) deselects.
           if (e.target === e.currentTarget) setSelectedProjectId(null);
         }}
-        onDragEnd={() => { setDragProjectId(null); setDragOverColumnId('__none__'); }}
+        onDragEnd={() => { _kanbanDragId = null; setDragProjectId(null); setDragOverColumnId('__none__'); }}
       >
         {columns.map((col) => (
           <KanbanColumn
@@ -513,6 +562,7 @@ export default function ProjectsKanban({
           notes={(projectNotes && projectNotes[selectedProject.id]) || ''}
           rating={(projectRatings && projectRatings[selectedProject.id]) || null}
           status={(projectStatuses && projectStatuses[selectedProject.id]) || null}
+          bounceOverrides={(projectBounceOverrides && projectBounceOverrides[selectedProject.id]) || null}
           statuses={statuses}
           knownTags={knownTags}
           onSetTags={onSetTags}
