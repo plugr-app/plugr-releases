@@ -18,6 +18,7 @@ const UPDATE_OPTIONS = [
   // distinguishes these visually so the user can see which is which
   // when viewing the bucket — the prior 3-way split was redundant
   // since the detail panel already surfaces companion + URL.
+  { value: 'ignored', label: 'Ignored' },
   { value: 'unknown', label: 'Unknown' },
 ];
 
@@ -276,7 +277,7 @@ export default function Sidebar({
   if (activeDeveloper) activeChips.push({ key: 'dev', label: activeDeveloper, onClear: () => onSelectDeveloper(null) });
   if (activeTag) activeChips.push({ key: 'tag', label: `#${activeTag}`, onClear: () => onSelectTag && onSelectTag(null) });
   if (updateFilter && updateFilter !== 'all') {
-    const labels = { outdated: 'Updates available', current: 'Up to date', unknown: 'Unchecked / unknown' };
+    const labels = { outdated: 'Updates available', current: 'Up to date', ignored: 'Ignored', unknown: 'Unchecked / unknown' };
     activeChips.push({ key: 'upd', label: labels[updateFilter] || updateFilter, onClear: () => onUpdateFilterChange('all') });
   }
   if (cleanupFilter && cleanupFilter !== 'all') {

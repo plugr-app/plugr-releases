@@ -907,6 +907,14 @@ code {
   border-color: color-mix(in srgb, var(--accent) 22%, var(--line));
   font-weight: 500;
 }
+/* "Update ignored" — user explicitly skipped this update (or all updates).
+ * Dashed border signals intentional inaction vs "haven't checked yet". */
+.badge.badge-ignored {
+  background: var(--bg-2);
+  color: var(--muted-2);
+  border-color: var(--line-2);
+  border-style: dashed;
+}
 /* When a plugin has a real update status AND a companion app, we render
  * the real status as the primary badge and append this small chip so the
  * user knows where to apply the update.
