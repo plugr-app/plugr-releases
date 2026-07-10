@@ -21,7 +21,7 @@ function fieldRow(label, value, copyable) {
 
 export default function DetailPanel({
   item, update, allItems, knownCategories, knownTags,
-  onClose, onSelect, onOpenInFinder, onOpenHomepage, onSetOverride, onTrash,
+  onClose, onSelect, onOpenInFinder, onOpenApp, onOpenHomepage, onSetOverride, onTrash,
   onDiscover, onEditUpdateSource, onRemoveUpdateSource, onShowAddSourceHelp, onOpenCompanionApp,
   onPickCompanion, onClearCompanion,
   onSetMirrorFrom,                            // () => void — open the picker modal
@@ -54,10 +54,14 @@ export default function DetailPanel({
   // Happens when developers release AU/VST3 before AAX (Avid certification takes time).
   // The user can acknowledge this to suppress the OLD badge and update CTA.
   const lagSiblings = (update && update.status === 'outdated' && update.latestVersion && groupMembers.length > 0)
-    ? groupMembers.filter((m) => m.version === update.latestVersion)
+    ? groupMembers.filter((m) => m.version === update.latestVersion && m.format !== item.format)
     : [];
   const isFormatLag = lagSiblings.length > 0;
   const formatLagAcknowledged = isFormatLag && item.formatLagAcknowledgedAt === update.latestVersion;
+  const updateDismissed = !!(update && update.latestVersion && item.dismissedUpdateVersion === update.latestVersion);
+  const isIgnored = !!(update && update.status === 'outdated' && (
+    item.ignoreAllUpdates || (item.ignoredUpdateVersion && item.ignoredUpdateVersion === update.latestVersion)
+  ));
   const lagSiblingFormats = lagSiblings.map((m) => m.format);
   const lagFormatsLabel = lagSiblingFormats.length === 1
     ? lagSiblingFormats[0]
@@ -312,6 +316,22 @@ export default function DetailPanel({
         {update && update.latestVersion && (
           <span className="detail-status-text">
             installed <code>v{item.version || '?'}</code> · latest <code>v{update.latestVersion}</code>
+            {update.status === 'outdated' && !updateDismissed && !isIgnored && !formatLagAcknowledged && (
+              <>
+                {' · '}
+                <button type="button" className="linkish" title="Mark this detected version as incorrect — Plugr won't flag this app as outdated again unless a different version is detected" onClick={() => onSetOverride({ dismissedUpdateVersion: update.latestVersion })}>Wrong version?</button>
+                {' · '}
+                <button type="button" className="linkish" title="Ignore this update — removes it from Updates available until a newer version is detected" onClick={() => onSetOverride({ ignoredUpdateVersion: update.latestVersion })}>Ignore update</button>
+                {' · '}
+                <button type="button" className="linkish" title="Never show update alerts for this plugin" onClick={() => onSetOverride({ ignoreAllUpdates: true })}>Ignore all updates</button>
+              </>
+            )}
+            {isIgnored && (
+              <> · <span style={{ opacity: 0.65 }}>{item.ignoreAllUpdates ? 'All updates ignored' : 'Update ignored'}</span>{' · '}<button type="button" className="linkish" onClick={() => onSetOverride(item.ignoreAllUpdates ? { ignoreAllUpdates: null, ignoredUpdateVersion: null } : { ignoredUpdateVersion: null })}>Undo</button></>
+            )}
+            {updateDismissed && (
+              <> · <button type="button" className="linkish" title="Re-enable update detection for this app" onClick={() => onSetOverride({ dismissedUpdateVersion: null })}>Undo dismiss</button></>
+            )}
           </span>
         )}
         {update && update.message && update.status !== 'outdated' && (
@@ -568,11 +588,14 @@ export default function DetailPanel({
 
       <div className="detail-actions">
         <button className="btn" onClick={() => onOpenInFinder(item.path)} title="Reveal in Finder">Show in Finder</button>
+        {item.format === 'App' && onOpenApp && (
+          <button className="btn" onClick={() => onOpenApp(item.path)}>Open app</button>
+        )}
 
         {/* When an update is available AND the developer has a companion
          * app, promote that companion app as the primary CTA — that's
          * almost always where the user actually applies the update. */}
-        {reg.companionApp && update && update.status === 'outdated' && !formatLagAcknowledged ? (
+        {reg.companionApp && update && update.status === 'outdated' && !formatLagAcknowledged && !updateDismissed && !isIgnored ? (
           <button
             className="btn primary companion-btn update-cta"
             onClick={() => onOpenCompanionApp && onOpenCompanionApp(reg.companionApp)}
@@ -625,7 +648,7 @@ export default function DetailPanel({
         {/* If there's no companion app and we have a direct update URL, that
          * becomes the primary update CTA when an update is available. */}
         {hasUpdateSource && reg.updateUrl && (
-          update && update.status === 'outdated' && !reg.companionApp && !formatLagAcknowledged ? (
+          update && update.status === 'outdated' && !reg.companionApp && !formatLagAcknowledged && !updateDismissed && !isIgnored ? (
             <button className="btn primary update-cta" onClick={() => onOpenHomepage(reg.updateUrl)}>
               Update available — Get v{update.latestVersion}
             </button>

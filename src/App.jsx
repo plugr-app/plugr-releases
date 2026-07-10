@@ -88,6 +88,7 @@ const api = (typeof window !== 'undefined' && window.pluginHub) || {
   deriveSourceFromVersion: async () => ({ ok: false, error: 'Browser preview — version derivation only works in the desktop app.' }),
   discoverAllUpdates: async () => ({ ok: true, data: { total: 0, foundCount: 0, additions: {}, mergedAdditions: {} } }),
   openInFinder: async () => ({ ok: true }),
+  openApp: async () => ({ ok: true }),
   openExternal: async (u) => { window.open(u, '_blank'); return { ok: true }; },
   trashItem: async () => ({ ok: true }),
   openCacheFile: async () => ({ ok: true }),
@@ -342,6 +343,18 @@ function applyOverrides(items, overrides) {
     // potential parent changes.
     if (o.dismissedMirrorSuggest) {
       next.dismissedMirrorSuggest = true;
+    }
+    if (o.formatLagAcknowledgedAt != null) {
+      next.formatLagAcknowledgedAt = o.formatLagAcknowledgedAt;
+    }
+    if (o.dismissedUpdateVersion != null) {
+      next.dismissedUpdateVersion = o.dismissedUpdateVersion;
+    }
+    if (o.ignoredUpdateVersion != null) {
+      next.ignoredUpdateVersion = o.ignoredUpdateVersion;
+    }
+    if (o.ignoreAllUpdates) {
+      next.ignoreAllUpdates = true;
     }
     return next;
   });
@@ -2881,10 +2894,12 @@ export default function App() {
       // not "unchecked". All of these should NOT fall into Unchecked or
       // Managed buckets.
       const realStatus = u && (u.status === 'outdated' || u.status === 'current' || u.status === 'ahead' || u.status === 'manual-check') ? u.status : null;
-      if (updateFilter === 'outdated' && realStatus !== 'outdated') return false;
-      // "Up to date" includes ahead — the user has a known version installed
-      // and there's nothing to update to.
+      const itemIsIgnored = realStatus === 'outdated' && (
+        it.ignoreAllUpdates || (it.ignoredUpdateVersion && it.ignoredUpdateVersion === u.latestVersion)
+      );
+      if (updateFilter === 'outdated' && (realStatus !== 'outdated' || itemIsIgnored)) return false;
       if (updateFilter === 'current' && realStatus !== 'current' && realStatus !== 'ahead') return false;
+      if (updateFilter === 'ignored' && !itemIsIgnored) return false;
       // Unknown bucket — everything that doesn't have a definitive
       // outdated/current/ahead answer. Used to be three separate
       // buckets (managed / manual-check / unchecked); collapsed since
@@ -3527,16 +3542,16 @@ export default function App() {
     // Count over the projection that respects every active filter EXCEPT
     // the update filter itself — so the user can see how many would land
     // in each update bucket given their other active filters.
-    const c = { all: itemsForUpdateSidebar.length, outdated: 0, current: 0, unknown: 0 };
+    const c = { all: itemsForUpdateSidebar.length, outdated: 0, current: 0, ignored: 0, unknown: 0 };
     for (const it of itemsForUpdateSidebar) {
       const u = effectiveUpdates[it.id];
       const isReal = u && (u.status === 'outdated' || u.status === 'current' || u.status === 'ahead');
-      if (isReal && u.status === 'outdated') c.outdated++;
-      // 'ahead' (installed > registry) counts as Up to date.
+      const isIgnored = isReal && u.status === 'outdated' && (
+        it.ignoreAllUpdates || (it.ignoredUpdateVersion && it.ignoredUpdateVersion === u.latestVersion)
+      );
+      if (isIgnored) c.ignored++;
+      else if (isReal && u.status === 'outdated') c.outdated++;
       else if (isReal && (u.status === 'current' || u.status === 'ahead')) c.current++;
-      // Everything else — no result, manual-check, or companion-managed —
-      // rolls up into a single Unknown bucket. Per-card UpdateBadge still
-      // shows the distinction.
       else c.unknown++;
     }
     return c;
@@ -4232,6 +4247,7 @@ export default function App() {
             onClose={() => setSelectedId(null)}
             onSelect={setSelectedId}
             onOpenInFinder={(p) => api.openInFinder(p || selected.path)}
+            onOpenApp={(p) => api.openApp(p || selected.path)}
             onOpenHomepage={(url) => api.openExternal(url)}
             onOpenCompanionApp={openCompanionApp}
             onSetOverride={(patch) => setItemOverride(selected.id, patch)}

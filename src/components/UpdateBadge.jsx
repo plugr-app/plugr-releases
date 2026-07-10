@@ -11,6 +11,7 @@ const LABELS = {
   error: 'Check failed',
   managed: 'Managed',
   'manual-check': 'Check manually',
+  ignored: 'Update ignored',
 };
 
 // Extract the leading major-version integer from a version string. Returns
@@ -38,6 +39,12 @@ export default function UpdateBadge({ item, update, compact = false, verbose = f
   }
   const status = deriveUpdateStatus(item, update);
   const companion = companionAppDisplayName(item);
+  const updateDismissed = status === 'outdated' && item &&
+    update && item.dismissedUpdateVersion === update.latestVersion;
+  const isIgnored = status === 'outdated' && item && update && (
+    item.ignoreAllUpdates || (item.ignoredUpdateVersion && item.ignoredUpdateVersion === update.latestVersion)
+  );
+  const displayStatus = updateDismissed ? 'current' : isIgnored ? 'ignored' : status;
 
   // Pure "managed" state: no real check result, just a companion-app
   // relationship. In compact card layouts we ship just "Managed"
@@ -58,19 +65,19 @@ export default function UpdateBadge({ item, update, compact = false, verbose = f
   // if the plugin also has a companion app, append a small chip telling
   // the user where to apply the update — "best of both worlds" so we
   // never hide either piece of info.
-  const label = LABELS[status] || status;
+  const label = LABELS[displayStatus] || displayStatus;
   // Detect major-version jumps (e.g. installed v2.6.4 vs latest v3.07).
   // These are almost always paid upgrades to a new product line rather
   // than a free patch — flag them visually so the user can spot the
   // difference at a glance. Heuristic: latest's major ≥ installed's + 1.
   const installedMajor = item ? majorOf(item.version) : null;
   const latestMajor = update ? majorOf(update.latestVersion) : null;
-  const isMajorUpgrade = status === 'outdated' &&
+  const isMajorUpgrade = displayStatus === 'outdated' &&
     installedMajor != null && latestMajor != null && latestMajor >= installedMajor + 1;
   return (
     <span className={`badge-row ${compact ? 'compact' : ''}`}>
-      <span className={`badge badge-${status} ${compact ? 'compact' : ''}`} title={(update && update.message) || label}>
-        {status === 'outdated' && update && update.latestVersion ? `→ v${update.latestVersion}` : label}
+      <span className={`badge badge-${displayStatus} ${compact ? 'compact' : ''}`} title={(update && update.message) || label}>
+        {displayStatus === 'outdated' && update && update.latestVersion ? `→ v${update.latestVersion}` : label}
       </span>
       {isMajorUpgrade && (
         <span

@@ -998,6 +998,10 @@ ipcMain.handle('overrides:set', async (_event, { id, patch }) => {
       if (Array.isArray(overrides[id].extraCategories) && overrides[id].extraCategories.length === 0) {
         delete overrides[id].extraCategories;
       }
+      if (overrides[id].formatLagAcknowledgedAt === null) delete overrides[id].formatLagAcknowledgedAt;
+      if (overrides[id].dismissedUpdateVersion === null) delete overrides[id].dismissedUpdateVersion;
+      if (overrides[id].ignoredUpdateVersion === null) delete overrides[id].ignoredUpdateVersion;
+      if (overrides[id].ignoreAllUpdates === null || overrides[id].ignoreAllUpdates === false) delete overrides[id].ignoreAllUpdates;
       if (Object.keys(overrides[id]).length === 0) delete overrides[id];
     }
     await patchCache({ userOverrides: overrides });
@@ -2910,6 +2914,13 @@ function sendToRenderer(channel, payload) {
 ipcMain.handle('shell:openInFinder', async (_event, fullPath) => {
   if (!fullPath) return { ok: false, error: 'no path' };
   shell.showItemInFolder(fullPath);
+  return { ok: true };
+});
+
+ipcMain.handle('shell:openApp', async (_event, fullPath) => {
+  if (!fullPath) return { ok: false, error: 'no path' };
+  const result = await shell.openPath(fullPath);
+  if (result) return { ok: false, error: result };
   return { ok: true };
 });
 

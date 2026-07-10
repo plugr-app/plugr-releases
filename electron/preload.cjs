@@ -70,6 +70,7 @@ contextBridge.exposeInMainWorld('pluginHub', {
   openProjectInDAW: (fullPath) => ipcRenderer.invoke('projects:openInDAW', fullPath),
 
   openInFinder: (fullPath) => ipcRenderer.invoke('shell:openInFinder', fullPath),
+  openApp: (fullPath) => ipcRenderer.invoke('shell:openApp', fullPath),
   openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
   trashItem: (fullPath) => ipcRenderer.invoke('shell:trashItem', fullPath),
   openCacheFile: () => ipcRenderer.invoke('shell:openCacheFile'),
@@ -149,6 +150,9 @@ contextBridge.exposeInMainWorld('pluginHub', {
     ipcRenderer.on(channel, cb);
     return () => ipcRenderer.removeListener(channel, cb);
   },
+
+  // App metadata
+  getVersion: () => ipcRenderer.invoke('app:getVersion'),
 
   // ---------- Auto-update ----------
   // Status from electron-updater. Renderer mounts a listener on the
