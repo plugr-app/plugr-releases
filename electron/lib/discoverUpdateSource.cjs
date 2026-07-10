@@ -58,25 +58,37 @@ async function fetchText(url) {
 function collectCandidateUrls(item) {
   const list = [];
   const reg = item.registry || {};
+
+  // When the user has explicitly entered a URL to test (manualHomepage),
+  // honour ONLY that URL and its slug-derived children. Skip reg.updateUrl
+  // and reg.downloadsUrl entirely — they represent the OLD (possibly wrong)
+  // source and must not win over what the user typed. This is what makes
+  // "Re-test" actually test the URL the user entered rather than
+  // silently reverting to the previously-saved source.
+  if (item.manualHomepage) {
+    const base = item.manualHomepage.replace(/\/$/, '');
+    const slug = nameToSlug(item.name);
+    list.push(item.manualHomepage);
+    if (slug) list.push(`${base}/products/${slug}`);
+    if (slug) list.push(`${base}/${slug}`);
+    list.push(`${base}/downloads`);
+    const seen = new Set();
+    return list.filter((u) => (seen.has(u) ? false : (seen.add(u), true)));
+  }
+
+  // Normal auto-discovery path (no manual URL): try the registry's known
+  // update/downloads URL first, then derive from the homepage.
   if (reg.updateUrl) list.push(reg.updateUrl);
   if (reg.downloadsUrl) list.push(reg.downloadsUrl);
-
-  // The user can override the homepage when their developer's site lives at
-  // a non-obvious URL (e.g. a1audio.alexhilton.net rather than a1audio.com).
-  // The override (if any) takes precedence; we try the registry homepage
-  // afterwards as a backup.
-  const candidates = [];
-  if (item.manualHomepage) candidates.push(item.manualHomepage);
-  if (reg.homepage && reg.homepage !== item.manualHomepage) candidates.push(reg.homepage);
 
   // Trimmed to the four highest-yield URL shapes per homepage. Trying
   // every possible /support, /changelog, /release-notes guess used to
   // multiply the wall time without finding much that the homepage and
   // the slug-product-page didn't already give us.
-  for (const home of candidates) {
-    const base = home.replace(/\/$/, '');
+  if (reg.homepage) {
+    const base = reg.homepage.replace(/\/$/, '');
     const slug = nameToSlug(item.name);
-    list.push(home);
+    list.push(reg.homepage);
     if (slug) list.push(`${base}/products/${slug}`);
     if (slug) list.push(`${base}/${slug}`);
     list.push(`${base}/downloads`);
