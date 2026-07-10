@@ -141,8 +141,6 @@ const api = (typeof window !== 'undefined' && window.pluginHub) || {
   getSupportConfig: async () => ({ ok: true, supportUrl: null, bugReportEnabled: false }),
   submitBugReport: async () => ({ ok: false, error: 'browser-preview' }),
   onMenuEvent: () => () => {},
-  onPluginsAutoUpdated: () => () => {},
-  onPluginsFdaRequired: () => () => {},
 };
 
 // Tiny helper for window-level drag-and-drop: returns true when a path
@@ -475,25 +473,26 @@ function applyCommunityAdditions(items, communityData) {
 }
 
 
-// Frozen — two behaviors based on the active transition:
+// Frozen — three behaviors based on the active transition:
 //   • inactive  → bail out (the tab isn't visible, no point re-rendering)
-//   • active (including switching IN) → let React reconcile normally.
-//     ProjectsView is wrapped in React.memo(projectsPropsEqual) which
-//     already skips the expensive 400-row render when only function
-//     refs changed. We removed the old "switching IN → bail" shortcut
-//     because it caused a bug: data that arrived while the tab was
-//     hidden (e.g. a project scan that completed on the Library tab)
-//     never flowed through to ProjectsViewInner, so the user saw a
-//     stale empty state until restart.
+//   • switching IN (inactive → active) → bail out, show cached output.
+//     This is the "tab cache" you experience as instant tab switching.
+//   • staying active → re-render normally. Data updates triggered by
+//     user actions while on the tab (adding a tag, rating a project,
+//     etc.) flow through as expected.
+// This gives instant tab switching AND working inline edits.
 const Frozen = React.memo(
   function Frozen({ children }) { return children; },
   (prev, next) => {
     // Tab is hidden — don't bother reconciling its subtree.
     if (!next.active) return true;
-    // Active (or switching in) — let the re-render through.
-    // ProjectsView's own memo comparator (projectsPropsEqual) handles
-    // the "don't re-render if only handler refs changed" optimisation,
-    // so tab switching is still fast when no real data changed.
+    // Just became active — bail out so the user sees the cached
+    // output immediately. The cost of re-rendering ProjectsView's
+    // 400-row list on every tab return is the whole reason this
+    // wrapper exists.
+    if (!prev.active && next.active) return true;
+    // Active and staying active — let the re-render through so
+    // interactions inside the tab work normally.
     return false;
   }
 );
@@ -951,7 +950,7 @@ export default function App() {
 
   // Modal state
   const [showHelp, setShowHelp] = useState(false);
-  const [helpInitialTab, setHelpInitialTab] = useState('updates');
+  const [helpInitialTab, setHelpInitialTab] = useState('preferences');
   const [discoverItem, setDiscoverItem] = useState(null);
   // When set, the DiscoverModal opens in 'edit' mode with these prefilled
   // URL+regex values instead of running auto-discover. Cleared when the
@@ -1537,25 +1536,9 @@ export default function App() {
           if (res.data.checkedAt) setUpdatesCheckedAt(res.data.checkedAt);
         }
       } catch { /* silent — user can manually re-check via the toolbar */ }
-      finally { setProgress(null); }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheLoaded, scanning, checking, displayedItems, updates, entitlements]);
-
-  // Keep the tray menu in sync with the current update results.
-  // Fires after every update check (auto, catch-up, or manual) and on
-  // cache load, so the count badge and plugin list are always current.
-  useEffect(() => {
-    if (!api.traySetUpdates) return;
-    const outdated = library.items
-      .filter((item) => updates[item.id]?.status === 'outdated')
-      .map((item) => ({
-        name: item.name,
-        from: item.version || '?',
-        to: updates[item.id].latestVersion || '?',
-      }));
-    api.traySetUpdates(outdated);
-  }, [updates, library.items]);
 
   // Subscribe to scan / update / discover-all progress streams.
   useEffect(() => {
@@ -1577,105 +1560,6 @@ export default function App() {
     ];
     return () => unsubs.forEach((u) => u && u());
     /* eslint-disable-next-line */
-  }, []);
-
-  // ── Plugin file watcher: auto-detected version changes ──────────────
-  // Main process watches plugin directories (FSEvents via Node fs.watch)
-  // and pushes updates when a bundle's Info.plist version changes on disk
-  // — e.g. the user ran Native Access, UJAM, or any other companion app
-  // that silently replaced a plugin bundle. We splice the new versions into
-  // `library` and re-run the stale-status reconciliation so badges clear
-  // without a manual rescan.
-  useEffect(() => {
-    if (!api.onPluginsAutoUpdated) return;
-    const unsub = api.onPluginsAutoUpdated(({ items: changedItems, newPluginPaths }) => {
-      if (changedItems && changedItems.length > 0) {
-        // Splice updated versions into the library state.
-        setLibrary((prev) => {
-          const patchMap = {};
-          for (const u of changedItems) patchMap[u.id] = u.version;
-          const nextItems = prev.items.map((it) =>
-            patchMap[it.id] ? { ...it, version: patchMap[it.id] } : it
-          );
-          return { ...prev, items: nextItems };
-        });
-
-        // Clear stale "outdated" entries in the update map.
-        setUpdates((prev) => {
-          let changed = false;
-          const next = { ...prev };
-          for (const u of changedItems) {
-            const cached = next[u.id];
-            if (!cached || cached.status !== 'outdated' || !cached.latestVersion) continue;
-            // Simple semver string comparison: if the new installed version
-            // is the same as (or ahead of) the cached "latest", mark current.
-            // We use the same coerce-then-compare logic as the main process.
-            const installed = (u.version || '').replace(/[^0-9.]/g, '.').replace(/\.{2,}/g, '.').replace(/\.$/, '');
-            const latest    = (cached.latestVersion || '').replace(/[^0-9.]/g, '.').replace(/\.{2,}/g, '.').replace(/\.$/, '');
-            // Split into numeric tuples and compare element-wise.
-            const instParts = installed.split('.').map(Number);
-            const latParts  = latest.split('.').map(Number);
-            const len = Math.max(instParts.length, latParts.length);
-            let cmp = 0;
-            for (let i = 0; i < len; i++) {
-              const a = instParts[i] || 0;
-              const b = latParts[i] || 0;
-              if (a > b) { cmp = 1; break; }
-              if (a < b) { cmp = -1; break; }
-            }
-            if (cmp >= 0) {
-              next[u.id] = { ...cached, status: cmp > 0 ? 'ahead' : 'current' };
-              changed = true;
-            }
-          }
-          return changed ? next : prev;
-        });
-
-        // Show a subtle toast naming the affected plugins.
-        const names = changedItems.map((u) => u.name).filter(Boolean);
-        const label = names.length <= 3
-          ? names.join(', ')
-          : `${names.slice(0, 2).join(', ')} + ${names.length - 2} more`;
-        pushToast({
-          kind: 'success',
-          title: `${changedItems.length} plugin${changedItems.length === 1 ? '' : 's'} updated automatically`,
-          message: label,
-          durationMs: 6000,
-        });
-      }
-
-      // New plugins appeared that weren't in the library — prompt rescan.
-      if (newPluginPaths && newPluginPaths.length > 0) {
-        pushToast({
-          kind: 'info',
-          title: `${newPluginPaths.length} new plugin${newPluginPaths.length === 1 ? '' : 's'} detected`,
-          message: 'Scan your library to add them.',
-          durationMs: 10000,
-          action: { label: 'Scan now', onClick: () => runScan() },
-        });
-      }
-    });
-    return () => { if (typeof unsub === 'function') unsub(); };
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, []);
-
-  // FDA toast: shown once when a system-level plugin dir is inaccessible.
-  useEffect(() => {
-    if (!api.onPluginsFdaRequired) return;
-    const unsub = api.onPluginsFdaRequired(() => {
-      pushToast({
-        kind: 'warning',
-        title: 'Full Disk Access needed for auto-detection',
-        message: 'Plugr can't watch system plugin folders without Full Disk Access. Grant it in System Settings to enable automatic update detection.',
-        durationMs: 0,   // persistent — user dismisses manually
-        action: {
-          label: 'Open Settings',
-          onClick: () => api.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles'),
-        },
-      });
-    });
-    return () => { if (typeof unsub === 'function') unsub(); };
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
   // Wire up menu actions from the main process.
@@ -1733,7 +1617,7 @@ export default function App() {
           setShowAlerts(true);
           break;
         case 'menu:showHelp':
-          setHelpInitialTab((payload && payload.tab) || 'updates');
+          setHelpInitialTab((payload && payload.tab) || 'preferences');
           setShowHelp(true);
           break;
         case 'menu:cacheCleared':
@@ -2611,7 +2495,6 @@ export default function App() {
     if (!ok) return;
     const res = await api.trashItem(item.path);
     if (!res.ok) {
-      if (res.canceled) return; // user dismissed the admin-password dialog — silent no-op
       pushToast({ kind: 'error', title: "Couldn't move to Trash", message: res.error || 'Unknown error' });
       return;
     }
@@ -2624,50 +2507,6 @@ export default function App() {
     });
     pushToast({ kind: 'success', message: `Moved "${item.name}" to Trash.`, durationMs: 4000 });
   }, [selectedId, pushToast]);
-
-  // Bulk version: move every selected item to Trash. Called from BulkEditPanel.
-  // Runs sequentially so that the admin-password dialog (for system-folder
-  // plugins) pops up for each one — less surprising than a flood of N prompts.
-  // Reports a summary toast at the end.
-  const bulkTrashItems = useCallback(async (items) => {
-    if (!items || items.length === 0) return;
-    const ok = window.confirm(
-      `Move ${items.length} plugin${items.length === 1 ? '' : 's'} to the Trash?\n\n` +
-      items.slice(0, 5).map((it) => `• ${it.name}`).join('\n') +
-      (items.length > 5 ? `\n• …and ${items.length - 5} more` : '') +
-      '\n\nThis is reversible — you can drag them back out of the Trash.'
-    );
-    if (!ok) return;
-    let trashed = 0;
-    const failed = [];
-    for (const it of items) {
-      const res = await api.trashItem(it.path);
-      if (res.ok) {
-        trashed++;
-        setLibrary((prev) => ({ ...prev, items: prev.items.filter((x) => x.id !== it.id) }));
-      } else if (!res.canceled) {
-        failed.push(it.name);
-      }
-    }
-    setSelectedIds(new Set());
-    setLastSelectedId(null);
-    if (trashed > 0) {
-      pushToast({
-        kind: failed.length > 0 ? 'warn' : 'success',
-        title: `Moved ${trashed} plugin${trashed === 1 ? '' : 's'} to Trash`,
-        message: failed.length > 0
-          ? `${failed.length} couldn't be moved: ${failed.slice(0, 3).join(', ')}${failed.length > 3 ? '…' : ''}`
-          : 'You can drag them back out of the Trash if needed.',
-        durationMs: 6000,
-      });
-    } else if (failed.length > 0) {
-      pushToast({
-        kind: 'error',
-        title: "Couldn't move to Trash",
-        message: failed.slice(0, 3).join(', ') + (failed.length > 3 ? `…and ${failed.length - 3} more` : ''),
-      });
-    }
-  }, [pushToast]);
 
   // Save tutorial dismissal preference.
   const dismissTutorialForever = useCallback(async () => {
@@ -4352,7 +4191,6 @@ export default function App() {
             knownTags={knownTags}
             onClose={() => { setSelectedIds(new Set()); setLastSelectedId(null); }}
             onApply={applyBulkChanges}
-            onBulkTrash={bulkTrashItems}
             onAddCustomCategory={addCustomCategory}
           />
         ) : selected && (
