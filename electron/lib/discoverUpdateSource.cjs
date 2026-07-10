@@ -524,8 +524,9 @@ function findVersionInText(text, name) {
   let savedPattern;
   if (best.trust >= 100) {
     savedPattern = `(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?${VERSION_CAPTURE}`;
+  } else if (best.trust >= 70) {
+    savedPattern = `${tolerantName}[\\s\\S]{0,120}?\\bv${VERSION_CAPTURE}`;
   } else if (best.trust >= 65) {
-    // build-suffix versions: anchor to the build-style format itself
     savedPattern = `${tolerantName}[\\s\\S]{0,120}?${VERSION_CAPTURE}`;
   } else {
     // Generic name + version, but explicitly skip price-character contexts

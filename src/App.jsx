@@ -3100,11 +3100,36 @@ export default function App() {
           label: `Move ${sel.length} plugins to Trash…`,
           danger: true,
           action: async () => {
+            const preview = sel.slice(0, 5).map((it) => `• ${it.name}`).join('\n');
+            const overflow = sel.length > 5 ? `\n…and ${sel.length - 5} more` : '';
+            const confirmed = window.confirm(
+              `Move ${sel.length} plugin${sel.length === 1 ? '' : 's'} to the Trash?\n\n${preview}${overflow}\n\nThis is reversible — you can drag them back out of the Trash.`
+            );
+            if (!confirmed) return;
+            const failed = [];
+            const succeededIds = new Set();
             for (const it of sel) {
-              // trashItem prompts its own confirm per item — that's the
-              // existing single-trash UX and matches what DetailPanel does.
               // eslint-disable-next-line no-await-in-loop
-              await trashItem(it);
+              const res = await api.trashItem(it.path);
+              if (res.ok) {
+                succeededIds.add(it.id);
+              } else {
+                failed.push({ name: it.name, error: res.error || 'Unknown error' });
+              }
+            }
+            if (succeededIds.size > 0) {
+              setLibrary((prev) => ({ ...prev, items: prev.items.filter((x) => !succeededIds.has(x.id)) }));
+              setSelectedIds((cur) => {
+                const next = new Set(cur);
+                for (const id of succeededIds) next.delete(id);
+                return next;
+              });
+              if (failed.length === 0) {
+                pushToast({ kind: 'success', message: `Moved ${succeededIds.size} plugin${succeededIds.size === 1 ? '' : 's'} to Trash.`, durationMs: 4000 });
+              }
+            }
+            for (const { name, error } of failed) {
+              pushToast({ kind: 'error', title: "Couldn't move to Trash", message: `${name}: ${error}` });
             }
           },
         },

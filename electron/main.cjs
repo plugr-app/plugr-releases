@@ -1012,8 +1012,19 @@ ipcMain.handle('overrides:set', async (_event, { id, patch }) => {
 ipcMain.handle('shell:trashItem', async (_event, fullPath) => {
   try {
     if (!fullPath) return { ok: false, error: 'no path' };
-    await shell.trashItem(fullPath);
-    return { ok: true };
+    try {
+      await shell.trashItem(fullPath);
+      return { ok: true };
+    } catch (shellErr) {
+      if (process.platform !== 'darwin') throw shellErr;
+      const { execFile } = require('node:child_process');
+      const { promisify } = require('node:util');
+      const execFileP = promisify(execFile);
+      const safe = fullPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+      await execFileP('/usr/bin/osascript', ['-e',
+        `tell application "Finder" to delete POSIX file "${safe}"`]);
+      return { ok: true };
+    }
   } catch (err) {
     return { ok: false, error: String(err && err.message || err) };
   }
