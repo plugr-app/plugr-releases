@@ -576,6 +576,32 @@ export default function App() {
         mirroredFromName: parent ? parent.name : '',
       };
     }
+
+    // ── Mark-as-current: override update status ───────────────────
+    // Explicit: handler can store updateStatusOverride in the override
+    // to persist "Up to date" across restarts without a new check.
+    // Implicit: if a raw-library superseded item has a non-benign
+    // override field (the dup-clearing field, whatever it's named),
+    // treat its update status as current — this works regardless of
+    // the field name the prior implementation chose.
+    const _rawById = new Map((library && library.items || []).map((it) => [it.id, it]));
+    const _benignFields = new Set([
+      'favorite', 'hidden', 'developer', 'category', 'subcategory',
+      'extraCategories', 'notes', 'tags', 'mirrorFromId',
+      'dismissedMirrorSuggest', 'updateStatusOverride',
+    ]);
+    for (const [id, o] of Object.entries(overrides)) {
+      if (!o) continue;
+      if (o.updateStatusOverride) {
+        out[id] = { ...(out[id] || {}), status: o.updateStatusOverride, manuallyOverridden: true };
+        continue;
+      }
+      const _raw = _rawById.get(id);
+      if (!_raw || !_raw.duplicate || _raw.duplicate.status !== 'superseded') continue;
+      if (Object.keys(o).some((k) => !_benignFields.has(k))) {
+        out[id] = { ...(out[id] || {}), status: 'current', manuallyOverridden: true };
+      }
+    }
     return out;
   }, [updates, overrides, library]);
   const [registryAdditions, setRegistryAdditions] = useState({});
@@ -1848,7 +1874,17 @@ export default function App() {
           }
         }
       }
-      if (changed) setter(next);
+      if (changed) {
+        // Only merge newly-discovered keys (not in the stale map) via a
+        // functional updater so we compose onto CURRENT state rather than
+        // replacing it with a stale-closure snapshot — which would clobber
+        // any drag change that happened since the reconcile was initiated.
+        const additions = {};
+        for (const [k, v] of Object.entries(next)) {
+          if (!(k in map)) additions[k] = v;
+        }
+        setter((prev) => ({ ...prev, ...additions }));
+      }
     }
 
     reconcile(projectTags,            setProjectTags);
@@ -2944,7 +2980,7 @@ export default function App() {
       }
     }
     return true;
-  }, [showHidden, favoritesOnly, activeFormats, activeCategory, activeDeveloper, activeTag, updateFilter, cleanupFilter, compatFilter, search, updates, projectFilter, projectMatch]);
+  }, [showHidden, favoritesOnly, activeFormats, activeCategory, activeDeveloper, activeTag, updateFilter, cleanupFilter, compatFilter, search, effectiveUpdates, projectFilter, projectMatch]);
 
   const filteredItems = useMemo(() => {
     let items = displayedItems.filter((it) => matchesFilters(it));
@@ -2966,7 +3002,7 @@ export default function App() {
       return cmp * dir;
     });
     return items;
-  }, [displayedItems, matchesFilters, sortBy, sortDir, updates]);
+  }, [displayedItems, matchesFilters, sortBy, sortDir, effectiveUpdates]);
 
   // Per-section filter projections — each one applies every active filter
   // EXCEPT its own dimension. Without this, e.g. the Developers section
