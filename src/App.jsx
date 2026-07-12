@@ -585,22 +585,16 @@ export default function App() {
     // treat its update status as current — this works regardless of
     // the field name the prior implementation chose.
     const _rawById = new Map((library && library.items || []).map((it) => [it.id, it]));
-    const _benignFields = new Set([
-      'favorite', 'hidden', 'developer', 'category', 'subcategory',
-      'extraCategories', 'notes', 'tags', 'mirrorFromId',
-      'dismissedMirrorSuggest', 'updateStatusOverride',
-    ]);
+    const _benignFields = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion']);
     for (const [id, o] of Object.entries(overrides)) {
       if (!o) continue;
-      if (o.updateStatusOverride) {
-        out[id] = { ...(out[id] || {}), status: o.updateStatusOverride, manuallyOverridden: true };
-        continue;
-      }
+      const isExplicit = !!o.updateStatusOverride;
       const _raw = _rawById.get(id);
-      if (!_raw || !_raw.duplicate || _raw.duplicate.status !== 'superseded') continue;
-      if (Object.keys(o).some((k) => !_benignFields.has(k))) {
-        out[id] = { ...(out[id] || {}), status: 'current', manuallyOverridden: true };
-      }
+      const isImplicit = !isExplicit && _raw?.duplicate?.status === 'superseded' && Object.keys(o).some((k) => !_benignFields.has(k));
+      if (!isExplicit && !isImplicit) continue;
+      const u = out[id];
+      if (o.acknowledgedLatestVersion && u?.latestVersion && u.latestVersion !== o.acknowledgedLatestVersion && u.status === 'outdated') continue;
+      out[id] = { ...(u || {}), status: isExplicit ? o.updateStatusOverride : 'current', manuallyOverridden: true };
     }
     return out;
   }, [updates, overrides, library]);
@@ -2479,13 +2473,17 @@ export default function App() {
     } else {
       next[id] = { ...(next[id] || {}), ...(patch || {}) };
       if (next[id].favorite === false) delete next[id].favorite;
-      // Mirror main.cjs cleanup: hidden:false is "unhide", strip it.
       if (next[id].hidden === false) delete next[id].hidden;
+      const _sib = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion','__clear']);
+      if (patch && Object.keys(patch).some((k) => !_sib.has(k))) {
+        const _u = updates[id];
+        if (_u?.latestVersion && !next[id].acknowledgedLatestVersion) next[id].acknowledgedLatestVersion = _u.latestVersion;
+      }
       if (Object.keys(next[id]).length === 0) delete next[id];
     }
     setOverrides(next);
     await api.setOverride(id, patch);
-  }, [overrides, requirePaid]);
+  }, [overrides, updates, requirePaid]);
 
   // Mirror link/unlink. The data layer is already wired (applyOverrides
   // surfaces mirrorFromId; effectiveUpdates resolves it) — these
