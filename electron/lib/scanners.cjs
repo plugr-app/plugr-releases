@@ -819,10 +819,14 @@ function propagateByName(items) {
       if (!donorDev && it.developer && it.developer !== 'Unknown') {
         donorDev = it.developer;
       }
-      if (!donorCat && it.category && it.category !== 'Undefined' && it.category !== 'Other') {
-        donorCat = { category: it.category, subcategory: it.subcategory };
+      if (it.category && it.category !== 'Undefined' && it.category !== 'Other') {
+        // Prefer a PLUGIN category donor over an app's 'Application' —
+        // if the group holds both Granite.app and Granite.component
+        // (Synth), the Synth should win as donor for the VST3/VST2.
+        if (!donorCat || (donorCat.category === 'Application' && it.category !== 'Application')) {
+          donorCat = { category: it.category, subcategory: it.subcategory };
+        }
       }
-      if (donorDev && donorCat) break;
     }
     if (!donorDev && !donorCat) continue;
 
@@ -832,6 +836,15 @@ function propagateByName(items) {
         it.developerSource = (it.developerSource || 'inferred') + '+propagated-by-name';
       }
       if (donorCat && (it.category === 'Undefined' || it.category === 'Other' || !it.category)) {
+        // NEVER propagate 'Application' onto a plugin-format item. The
+        // donor here is a standalone .app sharing the product's name
+        // (New Sonic Arts Freestyle/Vice case: Freestyle.app donated
+        // "Application" to the Freestyle VST3/VST2). A plugin whose
+        // category we can't determine should stay Undefined — honest —
+        // rather than claim to be an application. Apps themselves are
+        // always categorized by categorize()'s format === 'App' branch,
+        // so they never need donation in the other direction.
+        if (donorCat.category === 'Application' && it.format !== 'App') continue;
         it.category = donorCat.category;
         it.subcategory = donorCat.subcategory;
         it.categorySource = (it.categorySource || 'fallback') + '+propagated-by-name';

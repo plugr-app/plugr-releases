@@ -6493,10 +6493,12 @@
       "productMatchers": {
         "Freestyle": {
           "updateUrl": "https://www.newsonicarts.com/freestyle",
+          "category": "Instrument",
           "versionRegex": "t's\\s+New\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Freestyle AU": {
           "updateUrl": "https://www.newsonicarts.com/freestyle",
+          "category": "Instrument",
           "versionRegex": "t's\\s+New\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "FreestyleFX": {
@@ -6513,22 +6515,32 @@
         },
         "Granite": {
           "updateUrl": "https://www.newsonicarts.com/granite",
+          "category": "Instrument",
+          "subcategory": "Synth",
           "versionRegex": "t's\\s+New\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Nuance": {
           "updateUrl": "https://www.newsonicarts.com/nuance",
+          "category": "Instrument",
+          "subcategory": "Sampler",
           "versionRegex": "t's\\s+New\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Nuance 2": {
           "updateUrl": "https://www.newsonicarts.com/nuance",
+          "category": "Instrument",
+          "subcategory": "Sampler",
           "versionRegex": "t's\\s+New\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Vice": {
           "updateUrl": "https://www.newsonicarts.com/vice",
+          "category": "Instrument",
+          "subcategory": "Sampler",
           "versionRegex": "t's\\s+New\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Vice 2": {
           "updateUrl": "https://www.newsonicarts.com/vice",
+          "category": "Instrument",
+          "subcategory": "Sampler",
           "versionRegex": "t's\\s+New\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         }
       }
