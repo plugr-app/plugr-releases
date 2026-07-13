@@ -588,12 +588,22 @@ export default function App() {
     const _benignFields = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion']);
     for (const [id, o] of Object.entries(overrides)) {
       if (!o) continue;
+      const u = out[id];
       const isExplicit = !!o.updateStatusOverride;
       const _raw = _rawById.get(id);
       const isImplicit = !isExplicit && _raw?.duplicate?.status === 'superseded' && Object.keys(o).some((k) => !_benignFields.has(k));
-      if (!isExplicit && !isImplicit) continue;
-      const u = out[id];
-      if (o.acknowledgedLatestVersion && u?.latestVersion && u.latestVersion !== o.acknowledgedLatestVersion && u.status === 'outdated') continue;
+      // Format-lag acknowledgment, honored DIRECTLY. The implicit branch
+      // above keys off raw duplicate.status === 'superseded', but since
+      // the 1.0.19 format-aware change cross-format lag no longer marks
+      // the item superseded — so "Mark <format> as current" stopped
+      // moving items out of the Updates bucket. Version equality doubles
+      // as the staleness guard: when a genuinely newer version appears,
+      // latestVersion moves past the acknowledged one and the item goes
+      // back to outdated on its own.
+      const isLagAck = !isExplicit && !isImplicit &&
+        !!(o.formatLagAcknowledgedAt && u && u.status === 'outdated' && u.latestVersion === o.formatLagAcknowledgedAt);
+      if (!isExplicit && !isImplicit && !isLagAck) continue;
+      if (o.acknowledgedLatestVersion && u?.latestVersion && u.latestVersion !== o.acknowledgedLatestVersion && u.status === 'outdated' && !isLagAck) continue;
       out[id] = { ...(u || {}), status: isExplicit ? o.updateStatusOverride : 'current', manuallyOverridden: true };
     }
     return out;

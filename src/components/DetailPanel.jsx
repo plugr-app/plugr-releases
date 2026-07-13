@@ -388,7 +388,7 @@ export default function DetailPanel({
                 {canEditSource && (
                   <>
                     {' · '}
-                    <button type="button" className="linkish" onClick={handleEditSource} title="Edit the update page URL or version pattern — opens prefilled with the current source">Edit</button>
+                    <button type="button" className="linkish" onClick={handleEditSource} title="Edit the update page URL or version pattern — opens prefilled with the current source">Edit source…</button>
                   </>
                 )}
                 {ownsUserSource && onRemoveUpdateSource && (
@@ -541,43 +541,51 @@ export default function DetailPanel({
               ))}
             </div>
           )}
-          {isFormatLag && (
-            <div style={{
-              marginTop: 10,
-              padding: '8px 10px',
-              borderRadius: 6,
-              background: 'color-mix(in srgb, var(--accent) 6%, transparent)',
-              border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
-              fontSize: 12,
-              color: 'var(--text-muted, rgba(127,127,127,0.85))',
-            }}>
-              {formatLagAcknowledged ? (
-                <span>
-                  <span style={{ opacity: 0.65 }}>{item.format} marked as current</span>
-                  {' · '}
-                  <button
-                    type="button"
-                    className="linkish"
-                    onClick={() => onSetOverride({ formatLagAcknowledgedAt: null })}
-                  >Undo</button>
+        </div>
+      )}
+
+      {/* Format-lag banner — STANDALONE since the fix for the missing
+       * "Mark as current" option. It used to live inside the duplicate/
+       * superseded cleanup card above, which was fine when cross-format
+       * version lag produced an OLD flag. The 1.0.19 format-aware
+       * superseded change (correctly) stopped flagging those items, but
+       * that also silently removed this banner's only render path. Now
+       * it renders whenever format lag is detected, OLD flag or not. */}
+      {isFormatLag && (
+        <div style={{
+          margin: '8px 16px 0',
+          padding: '8px 10px',
+          borderRadius: 6,
+          background: 'color-mix(in srgb, var(--accent) 6%, transparent)',
+          border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
+          fontSize: 12,
+          color: 'var(--text-muted, rgba(127,127,127,0.85))',
+        }}>
+          {formatLagAcknowledged ? (
+            <span>
+              <span style={{ opacity: 0.65 }}>{item.format} marked as current</span>
+              {' · '}
+              <button
+                type="button"
+                className="linkish"
+                onClick={() => onSetOverride({ formatLagAcknowledgedAt: null })}
+              >Undo</button>
+            </span>
+          ) : (
+            <>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 7 }}>
+                <span style={{ flexShrink: 0, opacity: 0.5, lineHeight: '1.5' }}>ℹ</span>
+                <span style={{ lineHeight: '1.5' }}>
+                  The {lagFormatsLabel} {lagVersionWord} of this plugin {lagIsAre} already on v{update.latestVersion}, but the {item.format} is still on v{item.version}. Developers sometimes release formats at different times — if there is no {item.format} update available yet, you can mark it as current.
                 </span>
-              ) : (
-                <>
-                  <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', marginBottom: 7 }}>
-                    <span style={{ flexShrink: 0, opacity: 0.5, lineHeight: '1.5' }}>ℹ</span>
-                    <span style={{ lineHeight: '1.5' }}>
-                      The {lagFormatsLabel} {lagVersionWord} of this plugin {lagIsAre} already on v{update.latestVersion}, but the {item.format} is still on v{item.version}. Developers sometimes release formats at different times — if there is no {item.format} update available yet, you can mark it as current.
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    className="linkish"
-                    style={{ marginLeft: 16 }}
-                    onClick={() => onSetOverride({ formatLagAcknowledgedAt: update.latestVersion })}
-                  >Mark {item.format} as current</button>
-                </>
-              )}
-            </div>
+              </div>
+              <button
+                type="button"
+                className="linkish"
+                style={{ marginLeft: 16 }}
+                onClick={() => onSetOverride({ formatLagAcknowledgedAt: update.latestVersion })}
+              >Mark {item.format} as current</button>
+            </>
           )}
         </div>
       )}
