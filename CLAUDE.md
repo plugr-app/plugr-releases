@@ -195,7 +195,7 @@ Update-source additions propagate across a plugin's formats via `familyKeyFor()`
 3. **Edit files directly.** The paste-script era is over (see §0). If you ever must hand him something to run, it's ONE self-contained block, as short as possible, no verbose comments.
 4. **Assume a handed-off step happened if he doesn't respond** and moves on.
 5. **`git push` is always Josh, from his Terminal.** You may `git add`/`commit` locally when asked; never push.
-6. **Auto-bump `package.json` version after completing any feature set.** Don't ask.
+6. **Version bumps happen at RELEASE time, not per fix** (Josh's call, 2026-07-12 — supersedes the old auto-bump-per-feature-set rule). During dev, leave the version at the last-released number. When Josh says he's releasing: one `chore: bump vX.Y.Z` commit touching package.json + package-lock.json, then he runs release:mac. Never prompt him to release.
 7. **Never hedge with "if that exists" about his own codebase.** Read the live file and KNOW. If you genuinely can't access something, say exactly that, in one sentence, with the concrete fix.
 8. **Verify after editing** — read the diff, syntax-check. Never claim done without verifying.
 9. **Use the task-list tool liberally**; Josh likes watching progress.
