@@ -586,7 +586,9 @@ export default function DiscoverModal({
               <span className="check" aria-hidden="true">{isEditMode ? '✎' : '✓'}</span>
               <div>
                 <div className="discover-status-title">
-                  {isEditMode ? 'Editing your saved source' : 'Found a likely source'}
+                  {isEditMode
+                    ? (item.registryAddedByUser ? 'Editing your saved source' : 'Editing the update source')
+                    : 'Found a likely source'}
                 </div>
                 <div className="muted">{result.message}</div>
               </div>
@@ -906,7 +908,11 @@ export default function DiscoverModal({
 
         <div className="discover-footer">
           <button className="btn ghost" onClick={onClose}>Cancel</button>
-          {isEditMode && phase !== 'saved' && phase !== 'saving' && (
+          {/* "Remove source" only makes sense when a USER-added source
+           * exists — registry-source edits (routed here since 1.0.21)
+           * have nothing removable: the bundled entry can't be deleted,
+           * only overridden. */}
+          {isEditMode && item.registryAddedByUser && phase !== 'saved' && phase !== 'saving' && (
             <button
               className="btn danger"
               onClick={removeSource}

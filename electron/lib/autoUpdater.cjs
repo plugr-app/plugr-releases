@@ -90,10 +90,41 @@ function init({ checkOnStartDelayMs = 5000, checkIntervalMs = 4 * 60 * 60 * 1000
   autoUpdater.on('update-available',     (info) => broadcastToRenderer('available', { version: info && info.version }));
   autoUpdater.on('update-not-available', (info) => broadcastToRenderer('up-to-date', { version: info && info.version }));
   autoUpdater.on('error', (err) => {
-    // Surface the error to the renderer so we can show a toast, but
-    // also log so packagers can debug it via Console.app.
-    console.error('[auto-update] error', err);
-    broadcastToRenderer('error', { message: String(err && err.message || err) });
+    // Log the full error to Console.app for debugging.
+    // Open Console.app and filter for "[auto-update]" to find these entries.
+    console.error('[auto-update] error:', err);
+    try {
+      // Dump every useful diagnostic property — electron-updater sometimes
+      // buries the real cause in code/statusCode rather than message.
+      const diag = {
+        message:    err && err.message,
+        code:       err && err.code,         // e.g. ENOTFOUND, ECONNREFUSED
+        statusCode: err && err.statusCode,   // HTTP status from the download request
+        url:        err && err.url,          // which URL triggered the error
+        stack:      err && err.stack,
+        extra: (() => {
+          const out = {};
+          const skip = new Set(['message', 'code', 'statusCode', 'url', 'stack']);
+          for (const k of Object.getOwnPropertyNames(err || {})) {
+            if (!skip.has(k)) {
+              try { out[k] = String(err[k]); } catch { /* skip */ }
+            }
+          }
+          return out;
+        })(),
+      };
+      console.error('[auto-update] diagnostics:', JSON.stringify(diag, null, 2));
+    } catch (_) { /* tolerate serialisation errors */ }
+
+    let message = String(err && err.message || err);
+    // electron-updater sets err.message to a JSON-serialised array of
+    // download-file objects when the transfer itself fails (e.g. network
+    // drop mid-download, SHA512 mismatch). That raw JSON is unreadable
+    // as a toast — replace it with a plain sentence.
+    if (message.trimStart().startsWith('[') || message.trimStart().startsWith('{')) {
+      message = 'Download failed. Check your internet connection and try again.';
+    }
+    broadcastToRenderer('error', { message });
   });
   autoUpdater.on('download-progress', (p) => {
     broadcastToRenderer('downloading', {

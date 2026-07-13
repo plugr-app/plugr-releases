@@ -3980,6 +3980,7 @@ export default function App() {
               items={displayedItems}
               updates={effectiveUpdates}
               onOpenCompanionApp={openCompanionApp}
+              onCheckUpdates={runUpdateCheck}
             />
           </Frozen>
         </div>
@@ -4287,6 +4288,14 @@ export default function App() {
             onSetOverride={(patch) => setItemOverride(selected.id, patch)}
             onTrash={() => trashItem(selected)}
             onDiscover={() => { setDiscoverEditState(null); setDiscoverItem(selected); }}
+            onEditRegistrySource={() => {
+              const reg = selected.registry || {};
+              setDiscoverEditState({
+                mode: 'edit',
+                existingAddition: { updateUrl: reg.updateUrl || '', versionRegex: reg.versionRegex || '' },
+              });
+              setDiscoverItem(selected);
+            }}
             onEditUpdateSource={() => {
               // Open Discover in edit mode pre-loaded with the saved
               // source values. The modal will skip auto-discover and

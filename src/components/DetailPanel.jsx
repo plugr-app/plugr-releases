@@ -22,7 +22,7 @@ function fieldRow(label, value, copyable) {
 export default function DetailPanel({
   item, update, allItems, knownCategories, knownTags,
   onClose, onSelect, onOpenInFinder, onOpenApp, onOpenHomepage, onSetOverride, onTrash,
-  onDiscover, onEditUpdateSource, onRemoveUpdateSource, onShowAddSourceHelp, onOpenCompanionApp,
+  onDiscover, onEditRegistrySource, onEditUpdateSource, onRemoveUpdateSource, onShowAddSourceHelp, onOpenCompanionApp,
   onPickCompanion, onClearCompanion,
   onSetMirrorFrom,                            // () => void — open the picker modal
   onClearMirrorFrom,                          // () => void — drop the mirror link
@@ -102,6 +102,19 @@ export default function DetailPanel({
   const mirrorParent = (item.mirrorFromId && allItems)
     ? (allItems.find((x) => x.id === item.mirrorFromId) || null)
     : null;
+
+  // Unified source-edit routing (1.0.21 redesign): "the detected version
+  // is wrong" and "the source URL/regex is wrong" are the same problem,
+  // so both funnel into DiscoverModal's edit mode prefilled with the
+  // current source (which has the "type the version you actually see"
+  // correction field). User-added sources route through onEditUpdateSource,
+  // bundled registry sources through onEditRegistrySource. Sources
+  // inherited from a sibling format aren't editable here — editing
+  // happens on the plugin that owns the source.
+  const ownsUserSource = !!(item.registryAddedByUser && !item.registryAppliedViaSibling);
+  const inheritedUserSource = !!(item.registryAddedByUser && item.registryAppliedViaSibling);
+  const handleEditSource = ownsUserSource ? (onEditUpdateSource || onEditRegistrySource) : onEditRegistrySource;
+  const canEditSource = !!(reg.updateUrl && handleEditSource && !inheritedUserSource);
 
   // Auto-suggest a likely parent for plugins with no source yet. Picks
   // siblings from the same developer whose name brackets the current
@@ -318,10 +331,14 @@ export default function DetailPanel({
             installed <code>v{item.version || '?'}</code> · latest <code>v{update.latestVersion}</code>
             {update.status === 'outdated' && !updateDismissed && !isIgnored && !formatLagAcknowledged && (
               <>
+                {canEditSource && (
+                  <>
+                    {' · '}
+                    <button type="button" className="linkish" title="The detected version or source looks wrong — edit the update page URL or version pattern, or type the version you actually see and Plugr will fix the pattern for you" onClick={handleEditSource}>Wrong version or source? Fix it…</button>
+                  </>
+                )}
                 {' · '}
-                <button type="button" className="linkish" title="Mark this detected version as incorrect — Plugr won't flag this app as outdated again unless a different version is detected" onClick={() => onSetOverride({ dismissedUpdateVersion: update.latestVersion })}>Wrong version?</button>
-                {' · '}
-                <button type="button" className="linkish" title="Ignore this update — removes it from Updates available until a newer version is detected" onClick={() => onSetOverride({ ignoredUpdateVersion: update.latestVersion })}>Ignore update</button>
+                <button type="button" className="linkish" title="Ignore this update — removes it from Updates available until a newer version is detected" onClick={() => onSetOverride({ ignoredUpdateVersion: update.latestVersion })}>Ignore this update</button>
                 {' · '}
                 <button type="button" className="linkish" title="Never show update alerts for this plugin" onClick={() => onSetOverride({ ignoreAllUpdates: true })}>Ignore all updates</button>
               </>
@@ -337,78 +354,57 @@ export default function DetailPanel({
         {update && update.message && update.status !== 'outdated' && (
           <span className="detail-status-text muted">{update.message}</span>
         )}
-        {/* "Edit source…" escape hatch for built-in registry sources that
-         * either failed OR returned a version that looks wrong. Shown for:
-         *   - check failures (parse-failed / error / fetch-failed)
-         *   - successful-but-wrong detections (outdated) — e.g. the scraper
-         *     picks up "v2.4.0" from a developer page but the user knows
-         *     that version number is incorrect
-         * User-added sources already have their own Edit / Remove buttons
-         * in the registryAddedByUser block below, so we skip this one for
-         * those to avoid doubling up. */}
-        {!noSource &&
-          !item.registryAddedByUser &&
-          update &&
-          (update.status === 'parse-failed' || update.status === 'error' || update.status === 'fetch-failed' || update.status === 'outdated') &&
-          onDiscover && (
+        {/* Unified source row (1.0.21 redesign). One consistent line
+         * showing where update info comes from — Plugr registry, a source
+         * the user added, a built-in Sparkle feed, or a mirror link —
+         * with every source-management action in one place. Replaces four
+         * scattered lines ("Edit source…", "added by you ✓ · Edit ·
+         * Remove", "Mirrors from X · Unlink", "Mirror from another
+         * plugin…"). Hidden when there's no source at all (the no-source
+         * card covers that) and in the companion-only case (the companion
+         * banner covers it). */}
+        {!noSource && !(hasCompanion && !hasUpdateSource && !mirrorParent) && (
           <span className="detail-status-text muted">
-            <button type="button" className="linkish" onClick={onDiscover}>
-              Edit source…
-            </button>
-          </span>
-        )}
-        {item.registryAddedByUser && (
-          <span className="detail-status-text muted">
-            Update source added by you ✓
-            {item.registryAppliedViaSibling && <span title="Inherited from another format of this plugin"> (via sibling)</span>}
-            {/* Edit / Remove for the user-added source. Only shown when
-             * THIS item is the one that holds the source (not a sibling
-             * that inherited it via propagation), because editing should
-             * happen on the source plugin itself. */}
-            {!item.registryAppliedViaSibling && onEditUpdateSource && (
+            {mirrorParent ? (
+              <span title={`Update status borrowed from "${mirrorParent.name}". Removing this link will make Plugr check this plugin on its own.`}>
+                Source: mirrors <strong>{mirrorParent.name}</strong>
+                {onClearMirrorFrom && (
+                  <>
+                    {' · '}
+                    <button type="button" className="linkish" onClick={onClearMirrorFrom}>Unlink</button>
+                  </>
+                )}
+              </span>
+            ) : (
               <>
-                {' · '}
-                <button type="button" className="linkish" onClick={onEditUpdateSource}>Edit</button>
+                {'Source: '}
+                {item.registryAddedByUser ? (
+                  <>added by you ✓{inheritedUserSource && <span title="Inherited from another format of this plugin"> (via sibling)</span>}</>
+                ) : hasSparkle && !reg.updateUrl ? (
+                  <span title="This app announces updates itself via a built-in Sparkle feed — the most reliable kind of source">built-in update feed</span>
+                ) : (
+                  'Plugr registry'
+                )}
+                {canEditSource && (
+                  <>
+                    {' · '}
+                    <button type="button" className="linkish" onClick={handleEditSource} title="Edit the update page URL or version pattern — opens prefilled with the current source">Edit</button>
+                  </>
+                )}
+                {ownsUserSource && onRemoveUpdateSource && (
+                  <>
+                    {' · '}
+                    <button type="button" className="linkish danger" onClick={onRemoveUpdateSource}>Remove</button>
+                  </>
+                )}
+                {onSetMirrorFrom && (
+                  <>
+                    {' · '}
+                    <button type="button" className="linkish" onClick={onSetMirrorFrom} title="Borrow update status from another plugin you've already configured">Mirror from another plugin…</button>
+                  </>
+                )}
               </>
             )}
-            {!item.registryAppliedViaSibling && onRemoveUpdateSource && (
-              <>
-                {' · '}
-                <button type="button" className="linkish danger" onClick={onRemoveUpdateSource}>Remove</button>
-              </>
-            )}
-          </span>
-        )}
-        {/* Mirror-from-parent badge. Sits next to the other status text
-         * so the user immediately sees that this plugin's update result
-         * is borrowed from a sibling — useful for things like Serum FX
-         * (mirrors Serum) where the visible "v1.366" came from another
-         * page entirely. */}
-        {mirrorParent && (
-          <span
-            className="detail-status-text muted"
-            title={`Update status borrowed from "${mirrorParent.name}". Removing this link will make Plugr check this plugin on its own.`}
-          >
-            Mirrors from <strong>{mirrorParent.name}</strong>
-            {onClearMirrorFrom && (
-              <>
-                {' · '}
-                <button type="button" className="linkish" onClick={onClearMirrorFrom}>Unlink</button>
-              </>
-            )}
-          </span>
-        )}
-        {/* "Mirror from another plugin…" entry point for plugins that
-         * already have a source. Sits as a sibling link to Edit/Remove
-         * so the user can opt out of their own source and follow a
-         * sibling's instead (e.g. they added a flaky source for Serum
-         * FX, then realize linking it to Serum is easier). Hidden when
-         * a mirror link already exists — Unlink covers that case. */}
-        {(hasUpdateSource || hasCompanion) && !mirrorParent && onSetMirrorFrom && (
-          <span className="detail-status-text muted">
-            <button type="button" className="linkish" onClick={onSetMirrorFrom} title="Borrow update status from another plugin you've already configured">
-              Mirror from another plugin…
-            </button>
           </span>
         )}
       </div>

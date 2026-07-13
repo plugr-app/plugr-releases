@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import LicenseSection from './LicenseSection.jsx';
+import plugrLogo from '../assets/plugr-logo.png';
 
-// In-app help. Tabs: License, Preferences, Updates, Locations, Sync, Tips, About.
+// In-app help. Tabs: Preferences, Locations, Sync, Tips, Updates, License, About.
 // Plain language, examples, no jargon assumed.
 
 export default function HelpDialog({
-  onClose, openExternal, onShowTutorial, initialTab = 'updates',
+  onClose, openExternal, onShowTutorial, initialTab = 'preferences',
   customFolders, onAddCustomFolder, onRemoveCustomFolder,
   api, pushToast,
   defaultTabPref, onDefaultTabPrefChange,
@@ -21,14 +22,12 @@ export default function HelpDialog({
         <button className="tutorial-close" onClick={onClose} aria-label="Close help">×</button>
 
         <div className="help-tabs">
-          {/* License tab is first since it's the most-visited setting for
-           *  paid users (and the most relevant action for trial users). */}
-          <button className={tab === 'license' ? 'active' : ''} onClick={() => setTab('license')}>License</button>
           <button className={tab === 'preferences' ? 'active' : ''} onClick={() => setTab('preferences')}>Preferences</button>
-          <button className={tab === 'updates' ? 'active' : ''} onClick={() => setTab('updates')}>How to add an update source</button>
           <button className={tab === 'locations' ? 'active' : ''} onClick={() => setTab('locations')}>Library locations</button>
           <button className={tab === 'sync' ? 'active' : ''} onClick={() => setTab('sync')}>iCloud sync</button>
           <button className={tab === 'tips' ? 'active' : ''} onClick={() => setTab('tips')}>Tips & shortcuts</button>
+          <button className={tab === 'updates' ? 'active' : ''} onClick={() => setTab('updates')}>How to add an update source</button>
+          <button className={tab === 'license' ? 'active' : ''} onClick={() => setTab('license')}>License</button>
           <button className={tab === 'about' ? 'active' : ''} onClick={() => setTab('about')}>About</button>
         </div>
 
@@ -60,7 +59,7 @@ export default function HelpDialog({
           )}
           {tab === 'sync' && <SyncTab api={api} pushToast={pushToast} />}
           {tab === 'tips' && <TipsTab onShowTutorial={onShowTutorial} />}
-          {tab === 'about' && <AboutTab />}
+          {tab === 'about' && <AboutTab api={api} />}
         </div>
 
         <div className="help-footer">
@@ -780,9 +779,23 @@ function TipsTab({ onShowTutorial }) {
   );
 }
 
-function AboutTab() {
+function AboutTab({ api }) {
+  const [version, setVersion] = useState(null);
+
+  useEffect(() => {
+    if (api && api.getVersion) {
+      api.getVersion().then((v) => setVersion(v)).catch(() => {});
+    }
+  }, [api]);
+
   return (
     <div className="help-prose">
+      <div style={{ textAlign: 'center', marginBottom: 28 }}>
+        <img src={plugrLogo} alt="Plugr" style={{ width: 160, display: 'block', margin: '0 auto 10px' }} />
+        {version && (
+          <div className="muted" style={{ fontSize: 13 }}>Version {version}</div>
+        )}
+      </div>
       <h2>About Plugr</h2>
       <p>
         Plugr is a labor of love built by me, Josh — a lifelong music production nerd and

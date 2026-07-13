@@ -202,7 +202,8 @@
     "Trackspacer": "Wavesfactory",
     "TrackSpacer": "Wavesfactory",
     "TrackSpacerx64": "Wavesfactory",
-    "Trackspacer 2.5": "Wavesfactory"
+    "Trackspacer 2.5": "Wavesfactory",
+    "Beatmaker": "Splice"
   },
   "developers": {
     "FabFilter": {
@@ -2140,14 +2141,6 @@
         "SPL Attacker Plus": {
           "updateUrl": "https://www.plugin-alliance.com/products/attacker-plus/spl-attacker-plus",
           "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
-        },
-        "Astra": {
-          "updateUrl": "https://www.plugin-alliance.com/products/metric-ab",
-          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
-        },
-        "Beatmaker": {
-          "updateUrl": "https://www.plugin-alliance.com/products/metric-ab",
-          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Ampeg B15N": {
           "updateUrl": "https://www.plugin-alliance.com/products/b-15n",
@@ -6933,6 +6926,10 @@
         },
         "Splice": {
           "category": "Application"
+        },
+        "Beatmaker": {
+          "category": "Instrument",
+          "subcategory": "Synth"
         }
       }
     },

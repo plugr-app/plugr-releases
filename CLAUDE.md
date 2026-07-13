@@ -32,11 +32,12 @@ A native macOS app for music producers, built by **Josh Isaacs** (call him Josh,
 
 ---
 
-## 2. Current state (as of 2026-07-13)
+## 2. Current state (as of 2026-07-12, verified against live repo)
 
-- **Version:** `package.json` was bumped to **1.0.19** in the last confirmed-applied patch. A follow-up script that would have bumped to **1.0.20** was handed to Josh but **never confirmed run — and it was written against stale files, so treat it as suspect**. FIRST ACTION for next session: check `package.json` version and `git status`/`git log` to determine what actually landed, and verify `src/components/DetailPanel.jsx` and `src/App.jsx` weren't half-patched by it. If anything looks mangled, fix it against the live code.
-- **Working tree:** a commit was suggested for the 1.0.19 changes (`fix(duplicates): format-aware superseded, preserve Mono/Stereo variants; fix(trash): privileged fallback with macOS auth caching`) — verify via `git log` whether Josh ran it.
-- **The context snapshot problem:** previous sessions worked from an uploaded copy of the repo frozen at **v1.0.11**. Changes between 1.0.11 and 1.0.19 were applied via paste-scripts and exist only in Josh's live repo. The update detail panel UI (the "Wrong version?" / "Ignore update" buttons Josh screenshotted) was built in that gap — **no session has clean knowledge of that code. Read it fresh from the live files before touching it.**
+- **Version:** **1.0.21** (package.json AND package-lock.json — the lock was stale at 0.2.1 until this session).
+- **1.0.19 commit CONFIRMED landed** (`ce4574b`), plus CLAUDE.md commit (`b235b53`). Branch `main` is **14+ commits ahead of origin** — Josh pushes when ready.
+- **The 1.0.20 script DID run.** Verified 2026-07-12. It was coherent, not mangled: autoUpdater error diagnostics + friendly download-failure toast; full UpdateToast rewrite (progress bar, error+Retry states); HelpDialog tab reorder + About-tab logo/version; CompanionAppsView "Check for updates" button; registry fix (Beatmaker → Splice, bogus Astra/Beatmaker Plugin Alliance entries removed); App.jsx `onEditRegistrySource`; DetailPanel partial §3 work. It left 3 bugs, **all fixed in 1.0.21**: (a) stray " · · " separator where "Wrong version?" was deleted, (b) `onCheckUpdates` never passed to CompanionAppsView so its button never rendered, (c) preload's `getVersion` had no `app:getVersion` handler in main.cjs so the About tab showed no version.
+- **Update detail panel UX redesign (old §3): SHIPPED in 1.0.21.** See §3 for what was built. Everything uncommitted in the working tree = the 1.0.20 script + the 1.0.21 session changes.
 
 ### Confirmed applied in v1.0.19 (Josh confirmed: "I think it worked that time")
 
@@ -46,29 +47,31 @@ A native macOS app for music producers, built by **Josh Isaacs** (call him Josh,
 
 ### Applied in the session before that (v1.0.17–1.0.18 era, in Josh's live repo only)
 
-- **`src/App.jsx` — `effectiveUpdates` useMemo**: applies mirror-from-parent links (and possibly an acknowledged-version override — VERIFY in live code, the exact field name is unconfirmed; candidates seen historically: `acknowledgedLatestVersion`, `formatLagAcknowledgedAt`) on top of raw `updates`, so "mark as current" actions move items out of the "Updates Available" filter bucket without a restart.
+- **`src/App.jsx` — `effectiveUpdates` useMemo** (VERIFIED 2026-07-12 against live code): applies (1) mirror-from-parent links read straight from `overrides` (not items — applyOverrides runs later in the pipeline), and (2) mark-as-current overrides. The mark-as-current logic is two-tier: **explicit** via `overrides[id].updateStatusOverride`, and **implicit** — a raw-library `superseded` item whose override has any field NOT in a benign allow-list (`favorite, hidden, developer, category, subcategory, extraCategories, notes, tags, mirrorFromId, dismissedMirrorSuggest, updateStatusOverride, acknowledgedLatestVersion`) is treated as current. `formatLagAcknowledgedAt` is deliberately NOT in the benign list — setting it is what implicitly marks the item current. `acknowledgedLatestVersion` guards against staleness: if the live `latestVersion` moved past the acknowledged one, the override stops applying.
 - **`src/App.jsx` — `matchesFilters`** reads from `effectiveUpdates` (it's in the dep array) so filter buckets refresh live.
 - **DetailPanel format-lag acknowledgment**: an info banner + "Mark [format] as current" button + "Undo", persisted via a `formatLagAcknowledgedAt` override. This is what "removes the OLD badge".
 - **Kanban drag fix** (projects not moving between statuses until restart) — was reported and worked on; VERIFY it's actually fixed in live code before assuming.
 
 ---
 
-## 3. OPEN TASK — update detail panel UX redesign (in progress, not yet coded)
+## 3. SHIPPED (1.0.21) — update detail panel UX redesign
 
-Josh screenshotted the update detail panel and gave this feedback. His words, preserved:
+Josh's original feedback, preserved:
 
 > "Wrong version shouldn't just mark as up to date while keeping the same detected version there."
 > "Edit source basically takes you to the same options you have when you're adding a new source (manual or automatic). But when hitting 'edit source' I'd rather be shown the existing source so I can edit it, rather than having to enter something from scratch."
 
-Requirements distilled:
+What was built (Josh approved both options via AskUserQuestion, 2026-07-12):
 
-1. **"Wrong version?"** currently just marks the plugin as current while leaving the wrong detected `latestVersion` displayed — misleading. It should let the user CORRECT the detected version (or route into the unified edit flow below), not silently acknowledge a number everyone agrees is wrong.
-2. **"Ignore update"** label → **"Ignore this update"**.
-3. **"Wrong version?" and "Edit source" are redundant** — both exist to fix bad version detection. Unify them into one coherent flow.
-4. **"Edit source" must pre-populate** the existing source (URL, regex, detected version) for editing — NOT dump the user into the blank add-new-source chooser. Note: `DiscoverModal.jsx` already supports `mode: 'edit'` + `existingAddition` (used by the user-added-source "Edit" button, wired via `discoverEditState` in App.jsx around line ~4215). The registry-source "Edit source…" path calls `onDiscover` which passes `setDiscoverEditState(null)` — that's the blank-flow bug. The fix is likely: give the registry path the same edit-mode treatment, seeded from `item.registry.updateUrl` / `versionRegex`, and make sure the DiscoverModal's "Wrong version detected? Type the version you actually see" correction field (`reDeriveWithCorrectedVersion` → `api.deriveSourceFromVersion`) is the canonical way to fix a wrong version.
-5. **Design the panel holistically.** Josh asked "how can we simplify this panel?" — don't just rename buttons. Read the live DetailPanel.jsx update section fresh, list every action shown (Wrong version? / Ignore update / Edit source / Mirror from another plugin / Mark-as-current banner), and propose a simplified layout before coding. Use AskUserQuestion to present the design options — this is exactly the kind of design decision he wants input on.
+1. **Unified fix flow.** "Wrong version?" (which used to silently set `dismissedUpdateVersion` while still displaying the wrong number) and "Edit source…" are now ONE flow: a **"Wrong version or source? Fix it…"** link on the outdated status line. It opens DiscoverModal in edit mode prefilled with the current URL/regex; the modal's "Wrong version detected? Type the version you actually see" field (`reDeriveWithCorrectedVersion` → `api.deriveSourceFromVersion`) is the canonical correction path. Routing helper in DetailPanel: `handleEditSource` (user-owned source → `onEditUpdateSource`, registry source → `onEditRegistrySource`); `canEditSource` requires `reg.updateUrl` and hides for sibling-inherited sources.
+2. **Unified Source row.** The four scattered muted lines ("Edit source…", "added by you ✓ · Edit · Remove", "Mirrors from X · Unlink", "Mirror from another plugin…") are now ONE row: `Source: <Plugr registry | added by you ✓ | built-in update feed (Sparkle) | mirrors ParentName>` + `Edit · Remove · Mirror from another plugin… / Unlink` as applicable. Hidden when no source (no-source card covers it) and in the companion-only case (companion banner covers it).
+3. **"Ignore update" → "Ignore this update".** (Done by the 1.0.20 script.)
+4. **DiscoverModal guards for registry edits:** "Remove source" footer button now only shows when `item.registryAddedByUser` (bundled entries can't be deleted, only overridden), and the edit-phase title says "Editing the update source" for registry sources vs "Editing your saved source" for user ones.
+5. Legacy `dismissedUpdateVersion` overrides still render their "Undo dismiss" link — kept for users who clicked the old button.
 
-**Also pending:** confirm the 1.0.19 git commit happened; bump version (+1 patch) when this feature set lands.
+Note: saving an edit of a REGISTRY source creates a `userRegistryAddition` override (existing data model), so after saving, the Source row flips to "added by you ✓". That's correct behavior, not a bug.
+
+**No open feature tasks.** Next release: `npm run release:mac` at 1.0.21 whenever Josh is ready (remember `promote-cache --dry-run` first).
 
 ---
 
@@ -104,20 +107,35 @@ Preload — electron/preload.cjs  (the renderer↔main CONTRACT; grep here first
 Main — electron/main.cjs  (lifecycle, IPC, scanner orchestration, tray,
   license check, deals fetcher, project parsers, cache I/O, trashItem)
         ▼
-Libs — electron/lib/
-  cache.cjs                 JSON cache I/O (load/save/patch) + CACHE_VERSION
+Libs — electron/lib/  (VERIFIED file list, 2026-07-12 deep review)
+  cache.cjs                 JSON cache I/O, atomic tmp+rename writes, CACHE_VERSION (v5)
   developerRegistry.json    Curated dev metadata (~126 devs, 300+ matchers)
-  registryLookup.cjs        plugin → developer matching
-  updateChecker.cjs         fetch pages, regex out versions
-  discoverUpdateSource.cjs  auto-discover update URLs; exports nameVariants
-  duplicates.cjs            duplicate/superseded detection (format-aware)
-  familyKey.cjs             cross-format family propagation
-  entitlements.cjs          free/trial/paid flags
-  licenseStore.cjs          LemonSqueezy validation
-  community.cjs             community submissions (Google Form + Pages feed)
-  projectParsers/           .als / .logicx / .flp
-  dealFetchers/             Plugin Boutique, Audio Plugin Deals
+  registryLookup.cjs        plugin → developer/product matching
+  scanners.cjs              filesystem walkers (plugin dirs + /Applications, depth-1 into non-bundle subfolders)
+  categorize.cjs            category heuristics (lattice: Instrument/Effect/MIDI/Application + subcats; "Mastering" deliberately not a category)
+  updateChecker.cjs         fetch pages via httpFetch, regex out versions; dedupes by updateUrl; capped concurrency
+  discoverUpdateSource.cjs  auto-discover update URLs (candidate URLs → fetch → name+version proximity); 5s timeouts
+  httpFetch.cjs             Electron net.request (real Chromium TLS fingerprint beats bot detection); fetch() fallback for tests
+  sparkle.cjs               SUFeedURL appcast fetch+parse (most reliable source)
+  duplicates.cjs            duplicate/superseded detection (format-aware post-1.0.19)
+  entitlements.cjs          merges trial+license → status: trial|trial-expired|licensed|grace|grace-exceeded
+  license.cjs               LemonSqueezy activate/validate/deactivate; HMAC-signed local license.json; 7-day revalidation, 30-day grace
+  trial.cjs                 14-day trial; HMAC-signed start timestamp (cache-wipe-proof)
+  community.cjs             community submissions (Google Form POST) + fetch additions feed (GitHub Pages)
+  projectScanners/          ableton.cjs (.als = gzipped XML), logic.cjs (.logicx bundle), flstudio.cjs (.flp chunked binary), bounces.cjs (3-tier confidence)
+  projectStore.cjs          projects live in their OWN file, separate write chain (cache-merge wipes bit twice)
+  dealsFetcher.cjs+sources/ orchestrator + siloed scrapers: pluginBoutique.cjs, audioPluginDeals.cjs
+  dealAlerts.cjs            plugin/developer/custom-keyword watches → macOS notifications
+  priceHistory.cjs          rolling per-deal price snapshots (treated as user data — survives fetcher bumps)
+  exchangeRates.cjs         frankfurter.app ECB rates, 24h cache, hardcoded fallback
+  pluginWatcher.cjs         fs.watch on plugin dirs; debounced; clears stale outdated badges w/o rescan
+  autoUpdater.cjs           electron-updater vs GitHub Releases; no-ops in dev
+  backup.cjs                export/restore all user data; syncPrefs.cjs — iCloud location sidecar
+  plistParser.cjs (plutil→JSON), archUtil.cjs (lipo -archs), sizeUtil.cjs (du -sk),
+  waveform.cjs (afconvert→PCM peaks), affiliateConfig.cjs, supportConfig.cjs
 ```
+
+**Cross-format propagation is in the RENDERER, not a lib:** `familyKeyFor()` + `applyRegistryAdditions()` in `src/App.jsx` (~line 374). Key = `developer|nameStrippedOfAllNonAlphanumerics`. There is NO `electron/lib/familyKey.cjs` — earlier versions of this doc were wrong about that (and about `licenseStore.cjs`/`projectParsers/`/`dealFetchers/` — corrected names above).
 
 ---
 
@@ -133,7 +151,7 @@ This bug has shipped at least 4 times. Grep both lists every time.
 Main: `ipcMain.handle('namespace:verb', …)` → Preload: `pluginHub.namespaceVerb` → Renderer: `await window.pluginHub.namespaceVerb(…)`. The preload is the contract; grep it first when an IPC seems missing.
 
 ### 6c. Format families
-Category/tag/source overrides propagate across a plugin's formats via `formatFamilyKey()` (`electron/lib/familyKey.cjs`). Touch anything cross-format → read that file first.
+Update-source additions propagate across a plugin's formats via `familyKeyFor()` + `applyRegistryAdditions()` in `src/App.jsx` (NOT an electron lib). Propagated items get `registryAppliedViaSibling: true` — they show the source but hide Edit/Remove (edit on the owning plugin). Touch anything cross-format → read those two functions first.
 
 ### 6d. Developer matching order
 `developerByName` forced override → `userOverrides[id].developer` → bundle-ID `identifierPrefix` → alias → raw metadata. Never widen an `identifierPrefix` below two segments (`com.foo.` good; `com.f` caused the Trackspacer/W.A. Production bug).
@@ -152,6 +170,14 @@ Category/tag/source overrides propagate across a plugin's formats via `formatFam
 - Mirror links: `overrides[childId].mirrorFromId` — child borrows parent's update status via `effectiveUpdates` in App.jsx.
 - Sparkle: `item.sparkleFeedUrl`, most reliable when present.
 - DiscoverModal phases: `chooser | searching | found | notfound | manual | saving | saved | sharing | error`; edit mode = `mode:'edit'` + `existingAddition` jumps straight to `found` prefilled.
+
+### 6h-pre. Renderer data pipeline (order matters — deep-reviewed 2026-07-12)
+`library.items` (raw from scan) → `applyRegistryAdditions(items, registryAdditions)` (merges user sources + sibling propagation) → `applyOverrides(items, overrides)` (favorite/hidden/developer/category/subcategory/extraCategories/notes/tags/mirrorFromId → flags like `developerOverridden`) → `displayedItems` → `matchesFilters`/`filteredItems` (reads `effectiveUpdates`, not raw `updates`). `effectiveUpdates` deliberately reads mirror links from `overrides` directly because it runs BEFORE applyOverrides in the memo graph. ~75 IPC channels; the preload exposes ~100 methods. Update-source fix flows: DiscoverModal `deriveSourceFromVersion` (`updates:deriveFromVersion`) builds a regex from a user-typed version; `updates:tryTemplate` applies a found source pattern across siblings; `updates:applySharedSource` applies a shared-dev-page URL verbatim to siblings.
+
+### 6i-pre. Trash-adjacent gotchas found in deep review
+- `.env` EXISTS in the repo folder (gitignored — never read it into chat or commit it).
+- Google Drive Plugr folder root is littered with legacy paste-era `.tgz` patch bundles and `splice-fix*` folders — dead artifacts of the killed workflow. Ignore them; don't resurrect. (Ask Josh before deleting.)
+- Repo has stray `# Plugr Releases` file and `FRESH_CLAUDE_FIRST_MESSAGE.md` at root — historical, harmless.
 
 ### 6h. Perf
 `ProjectsView` is react-window virtualized; Plugins view uses content-aware memoization. Perf-test before/after if touched.
@@ -211,7 +237,8 @@ Separate repo at `~/Library/CloudStorage/.../Plugr/website/`. Vanilla HTML/CSS, 
 
 - `PLUGR-WEBSITE-COPY-AUDIT.md` is copy source-of-truth; keep HTML and doc in sync bidirectionally.
 - Deploy: `cd` into the website folder, then `rm -f .git/HEAD.lock .git/index.lock` (REQUIRED — Google Drive sync leaves stale git locks), `git add -A && git commit && git push`. Pages rebuilds in ~1 min.
-- Pages: index / features / pricing / download / about / changelog; support/{index,getting-started,faq,troubleshooting,contact}; legal/{privacy,eula}.
+- Pages (verified 2026-07-12): index / features / pricing / download / about / changelog / 404; support/{index,getting-started,faq,troubleshooting,contact}; legal/{privacy,eula,refund,terms}. Plus robots.txt, sitemap.xml, CNAME, assets/{logos,icons,screenshots}. Site repo working tree was CLEAN at last check (latest commit: "Fix Best value → Most popular on homepage").
+- Homepage positioning: title "the ultimate music production companion app"; OG tagline "Built for producers who'd rather be making music." / "Every plugin you own. Every update you've missed. Every project you've built. Every tool you need. One Mac app." Pricing badge is "Most popular" (annual) — was deliberately changed FROM "Best value"; don't revert.
 - CSS utilities: `.container[-narrow|-wide]`, `.feature-grid` (auto-fit), `.feature-grid-3` (forced 3-col), `.feature-card-centered`, `.pricing-grid-3`, `.trial-banner`.
 
 ---
@@ -226,7 +253,8 @@ Conversational, specific, honest about limits, never corporate. "Every plugin, a
 
 ## 12. Session log (newest first — APPEND HERE every session)
 
-- **2026-07-12/13** — Fixed format-aware superseded + Mono/Stereo grouping in `duplicates.cjs`; privileged-trash fallback in `main.cjs`; bumped 1.0.19 (all confirmed applied). Raised + specced the update-panel UX redesign (§3) — NOT yet coded. A speculative 1.0.20 patch script was issued against stale files; verify whether it ran and whether it did damage. Established the connected-folder workflow and this CLAUDE.md.
+- **2026-07-12 (b, connected-folder session)** — Verified the 1.0.20 script ran cleanly (autoUpdater diagnostics, UpdateToast rewrite, HelpDialog About tab, registry Beatmaker→Splice) and fixed its 3 leftover bugs: stray " · · " separator in DetailPanel, missing `onCheckUpdates` prop on CompanionAppsView, missing `app:getVersion` IPC handler. **Shipped the §3 update-panel redesign** (unified "Wrong version or source? Fix it…" link + unified Source row; DiscoverModal registry-edit guards) — Josh approved both design options via AskUserQuestion. Bumped to **1.0.21** (package.json + package-lock, which had been stale at 0.2.1). Deep-reviewed the full app codebase + website repo; corrected §5's architecture map (familyKey lives in App.jsx; lib names fixed) and added §6h-pre pipeline notes. All changes uncommitted — suggest commit: `feat(detail-panel): unified fix-source flow + Source row; fix 1.0.20 leftovers; v1.0.21`.
+- **2026-07-12/13 (a)** — Fixed format-aware superseded + Mono/Stereo grouping in `duplicates.cjs`; privileged-trash fallback in `main.cjs`; bumped 1.0.19 (all confirmed applied). Raised + specced the update-panel UX redesign — coded in session (b). Established the connected-folder workflow and this CLAUDE.md.
 - **~2026-07-early** — (prior compacted session) `effectiveUpdates`/`matchesFilters` in App.jsx so mark-as-current moves items to "up to date" live; format-lag acknowledgment UI; kanban drag-status fix (verify). Versions ~1.0.12–1.0.18 span multiple compacted sessions whose details are lost — `git log` is the authoritative record of that gap.
 - **≤ v1.0.11** — Deal Alerts, Menu Bar mode, tab hiding, entitlements/LemonSqueezy, kanban view, mirror-from-plugin system, community submissions scaffolding, shared-dev-page detection, plugr.co launch. See `HANDOFF.md` and `TODO.md` for the deep history.
 

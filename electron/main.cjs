@@ -1569,6 +1569,10 @@ ipcMain.handle('theme:set', async (_event, themePreference) => {
 // Persist a small set of UI preferences. Restricted to known keys so a
 // renderer compromise can't write arbitrary fields into the cache.
 const ALLOWED_PREF_KEYS = new Set(['categorySort', 'developerSort', 'formatSort', 'customFolders', 'columnWidths', 'compatFilter', 'userCategories', 'sidebarSectionOrder', 'sortBy', 'sortDir', 'view', 'appView', 'audioVolume', 'defaultTab', 'currencyPref', 'hiddenTabs']);
+// App version for the About tab. Trivial, but the preload exposed
+// getVersion → 'app:getVersion' without a matching handler, so the
+// About tab silently showed no version number.
+ipcMain.handle('app:getVersion', () => app.getVersion());
 // Background-app prefs: read + write the runInMenuBar / launchAtLogin
 // toggles. Persisted to cache so they survive restarts; main applies
 // them immediately (tray icon + login-item registration) so the

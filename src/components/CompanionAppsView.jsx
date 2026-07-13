@@ -12,6 +12,7 @@ import { naturalCompare } from '../util/format.js';
 // Props:
 //   items                — the library item array (after applyOverrides)
 //   onOpenCompanionApp   — App.jsx callback that launches a given app
+//   onCheckUpdates       — App.jsx callback that runs a full update check
 
 const SORT_OPTIONS = [
   { value: 'updates', label: 'Updates first' },
@@ -39,7 +40,7 @@ function avatarInitials(name) {
   return words.map((w) => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
-export default function CompanionAppsView({ items, updates, onOpenCompanionApp }) {
+export default function CompanionAppsView({ items, updates, onOpenCompanionApp, onCheckUpdates }) {
   const [sortBy, setSortBy] = useState('updates');
   const apps = useMemo(() => {
     const byKey = new Map();
@@ -121,7 +122,16 @@ export default function CompanionAppsView({ items, updates, onOpenCompanionApp }
                 return totalUpd > 0 ? <> · <span style={{ color: 'var(--warn, #ff9f5a)', fontWeight: 600 }}>{totalUpd} update{totalUpd === 1 ? '' : 's'} available</span></> : null;
               })()}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {onCheckUpdates && (
+                <button
+                  type="button"
+                  onClick={onCheckUpdates}
+                  style={checkUpdatesButtonStyle}
+                >
+                  Check for updates
+                </button>
+              )}
               <label style={sortLabelStyle}>Sort by</label>
               <select
                 value={sortBy}
@@ -288,6 +298,17 @@ const toolbarStyle = {
   borderBottom: '1px solid var(--line, rgba(127,127,127,0.12))',
 };
 const countLabelStyle = { fontSize: 12, opacity: 0.65 };
+const checkUpdatesButtonStyle = {
+  padding: '6px 13px', fontSize: 12, fontWeight: 600,
+  letterSpacing: '0.03em',
+  border: '1px solid color-mix(in srgb, var(--accent) 35%, transparent)',
+  borderRadius: 7,
+  background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+  color: 'var(--accent)',
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  transition: 'background 140ms ease, border-color 140ms ease',
+};
 const sortLabelStyle = { fontSize: 11, opacity: 0.55, textTransform: 'uppercase', letterSpacing: '0.06em' };
 const sortSelectStyle = {
   padding: '6px 10px', fontSize: 13, borderRadius: 6,
