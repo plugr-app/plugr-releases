@@ -122,7 +122,14 @@ function detectDuplicates(items) {
       // !== "2.4.0" would make the build-suffixed copy look older.
       const fmtNewest = newestByFormat.get((m.format || '').toLowerCase()) || sorted[0];
       const fmtNewestVer = fmtNewest.version || '';
-      const isNewestVersion = mVer === fmtNewestVer || compareSemver(mVer, fmtNewestVer) >= 0;
+      // An unknown version (on either side) can never prove "older".
+      // This matters for bundles whose plist version was rejected as
+      // garbage by saneVersion (KORG AAX placeholder strings): without
+      // this guard the empty string compares as v0 and the copy gets a
+      // bogus OLD badge. Unknown-version copies fall through to the
+      // same-format duplicate check instead.
+      const isNewestVersion = !mVer || !fmtNewestVer ||
+        mVer === fmtNewestVer || compareSemver(mVer, fmtNewestVer) >= 0;
 
       if (!isNewestVersion) {
         // Older version than the group's newest → superseded, regardless
@@ -163,7 +170,9 @@ function detectDuplicates(items) {
             status: null,
             groupId: key,
             keptId: m.id,
-            reason: `Newest version (v${mVer || '?'}) in this product family`,
+            reason: mVer
+              ? `Newest version (v${mVer}) in this product family`
+              : 'Version unknown — not compared against other copies',
           });
         }
       }

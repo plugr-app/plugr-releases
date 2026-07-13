@@ -126,6 +126,31 @@ async function extractLegacyAuComponents(bundlePath, bundleInfo) {
 }
 
 /**
+ * Sanity-check a plist version value. Returns the trimmed string when it
+ * looks like an actual version, else null.
+ *
+ * Why: some vendors ship Info.plists whose version fields contain
+ * unexpanded build-system placeholders — KORG's legacy AAX wrappers are
+ * the canonical case, with CFBundleShortVersionString literally set to
+ * "KLAAXWRAPPER_M1_VERSION_STRING". Pro Tools reads the version from the
+ * AAX binary's own resources, never the plist, so KORG never noticed.
+ * Without this check that garbage becomes the displayed version AND
+ * poisons duplicate/superseded comparison (semver.coerce extracts the
+ * "1" out of "M1" and the copy compares as v1.0.0).
+ *
+ * The rule: a real version starts with a digit (optionally prefixed with
+ * "v"). Digit-CONTAINING is not enough — see the M1 case above.
+ * plutil's JSON conversion can also give us numbers (CFBundleVersion is
+ * sometimes numeric) — those are always valid.
+ */
+function saneVersion(v) {
+  if (typeof v === 'number' && Number.isFinite(v)) return String(v);
+  if (typeof v !== 'string') return null;
+  const t = v.trim();
+  return /^v?\d/i.test(t) ? t : null;
+}
+
+/**
  * Read a bundle's Info.plist and return a normalized record.
  * Works for .app, .vst3, .component, .vst, .aaxplugin and .clap bundles.
  */
@@ -161,7 +186,7 @@ async function readBundleInfo(bundlePath) {
         name: info.CFBundleName || path.basename(bundlePath, '.component'),
         description: null,
         tags: null,
-        version: info.CFBundleVersion || null,
+        version: saneVersion(info.CFBundleVersion),
       }));
     }
   }
@@ -175,10 +200,10 @@ async function readBundleInfo(bundlePath) {
       path.basename(bundlePath, path.extname(bundlePath)),
     identifier: info.CFBundleIdentifier || null,
     version:
-      info.CFBundleShortVersionString ||
-      info.CFBundleVersion ||
+      saneVersion(info.CFBundleShortVersionString) ||
+      saneVersion(info.CFBundleVersion) ||
       null,
-    buildVersion: info.CFBundleVersion || null,
+    buildVersion: saneVersion(info.CFBundleVersion),
     executable: info.CFBundleExecutable || null,
     minimumSystemVersion: info.LSMinimumSystemVersion || null,
     iconFile: info.CFBundleIconFile || info.CFBundleIconName || null,
@@ -194,4 +219,4 @@ async function readBundleInfo(bundlePath) {
   };
 }
 
-module.exports = { parsePlistFile, readBundleInfo };
+module.exports = { parsePlistFile, readBundleInfo, saneVersion };
