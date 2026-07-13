@@ -151,6 +151,29 @@ function saneVersion(v) {
 }
 
 /**
+ * Decode an Apple packed binary AU version integer into a dotted string.
+ *
+ * Audio Unit convention packs versions as (major << 16) | (minor << 8) |
+ * patch — e.g. 0x10801 = 67585 = "1.8.1". Some vendors (Arturia) write
+ * this packed integer straight into their AU bundle's plist version
+ * fields, so Plugr displayed "v67585" and the update checker declared it
+ * "Newer than registry" (67585 > 1.8.x numerically).
+ *
+ * Only call this for AU (.component) bundles. Guards: the value must be
+ * pure digits, ≥ 0x10000 (a plausible dotted version like "2024" or
+ * "1.8" never hits this), and decode to a sane major ≤ 99.
+ */
+function decodePackedAuVersion(v) {
+  const s = typeof v === 'number' ? String(v) : (typeof v === 'string' ? v.trim() : '');
+  if (!/^\d{5,9}$/.test(s)) return null;
+  const n = parseInt(s, 10);
+  if (!Number.isFinite(n) || n < 0x10000) return null;
+  const major = n >> 16;
+  if (major < 1 || major > 99) return null;
+  return `${major}.${(n >> 8) & 0xff}.${n & 0xff}`;
+}
+
+/**
  * Read a bundle's Info.plist and return a normalized record.
  * Works for .app, .vst3, .component, .vst, .aaxplugin and .clap bundles.
  */
@@ -191,6 +214,15 @@ async function readBundleInfo(bundlePath) {
     }
   }
 
+  const rawVersion =
+    saneVersion(info.CFBundleShortVersionString) ||
+    saneVersion(info.CFBundleVersion) ||
+    null;
+  // AU bundles: some vendors write the packed AU integer (0x10801) into
+  // the plist instead of a dotted string — decode it for display.
+  const isAuBundle = bundlePath.toLowerCase().endsWith('.component');
+  const version = isAuBundle ? (decodePackedAuVersion(rawVersion) || rawVersion) : rawVersion;
+
   return {
     bundlePath,
     bundleName: path.basename(bundlePath),
@@ -199,10 +231,7 @@ async function readBundleInfo(bundlePath) {
       info.CFBundleName ||
       path.basename(bundlePath, path.extname(bundlePath)),
     identifier: info.CFBundleIdentifier || null,
-    version:
-      saneVersion(info.CFBundleShortVersionString) ||
-      saneVersion(info.CFBundleVersion) ||
-      null,
+    version,
     buildVersion: saneVersion(info.CFBundleVersion),
     executable: info.CFBundleExecutable || null,
     minimumSystemVersion: info.LSMinimumSystemVersion || null,
@@ -219,4 +248,4 @@ async function readBundleInfo(bundlePath) {
   };
 }
 
-module.exports = { parsePlistFile, readBundleInfo, saneVersion };
+module.exports = { parsePlistFile, readBundleInfo, saneVersion, decodePackedAuVersion };

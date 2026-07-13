@@ -32,7 +32,7 @@ const path = require('node:path');
 const os   = require('node:os');
 const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
-const { saneVersion } = require('./plistParser.cjs');
+const { saneVersion, decodePackedAuVersion } = require('./plistParser.cjs');
 
 const execFileAsync = promisify(execFile);
 
@@ -78,8 +78,13 @@ async function readBundleVersion(bundlePath) {
     );
     const info = JSON.parse(stdout);
     // saneVersion filters unexpanded build placeholders (KORG AAX ships
-    // "KLAAXWRAPPER_*_VERSION_STRING" literals) — same rule as the scanner.
-    return saneVersion(info.CFBundleShortVersionString) || saneVersion(info.CFBundleVersion) || null;
+    // "KLAAXWRAPPER_*_VERSION_STRING" literals); decodePackedAuVersion
+    // unpacks AU integer versions (Arturia) — same rules as the scanner.
+    const raw = saneVersion(info.CFBundleShortVersionString) || saneVersion(info.CFBundleVersion) || null;
+    if (bundlePath.toLowerCase().endsWith('.component')) {
+      return decodePackedAuVersion(raw) || raw;
+    }
+    return raw;
   } catch {
     return null;
   }

@@ -20,24 +20,33 @@
 //   }
 
 const semver = require('semver');
-const { nameVariants } = require('./discoverUpdateSource.cjs');
 
 // Normalize a name down to its product family identifier — strips
-// trailing version markers (V3, V4, 3, V) and decorative punctuation,
-// but KEEPS internal numbers like "80" in "CS-80" or "2600" in
-// "ARP 2600". We do this by feeding the name through nameVariants and
-// taking the most-stripped variant (which is always last). So:
-//   "CS-80 V3"   → "cs 80"   (strip V3 → "CS-80 V" → "CS-80" → normalize)
-//   "CS-80 V4"   → "cs 80"   (same key — groups for old-version detection)
-//   "Pro-Q 3"    → "pro q"
-//   "Mini V3"    → "mini"
-//   "ARP 2600 V" → "arp 2600"
-//   "Pigments"   → "pigments"
+// trailing VERSION markers but keeps MODEL numbers. Previously this
+// borrowed nameVariants() from discoverUpdateSource and took its
+// most-stripped variant; that's correct for URL discovery (aggressive
+// stripping just means trying more slugs) but WRONG here: it collapsed
+// "Pre V76" and "Pre 1973" (different Arturia preamp PRODUCTS) both
+// down to "pre", so every format of Pre V76 was marked OLD against
+// Pre 1973's higher version number.
+//
+// The distinction we rely on: version markers are "V" + a SINGLE digit
+// ("Mini V3", "CS-80 V4") or a bare 1-2 digit trailing number
+// ("Neutron 3", "Ozone 11", "Pro-Q 3") — grouping those is the whole
+// point (Neutron 3 should flag OLD when Neutron 4 exists). Model
+// numbers are V + 2+ digits ("Pre V76" — the V76 is a hardware unit)
+// or 3+ digit numbers ("Pre 1973", "ARP 2600") and must NOT strip.
+//   "CS-80 V3"   → "cs 80"     "Pre V76"    → "pre v76"
+//   "CS-80 V4"   → "cs 80"     "Pre 1973"   → "pre 1973"
+//   "Pro-Q 3"    → "pro q"     "ARP 2600 V" → "arp 2600"
+//   "Mini V3"    → "mini"      "Pigments"   → "pigments"
 function normalizeName(name) {
   if (!name) return '';
-  const variants = nameVariants(name);
-  const mostStripped = variants[variants.length - 1] || name;
-  return String(mostStripped)
+  let s = String(name)
+    .replace(/\s+V\d\s*$/i, '')      // trailing " V3" — single-digit version
+    .replace(/\s+V\s*$/i, '')        // trailing bare " V" (ARP 2600 V, Mini V)
+    .replace(/\s+\d{1,2}\s*$/, '');  // trailing bare 1-2 digit number (Neutron 3, Ozone 11)
+  return s
     .toLowerCase()
     .replace(/\s*\([^)]*\)\s*/g, ' ')   // strip "(stereo)" etc
     .replace(/[^a-z0-9]+/g, ' ')
