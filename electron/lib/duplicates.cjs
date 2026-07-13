@@ -54,7 +54,9 @@ function groupKey(item) {
   // legit multi-format installs (Pro-Q 3 VST3 + Pro-Q 3 AU).
   const fam = normalizeName(item.name);
   const dev = (item.developer || 'unknown').toLowerCase().trim();
-  return `${dev}|${fam}`;
+  const vm = (item.name || '').match(/\(([a-zA-Z][a-zA-Z\s]*)\)\s*$/);
+  const variant = vm ? `|${vm[1].toLowerCase().trim()}` : '';
+  return `${dev}|${fam}${variant}`;
 }
 
 function compareSemver(a, b) {
@@ -94,8 +96,12 @@ function detectDuplicates(items) {
       return (b.sizeBytes || 0) - (a.sizeBytes || 0);
     });
 
-    const newest = sorted[0];
-    const newestVer = newest.version || '';
+    const newestByFormat = new Map();
+    for (const m of members) {
+      const fmt = (m.format || '').toLowerCase();
+      const cur = newestByFormat.get(fmt);
+      if (!cur || compareSemver(m.version || '', cur.version || '') > 0) newestByFormat.set(fmt, m);
+    }
 
     // Bucket members by (version + format) so we can identify true
     // same-format duplicates separately from cross-format multi-format
@@ -114,7 +120,9 @@ function detectDuplicates(items) {
       // Example: "2.4.0.82a3f41" vs "2.4.0" — both coerce to 2.4.0, so
       // compareSemver returns 0. Without this, the string "2.4.0.82a3f41"
       // !== "2.4.0" would make the build-suffixed copy look older.
-      const isNewestVersion = mVer === newestVer || compareSemver(mVer, newestVer) >= 0;
+      const fmtNewest = newestByFormat.get((m.format || '').toLowerCase()) || sorted[0];
+      const fmtNewestVer = fmtNewest.version || '';
+      const isNewestVersion = mVer === fmtNewestVer || compareSemver(mVer, fmtNewestVer) >= 0;
 
       if (!isNewestVersion) {
         // Older version than the group's newest → superseded, regardless
@@ -124,8 +132,8 @@ function detectDuplicates(items) {
         out.set(m.id, {
           status: 'superseded',
           groupId: key,
-          keptId: newest.id,
-          reason: `Older than v${newestVer || '?'} installed at ${newest.path}`,
+          keptId: fmtNewest.id,
+          reason: `Older than v${fmtNewestVer || '?'} installed at ${fmtNewest.path}`,
         });
       } else {
         // Member is at the newest version. Check whether any peer

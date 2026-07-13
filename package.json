@@ -1,7 +1,7 @@
 {
   "name": "plugr",
-  "version": "1.0.18",
-  "description": "Plugr \u2014 a personal plugin & app library for macOS. Scan, organize, and update audio plugins (VST3/AU/VST2/AAX/CLAP) and Mac applications.",
+  "version": "1.0.19",
+  "description": "Plugr — a personal plugin & app library for macOS. Scan, organize, and update audio plugins (VST3/AU/VST2/AAX/CLAP) and Mac applications.",
   "main": "electron/main.cjs",
   "author": "Josh",
   "license": "MIT",
@@ -38,7 +38,7 @@
   "build": {
     "appId": "co.plugr.app",
     "productName": "Plugr",
-    "copyright": "\u00a9 2026 Plugr",
+    "copyright": "© 2026 Plugr",
     "directories": {
       "output": "release",
       "buildResources": "build"

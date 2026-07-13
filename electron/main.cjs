@@ -1030,7 +1030,23 @@ ipcMain.handle('shell:trashItem', async (_event, fullPath) => {
       return { ok: true };
     }
   } catch (err) {
-    return { ok: false, error: String(err && err.message || err) };
+    if (process.platform !== 'darwin') return { ok: false, error: String(err && err.message || err) };
+    try {
+      const { basename, extname, join } = require('path');
+      const { homedir } = require('os');
+      const { execFile } = require('child_process');
+      const name = basename(fullPath);
+      const ext = extname(name);
+      const stem = basename(name, ext);
+      const dest = join(homedir(), '.Trash', `${stem}_${Date.now()}${ext}`);
+      const script = `do shell script "mv -f ${JSON.stringify(fullPath)} ${JSON.stringify(dest)}" with administrator privileges`;
+      await new Promise((res, rej) =>
+        execFile('osascript', ['-e', script], (e, _, se) => e ? rej(new Error(se || String(e))) : res())
+      );
+      return { ok: true };
+    } catch (privErr) {
+      return { ok: false, error: String(privErr && privErr.message || privErr) };
+    }
   }
 });
 
