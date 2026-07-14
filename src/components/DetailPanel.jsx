@@ -49,6 +49,11 @@ export default function DetailPanel({
   const groupMembers = dup && allItems
     ? allItems.filter((x) => x.duplicate && x.duplicate.groupId === dup.groupId && x.id !== item.id)
     : [];
+  // The copy this one is duplicated by / superseded by — used to render
+  // its path as a clickable reveal-in-Finder link in the cleanup card.
+  const keptItem = (dup && dup.keptId && dup.keptId !== item.id && allItems)
+    ? (allItems.find((x) => x.id === dup.keptId) || null)
+    : null;
 
   // Format lag: this plugin is outdated but sibling formats are already at the latest version.
   // Happens when developers release AU/VST3 before AAX (Avid certification takes time).
@@ -528,7 +533,26 @@ export default function DetailPanel({
       {dup && dup.status && (
         <div className={`detail-cleanup dup-${dup.status}`}>
           <div className="cleanup-title">{dup.status === 'duplicate' ? 'Duplicate copy' : 'Older version'}</div>
-          <div className="cleanup-body">{dup.reason}</div>
+          {/* Reconstruct the reason with the kept copy's path as a
+           * clickable reveal-in-Finder link instead of dead text. Falls
+           * back to the plain reason string when the kept item can't be
+           * resolved (e.g. it was trashed since the last scan). */}
+          <div className="cleanup-body">
+            {keptItem && onOpenInFinder ? (
+              <>
+                {dup.status === 'duplicate'
+                  ? 'Same version as the kept copy at '
+                  : `Older than v${keptItem.version || '?'} installed at `}
+                <button
+                  type="button"
+                  className="linkish"
+                  style={{ wordBreak: 'break-all', textAlign: 'left' }}
+                  title="Show in Finder"
+                  onClick={() => onOpenInFinder(keptItem.path)}
+                >{keptItem.path}</button>
+              </>
+            ) : dup.reason}
+          </div>
           {groupMembers.length > 0 && (
             <div className="cleanup-list">
               <div className="cleanup-list-title">Other copies in this group</div>

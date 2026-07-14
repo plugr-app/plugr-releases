@@ -3226,15 +3226,41 @@ export default function App() {
       const hasSavedSource = !!(existingAddition && existingAddition.updateUrl);
       const findOrEditLabel = hasSavedSource ? 'Edit update source…' : 'Find update source…';
 
+      // Ignore-update entries — mirror the DetailPanel's status-line
+      // actions so the user doesn't have to open the panel to silence
+      // an update. Shown only when relevant: ignore actions need a live
+      // outdated result; the undo shows whenever an ignore is in force.
+      const upd = effectiveUpdates[item.id];
+      const updOutdated = !!(upd && upd.status === 'outdated' && upd.latestVersion);
+      const updIgnored = !!(item.ignoreAllUpdates || (updOutdated && item.ignoredUpdateVersion && item.ignoredUpdateVersion === upd.latestVersion));
+
       items = [
         { label: 'Copy plugin name', action: () => copy(item.name) },
         { label: 'Copy developer', action: () => copy(item.developer || '') },
         { label: 'Copy bundle identifier', action: () => copy(item.identifier || ''), disabled: !hasIdentifier },
         { label: 'Copy file path', action: () => copy(item.path || ''), disabled: !hasPath },
         { divider: true },
-        { label: 'Open in Finder', action: () => api.openInFinder(item.path), disabled: !hasPath },
+        { label: 'Show in Finder', action: () => api.openInFinder(item.path), disabled: !hasPath },
         { label: "Open developer's website", action: () => api.openExternal(reg.homepage), disabled: !hasHomepage },
         { divider: true },
+        ...(updOutdated && !updIgnored ? [
+          {
+            label: 'Ignore this update',
+            action: () => setItemOverride(item.id, { ignoredUpdateVersion: upd.latestVersion }),
+          },
+          {
+            label: 'Ignore all updates',
+            action: () => setItemOverride(item.id, { ignoreAllUpdates: true }),
+          },
+        ] : []),
+        ...(updIgnored ? [
+          {
+            label: item.ignoreAllUpdates ? 'Stop ignoring updates' : 'Stop ignoring this update',
+            action: () => setItemOverride(item.id, item.ignoreAllUpdates
+              ? { ignoreAllUpdates: null, ignoredUpdateVersion: null }
+              : { ignoredUpdateVersion: null }),
+          },
+        ] : []),
         {
           label: findOrEditLabel,
           action: () => {
@@ -3283,7 +3309,7 @@ export default function App() {
       ];
     }
     setContextMenu({ x, y, item, items });
-  }, [filteredItems, selectedIds, registryAdditions, setItemOverride, trashItem]);
+  }, [filteredItems, selectedIds, registryAdditions, effectiveUpdates, setItemOverride, trashItem]);
 
   // Bulk apply: walks the selected items and applies the field changes
   // from the BulkEditPanel. Each change layered as a per-item override
