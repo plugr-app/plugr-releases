@@ -239,7 +239,7 @@ const STEPS = [
     visual: <MiniUpdateStatuses />,
     body: (
       <>
-        <p>Plugr automatically checks for updates the first time you launch each day. You can also click <strong>Check for Plugin Updates</strong> in the toolbar any time. Plugr looks up each plugin against a built-in registry of developers and their version-check pages.</p>
+        <p>Plugr automatically checks for updates the first time you launch each day. You can also click <strong>Check for Updates</strong> in the toolbar any time. Plugr looks up each plugin against a built-in registry of developers and their version-check pages.</p>
         <p>For each plugin you'll see one of these states:</p>
         <ul>
           <li>🟢 <strong>Up to date</strong> — nothing to do.</li>

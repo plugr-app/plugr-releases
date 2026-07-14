@@ -78,7 +78,7 @@ export default function Toolbar({
         </button>
 
         <button className="btn primary" onClick={onCheckUpdates} disabled={checking || totalCount === 0} title="Check for updates against the developer registry">
-          {checking ? 'Checking…' : 'Check for Plugin Updates'}
+          {checking ? 'Checking…' : 'Check for Updates'}
         </button>
 
         {/* Volume / theme / help live on the TabBar now (it's always

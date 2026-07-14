@@ -554,20 +554,40 @@ export default function App() {
   // Resolved lazily on read via a Map keyed by id. Memoized so we
   // only rebuild when updates or library identity changes.
   const effectiveUpdates = useMemo(() => {
+    const items = (library && library.items) || [];
+    const byId = new Map();
+    for (const it of items) byId.set(it.id, it);
+
+    // ── Staleness guard ────────────────────────────────────────────
+    // Every check result records the installedVersion it was computed
+    // against. If a rescan has since changed the item's version (e.g.
+    // the packed-AU-integer fix turned Arturia's "134402" into
+    // "2.13.2"), the cached verdict is meaningless — SEM V2 showed
+    // "Newer than registry" from a check made against the old reading.
+    // Treat mismatched results as never-checked until the next update
+    // run recomputes them against the real version.
+    let base = updates;
+    let copied = false;
+    for (const [id, u] of Object.entries(updates || {})) {
+      if (!u || !u.installedVersion) continue;
+      const it = byId.get(id);
+      if (it && it.version && u.installedVersion !== it.version) {
+        if (!copied) { base = { ...updates }; copied = true; }
+        delete base[id];
+      }
+    }
+
     // Read mirror links straight out of `overrides`, not from items.
     // applyOverrides — which copies mirrorFromId onto each item — only
     // runs later in the displayedItems pipeline, so library.items here
     // never has the field yet. Iterating overrides directly bypasses
     // that ordering problem and means the count + filter buckets
     // refresh immediately when the user picks a parent.
-    if (!overrides || Object.keys(overrides).length === 0) return updates;
-    const items = (library && library.items) || [];
-    const byId = new Map();
-    for (const it of items) byId.set(it.id, it);
-    const out = { ...updates };
+    if (!overrides || Object.keys(overrides).length === 0) return base;
+    const out = { ...base };
     for (const [childId, o] of Object.entries(overrides)) {
       if (!o || !o.mirrorFromId) continue;
-      const parentUpd = updates[o.mirrorFromId];
+      const parentUpd = base[o.mirrorFromId];
       if (!parentUpd) continue;
       const parent = byId.get(o.mirrorFromId);
       out[childId] = {

@@ -616,7 +616,7 @@ function UpdatesTab({ openExternal }) {
         number you typed.
       </p>
       <p className="muted">
-        From then on, every time you Check for Plugin Updates, Plugr re-visits that same page and pulls
+        From then on, every time you Check for Updates, Plugr re-visits that same page and pulls
         the current version using the same pattern. If the developer keeps the page format
         consistent — and most do — it'll catch new releases automatically.
       </p>
@@ -698,7 +698,7 @@ function UpdatesTab({ openExternal }) {
     }
   }
 }`}</pre>
-          <p>Save the file. Restart Plugr. Click <strong>Check for Plugin Updates</strong> again.</p>
+          <p>Save the file. Restart Plugr. Click <strong>Check for Updates</strong> again.</p>
 
           <h4>Testing a pattern</h4>
           <p>
