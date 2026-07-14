@@ -553,6 +553,18 @@ export default function DetailPanel({
               </>
             ) : dup.reason}
           </div>
+          {/* Escape hatch for false family grouping (product-line
+           * reboots like iZotope Trash v1.x vs legacy Trash 2, or model
+           * numbers the grouper misread). Persisted per-item override —
+           * survives rescans; Undo affordance renders below once set. */}
+          <div style={{ marginTop: 8 }}>
+            <button
+              type="button"
+              className="linkish"
+              title="Wrongly grouped? Exclude this plugin from duplicate/older-version detection. You can undo this any time."
+              onClick={() => onSetOverride({ notDuplicate: true })}
+            >Not the same plugin? Unlink</button>
+          </div>
           {groupMembers.length > 0 && (
             <div className="cleanup-list">
               <div className="cleanup-list-title">Other copies in this group</div>
@@ -565,6 +577,23 @@ export default function DetailPanel({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Undo affordance for "Not the same plugin" — the cleanup card
+       * itself no longer renders once the dup record is stripped, so
+       * this muted line is the way back. */}
+      {item.notDuplicate && (
+        <div className="detail-status" style={{ paddingTop: 0 }}>
+          <span className="detail-status-text muted">
+            Excluded from duplicate detection
+            {' · '}
+            <button
+              type="button"
+              className="linkish"
+              onClick={() => onSetOverride({ notDuplicate: null })}
+            >Undo</button>
+          </span>
         </div>
       )}
 

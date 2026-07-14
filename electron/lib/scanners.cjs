@@ -45,6 +45,13 @@ function enrichRegistryByDeveloperName(registryEntry, developer, forceReplace = 
 }
 const { computeSizesBatch } = require('./sizeUtil.cjs');
 const { detectDuplicates } = require('./duplicates.cjs');
+
+// A bundle registering this many AU components is a multi-plugin shell
+// (Waves WaveShell registers hundreds), not a plugin with variants
+// (FabFilter ships 2-3 components per bundle: effect + sidechain).
+// Shells keep their on-disk bundle name instead of borrowing the first
+// component's name.
+const SHELL_COMPONENT_THRESHOLD = 5;
 const { detectArchitecturesBatch } = require('./archUtil.cjs');
 
 const HOME = os.homedir();
@@ -193,11 +200,23 @@ async function scanFormat(format) {
         let displayName = info.name;
         let auKeys = null;
         if (format === 'AU' && info.auComponents && info.auComponents.length > 0) {
+          if (info.auComponents.length >= SHELL_COMPONENT_THRESHOLD) {
+            // Multi-plugin shell (Waves WaveShell registers EVERY owned
+            // plugin as a component of one bundle). Naming the bundle
+            // after its first component made both shell generations
+            // masquerade as "Abbey Road Chambers (m)" — colliding in
+            // duplicate detection (false OLD across V15/V16) and hiding
+            // that "Move to Trash" would nuke the whole shell. Use the
+            // on-disk bundle name instead; it's what Finder shows and is
+            // guaranteed distinct per shell generation.
+            displayName = info.bundleName.replace(/\.[^.]+$/, '');
+          } else {
           const auName = info.auComponents[0].name;
           if (auName) {
             // AU names are usually "Manufacturer: Plugin Name"
             const parts = auName.split(':').map((s) => s.trim());
             displayName = parts[parts.length - 1] || displayName;
+          }
           }
           // Build a list of canonical "au:type:subtype:manufacturer" keys
           // (one per AudioComponent in the bundle — multi-component plugins
@@ -300,10 +319,15 @@ async function scanCustomFolder(rootDir, format, extensions, maxDepth) {
       let displayName = info.name;
       let auKeys = null;
       if (format === 'AU' && info.auComponents && info.auComponents.length > 0) {
+        if (info.auComponents.length >= SHELL_COMPONENT_THRESHOLD) {
+          // Multi-plugin shell — see the comment on the main scan path.
+          displayName = info.bundleName.replace(/\.[^.]+$/, '');
+        } else {
         const auName = info.auComponents[0].name;
         if (auName) {
           const parts = auName.split(':').map((s) => s.trim());
           displayName = parts[parts.length - 1] || displayName;
+        }
         }
         auKeys = info.auComponents
           .map((c) => buildAuKey(c.type, c.subtype, c.manufacturer))
@@ -497,16 +521,30 @@ async function scanLibrary(options = {}) {
       all.push(...items);
     }
   }
-  // Dedupe (custom folder may overlap with a default path).
-  const seenPaths = new Set();
-  const deduped = [];
+  // Dedupe (custom folder may overlap with a default path). Identity is
+  // the RESOLVED path, not the raw one: installers sometimes drop a
+  // symlink alongside the real bundle (OpenVPN ships an alias to
+  // "OpenVPN Connect/OpenVPN Connect.app"), and reading through the
+  // link yields a second identical item that then gets flagged as a
+  // duplicate of itself. Resolving realpaths collapses those. When both
+  // the symlink and the real bundle were scanned, keep the real one —
+  // its path is what Show in Finder should reveal. A symlink whose
+  // target lives OUTSIDE the scan roots still survives as the sole
+  // representative of that install (users symlink plugins from external
+  // drives into the plugin folders; those must not disappear).
+  const byReal = new Map();
   for (const it of all) {
-    if (seenPaths.has(it.path)) continue;
-    seenPaths.add(it.path);
-    deduped.push(it);
+    let real = it.path;
+    try { real = fsSync.realpathSync(it.path); } catch { /* unresolvable — keep raw */ }
+    const prev = byReal.get(real);
+    if (!prev) {
+      byReal.set(real, it);
+    } else if (prev.path !== real && it.path === real) {
+      byReal.set(real, it); // real copy replaces its symlink stand-in
+    }
   }
   all.length = 0;
-  all.push(...deduped);
+  all.push(...byReal.values());
 
   // Compute size-on-disk for every item (in parallel, capped concurrency).
   if (includeSizes) {

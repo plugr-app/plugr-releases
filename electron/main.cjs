@@ -973,6 +973,9 @@ ipcMain.handle('overrides:set', async (_event, { id, patch }) => {
       // `false`, we strip it so the override entry can collapse away
       // entirely if it was the only field.
       if (overrides[id].hidden === false) delete overrides[id].hidden;
+      // "Not the same plugin" duplicate-group unlink — only persist
+      // when explicitly true so an undo (null/false) collapses away.
+      if (!overrides[id].notDuplicate) delete overrides[id].notDuplicate;
       if (overrides[id].category === null) delete overrides[id].category;
       if (overrides[id].subcategory === null) delete overrides[id].subcategory;
       if (overrides[id].developer === null || overrides[id].developer === '') delete overrides[id].developer;

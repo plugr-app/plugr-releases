@@ -356,6 +356,16 @@ function applyOverrides(items, overrides) {
     if (o.ignoreAllUpdates) {
       next.ignoreAllUpdates = true;
     }
+    // "Not the same plugin" — the user declared this item's detected
+    // duplicate/superseded family WRONG (product-line reboots like
+    // iZotope's Trash v1.x being flagged OLD against legacy Trash 2
+    // v2.x). Strips the dup record so the OLD badge, cleanup buckets
+    // and cleanup card all stand down. Kept as a flag on the item so
+    // DetailPanel can render the Undo affordance.
+    if (o.notDuplicate) {
+      next.notDuplicate = true;
+      next.duplicate = null;
+    }
     return next;
   });
 }
@@ -605,7 +615,7 @@ export default function App() {
     // treat its update status as current — this works regardless of
     // the field name the prior implementation chose.
     const _rawById = new Map((library && library.items || []).map((it) => [it.id, it]));
-    const _benignFields = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion']);
+    const _benignFields = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion','notDuplicate']);
     for (const [id, o] of Object.entries(overrides)) {
       if (!o) continue;
       const u = out[id];
@@ -2504,7 +2514,7 @@ export default function App() {
       next[id] = { ...(next[id] || {}), ...(patch || {}) };
       if (next[id].favorite === false) delete next[id].favorite;
       if (next[id].hidden === false) delete next[id].hidden;
-      const _sib = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion','__clear']);
+      const _sib = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion','notDuplicate','__clear']);
       if (patch && Object.keys(patch).some((k) => !_sib.has(k))) {
         const _u = updates[id];
         if (_u?.latestVersion && !next[id].acknowledgedLatestVersion) next[id].acknowledgedLatestVersion = _u.latestVersion;

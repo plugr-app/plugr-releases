@@ -40,12 +40,29 @@ const semver = require('semver');
 //   "CS-80 V4"   → "cs 80"     "Pre 1973"   → "pre 1973"
 //   "Pro-Q 3"    → "pro q"     "ARP 2600 V" → "arp 2600"
 //   "Mini V3"    → "mini"      "Pigments"   → "pigments"
-function normalizeName(name) {
+function normalizeName(name, version) {
   if (!name) return '';
-  let s = String(name)
-    .replace(/\s+V\d\s*$/i, '')      // trailing " V3" — single-digit version
-    .replace(/\s+V\s*$/i, '')        // trailing bare " V" (ARP 2600 V, Mini V)
-    .replace(/\s+\d{1,2}\s*$/, '');  // trailing bare 1-2 digit number (Neutron 3, Ozone 11)
+  let s = String(name);
+  // Trailing-number handling needs the item's VERSION to disambiguate:
+  // "Neutron 3" (version suffix — the product is v3.x) must group with
+  // "Neutron 4", but "RC 48" (model number — the product is v1.4.11)
+  // must NOT group with "RC 24". Syntactically identical; semantically
+  // distinguishable because a genuine version suffix matches the
+  // installed major version (Neutron 3 → v3.x, SEM V2 → v2.13.2,
+  // Ozone 11 → v11.x, Mini V3 → v3.5) while a model number doesn't
+  // (RC 48 → v1.4.11, Pre V76 → v1.8.1). Only strip when they agree.
+  // Unknown version → keep the number (conservative; unknown-version
+  // items are excluded from superseded marking anyway).
+  const m = s.match(/\s+V?(\d{1,2})\s*$/i);
+  if (m) {
+    const sv = semver.coerce(String(version || ''));
+    if (sv && sv.major === parseInt(m[1], 10)) {
+      s = s.slice(0, m.index);
+    }
+  }
+  // Trailing bare " V" (Arturia's unnumbered line naming: "ARP 2600 V",
+  // "Mini V") is always a version marker — strip unconditionally.
+  s = s.replace(/\s+V\s*$/i, '');
   return s
     .toLowerCase()
     .replace(/\s*\([^)]*\)\s*/g, ' ')   // strip "(stereo)" etc
@@ -61,7 +78,7 @@ function groupKey(item) {
   // AU exists. Within the group, we still distinguish same-format
   // duplicates (multiple installs of the same plugin version) from
   // legit multi-format installs (Pro-Q 3 VST3 + Pro-Q 3 AU).
-  const fam = normalizeName(item.name);
+  const fam = normalizeName(item.name, item.version);
   const dev = (item.developer || 'unknown').toLowerCase().trim();
   const vm = (item.name || '').match(/\(([a-zA-Z][a-zA-Z\s]*)\)\s*$/);
   const variant = vm ? `|${vm[1].toLowerCase().trim()}` : '';
@@ -112,12 +129,21 @@ function detectDuplicates(items) {
       if (!cur || compareSemver(m.version || '', cur.version || '') > 0) newestByFormat.set(fmt, m);
     }
 
-    // Bucket members by (version + format) so we can identify true
-    // same-format duplicates separately from cross-format multi-format
-    // installs at the same version.
+    // Bucket members by (version + format + bundle filename) so we can
+    // identify true same-format duplicates separately from cross-format
+    // multi-format installs at the same version. The FILENAME is part of
+    // the identity: a genuine duplicate (same product installed twice —
+    // system vs user plugin folder) carries the same bundle name, while
+    // companion variants that register the same friendly AU name from
+    // DIFFERENT bundles (Polyverse "Gatekeeper.component" vs
+    // "GatekeeperMIDI.component") are distinct products and must not be
+    // flagged. Superseded detection deliberately ignores filenames —
+    // those legitimately change across versions ("Neutron 3.vst3" →
+    // "Neutron 4.vst3").
+    const dupBucketKey = (m) => `${m.version || ''}|${m.format}|${String(m.bundleName || '').toLowerCase()}`;
     const versionFormatBuckets = new Map();
     for (const m of members) {
-      const k = `${m.version || ''}|${m.format}`;
+      const k = dupBucketKey(m);
       if (!versionFormatBuckets.has(k)) versionFormatBuckets.set(k, []);
       versionFormatBuckets.get(k).push(m);
     }
@@ -154,7 +180,7 @@ function detectDuplicates(items) {
       } else {
         // Member is at the newest version. Check whether any peer
         // shares the same version AND format — that's a real duplicate.
-        const peers = versionFormatBuckets.get(`${mVer}|${m.format}`) || [];
+        const peers = versionFormatBuckets.get(dupBucketKey(m)) || [];
         if (peers.length >= 2) {
           // Two+ installs of the exact same plugin+version+format.
           // Keep the one with the largest size (heuristic — more likely
