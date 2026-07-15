@@ -362,13 +362,22 @@ function createTray() {
         if (icon && !icon.isEmpty()) break;
       }
     }
-    if (!icon || icon.isEmpty()) icon = nativeImage.createEmpty();
+    const iconMissing = !icon || icon.isEmpty();
+    if (iconMissing) icon = nativeImage.createEmpty();
     // Template image: macOS will tint white/black to match the menu
     // bar appearance (dark mode vs light mode). Only applies on mac.
     if (process.platform === 'darwin' && typeof icon.setTemplateImage === 'function') {
       icon.setTemplateImage(true);
     }
     tray = new Tray(icon);
+    // An empty icon on macOS renders a ZERO-WIDTH menu bar item — the
+    // tray technically exists but is invisible and unclickable, which
+    // reads as "the menu bar icon disappeared". Fall back to a text
+    // title so a broken icon load degrades visibly instead of silently.
+    if (iconMissing) {
+      console.warn('[tray] no icon asset loaded — falling back to text title');
+      try { tray.setTitle('Plugr'); } catch { /* non-mac */ }
+    }
     tray.setToolTip('Plugr');
     // No static context menu — both left- and right-click build a
     // fresh menu from the cache so the update list is always current.
@@ -691,6 +700,15 @@ app.on('window-all-closed', () => {
 // app menu Quit item, and the tray's "Quit Plugr" entry (which sets
 // the flag directly before calling app.quit()).
 app.on('before-quit', () => { isQuitting = true; });
+
+// Squirrel.Mac (electron-updater's macOS engine) does NOT emit
+// 'before-quit' before closing windows for an update install — it
+// emits 'before-quit-for-update'. Without this handler, clicking
+// "Restart" on the update toast closed the window (intercepted →
+// hidden by the menu-bar-mode close handler above), the quit stalled,
+// and Plugr sat in the dock until the user quit manually — only then
+// did the pending install run.
+app.on('before-quit-for-update', () => { isQuitting = true; });
 
 // ---------- IPC ----------
 
@@ -3601,7 +3619,13 @@ ipcMain.handle('projects:removeFolder', async (_event, arg) => {
 
 ipcMain.handle('updater:getStatus',  () => autoUpdater.getStatus());
 ipcMain.handle('updater:checkNow',   () => ({ ok: autoUpdater.checkNow() }));
-ipcMain.handle('updater:install',    () => ({ ok: autoUpdater.quitAndInstall() }));
+ipcMain.handle('updater:install',    () => {
+  // Belt-and-braces alongside the 'before-quit-for-update' handler:
+  // the user explicitly asked to restart, so nothing should intercept
+  // the window close, whatever event sequence the updater engine uses.
+  isQuitting = true;
+  return { ok: autoUpdater.quitAndInstall() };
+});
 
 // ---------- IPC: licensing + trial + entitlements ----------
 
