@@ -639,6 +639,12 @@ async function scanLibrary(options = {}) {
     if (d) it.duplicate = d;
   }
 
+  // Flag WaveShell binaries that no installed (or Central-deactivated)
+  // Waves payload declares a dependency on — sets `wavesShellOrphaned`.
+  // Reads Waves' own manifest.yaml dependency maps; fails closed (flags
+  // nothing) if no manifests can be parsed.
+  await flagOrphanWaveShells(all);
+
   // Build summary counts.
   const byFormat = {};
   const byCategory = {};
@@ -936,6 +942,87 @@ function propagateByName(items) {
         it.subcategory = donorCat.subcategory;
         it.categorySource = (it.categorySource || 'fallback') + '+propagated-by-name';
       }
+    }
+  }
+}
+
+/**
+ * Orphan WaveShell detection. Every Waves payload bundle ships a
+ * Contents/manifest.yaml whose `depends:` list NAMES the exact shell
+ * versions it loads through (e.g. "WaveShell1_VST3_V16_0_IID",
+ * "WaveShell1_AAX_16_0_IID"). Aggregating those across every payload —
+ * including the "Unused Plug-Ins V*" folders, since Waves Central can
+ * reactivate those without reinstalling — gives ground truth for which
+ * shells are still needed. Any scanned WaveShell whose
+ * (number, format, major.minor) appears in NO manifest is dead weight.
+ *
+ * Deliberately fail-closed: if zero manifests parse (nonstandard install
+ * root, format change in a future Waves version), nothing gets flagged.
+ * ARA shell variants are considered required whenever their base
+ * version is required (payload manifests don't declare ARA separately).
+ */
+const MANIFEST_DEP_RE = /WaveShell(\d+)_((?:WPAPI_\d+)|VST3|VST|AU|AAX)_V?(\d+)_(\d+)/g;
+const SHELL_FILE_RE = /^WaveShell(\d+)-(VST3|VST|AU|AAX)(-ARA)?\s+(\d+)\.(\d+)/i;
+
+async function collectRequiredWaveShells(items) {
+  const required = new Set();
+  let manifestsParsed = 0;
+
+  const readManifest = async (bundlePath) => {
+    try {
+      const text = await fs.readFile(path.join(bundlePath, 'Contents', 'manifest.yaml'), 'utf8');
+      let matched = false;
+      for (const m of text.matchAll(MANIFEST_DEP_RE)) {
+        required.add(`${m[1]}|${m[2].toUpperCase()}|${m[3]}.${m[4]}`);
+        matched = true;
+      }
+      if (matched) manifestsParsed += 1;
+    } catch { /* no manifest — contributes nothing */ }
+  };
+
+  // Active payloads (already scanned as 'Waves' items).
+  const wavesItems = items.filter((it) => it.format === 'Waves');
+  for (const it of wavesItems) await readManifest(it.path);
+
+  // Deactivated payloads in "Unused Plug-Ins V*" — not library items,
+  // but their shell requirements still count (one click in Central
+  // brings them back).
+  const roots = new Set();
+  for (const it of wavesItems) {
+    const m = it.path.match(/^(.*)\/Plug-Ins V\d+\//i);
+    if (m) roots.add(m[1]);
+  }
+  if (roots.size === 0 && FORMATS.Waves) roots.add(FORMATS.Waves.paths[0]);
+  for (const root of roots) {
+    try {
+      const entries = await listDirSafe(root);
+      for (const entry of entries) {
+        if (!entry.isDirectory() || !/^Unused Plug-Ins V\d+$/i.test(entry.name)) continue;
+        const unusedDir = path.join(root, entry.name);
+        const bundles = await listDirSafe(unusedDir);
+        for (const b of bundles) {
+          if (b.isDirectory() && b.name.toLowerCase().endsWith('.bundle')) {
+            await readManifest(path.join(unusedDir, b.name));
+          }
+        }
+      }
+    } catch { /* root unreadable — skip */ }
+  }
+
+  return { required, manifestsParsed };
+}
+
+async function flagOrphanWaveShells(items) {
+  const { required, manifestsParsed } = await collectRequiredWaveShells(items);
+  // Fail closed: no parsed manifests → no claims about anything.
+  if (manifestsParsed === 0 || required.size === 0) return;
+  for (const it of items) {
+    const m = String(it.bundleName || '').match(SHELL_FILE_RE);
+    if (!m) continue;
+    const key = `${m[1]}|${m[2].toUpperCase()}|${m[4]}.${m[5]}`;
+    // ARA variants ride on their base shell's requirement.
+    if (!required.has(key)) {
+      it.wavesShellOrphaned = true;
     }
   }
 }

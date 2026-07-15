@@ -580,6 +580,33 @@ export default function DetailPanel({
         </div>
       )}
 
+      {/* Orphaned WaveShell — no installed or Central-deactivated Waves
+       * payload declares a dependency on this shell version, so it can
+       * load nothing and is safe to remove. Determined from Waves' own
+       * manifest.yaml dependency maps (fail-closed), not a heuristic. */}
+      {item.wavesShellOrphaned && (
+        <div className="detail-cleanup waves-orphan">
+          <div className="cleanup-title">Safe to remove</div>
+          <div className="cleanup-body">
+            No installed Waves plugin loads through this shell version — every payload
+            that required it has been removed. Deleting it frees space and won&rsquo;t
+            affect any Waves plugin you still have.
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>
+            Best removed through Waves Central, which keeps its own dependency records.
+          </div>
+          {onOpenInFinder && (
+            <button
+              type="button"
+              className="linkish"
+              style={{ wordBreak: 'break-all', textAlign: 'left' }}
+              title="Show in Finder"
+              onClick={() => onOpenInFinder(item.path)}
+            >{item.path}</button>
+          )}
+        </div>
+      )}
+
       {/* Undo affordance for "Not the same plugin" — the cleanup card
        * itself no longer renders once the dup record is stripped, so
        * this muted line is the way back. */}
