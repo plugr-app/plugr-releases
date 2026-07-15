@@ -250,6 +250,21 @@ export default function Sidebar({
     return c;
   }, [compatItems]);
 
+  // Cleanup bucket counts, computed LIVE from the items actually in view
+  // (which already exclude hidden plugins and honor "Not the same plugin"
+  // unlinks) rather than the frozen scan-time summary. Without this,
+  // hiding every superseded copy left the "Old versions" count stuck at
+  // its scan value while the grid showed nothing.
+  const cleanupLive = useMemo(() => {
+    let duplicateCount = 0, supersededCount = 0, duplicateBytes = 0, supersededBytes = 0;
+    for (const it of items) {
+      const s = it.duplicate && it.duplicate.status;
+      if (s === 'duplicate') { duplicateCount++; duplicateBytes += it.sizeBytes || 0; }
+      else if (s === 'superseded') { supersededCount++; supersededBytes += it.sizeBytes || 0; }
+    }
+    return { duplicateCount, supersededCount, duplicateBytes, supersededBytes };
+  }, [items]);
+
   // Build a list of active filter chips for the top of the sidebar.
   // Each entry knows how to clear itself, so users can see at a glance
   // exactly which filters are applied without scrolling the side menu.
@@ -558,14 +573,14 @@ export default function Sidebar({
       >
         {CLEANUP_OPTIONS.map((opt) => {
           const count = opt.value === 'duplicate'
-            ? (summary && summary.duplicateCount) || 0
+            ? cleanupLive.duplicateCount
             : opt.value === 'superseded'
-              ? (summary && summary.supersededCount) || 0
+              ? cleanupLive.supersededCount
               : items.length;
           const sizeHint = opt.value === 'duplicate'
-            ? (summary && summary.duplicateBytes)
+            ? cleanupLive.duplicateBytes
             : opt.value === 'superseded'
-              ? (summary && summary.supersededBytes)
+              ? cleanupLive.supersededBytes
               : null;
           return (
             <button
