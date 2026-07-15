@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { formatBytes, naturalCompare } from '../util/format.js';
 
-const FORMAT_ORDER = ['VST3', 'AU', 'VST2', 'AAX', 'CLAP', 'App'];
+const FORMAT_ORDER = ['VST3', 'AU', 'VST2', 'AAX', 'CLAP', 'Waves', 'App'];
 
 const UPDATE_OPTIONS = [
   { value: 'all', label: 'All' },

@@ -82,7 +82,11 @@ function groupKey(item) {
   const dev = (item.developer || 'unknown').toLowerCase().trim();
   const vm = (item.name || '').match(/\(([a-zA-Z][a-zA-Z\s]*)\)\s*$/);
   const variant = vm ? `|${vm[1].toLowerCase().trim()}` : '';
-  return `${dev}|${fam}${variant}`;
+  // Waves generation is part of identity: V12/V13/V16 payload bundles
+  // of the same plugin coexist BY DESIGN (sessions pin to a shell
+  // major), so "H-Delay" V13 must never be flagged OLD against V16.
+  const gen = item.wavesGeneration ? `|${String(item.wavesGeneration).toLowerCase()}` : '';
+  return `${dev}|${fam}${variant}${gen}`;
 }
 
 function compareSemver(a, b) {

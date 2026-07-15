@@ -101,6 +101,23 @@ const FORMATS = {
     // Don't recurse into Applications/Utilities subfolders too deep
     maxDepth: 2,
   },
+  // Waves per-plugin inventory. Waves plugins load through WaveShell
+  // (one opaque multi-plugin binary per format — the shells are scanned
+  // as normal AU/VST3/AAX items above), but the actual per-plugin
+  // payloads live as individually-named bundles in
+  // /Applications/Waves/Plug-Ins V<gen>/ with REAL names, versions
+  // (CFBundleShortVersionString like "16.0.23"), identifiers and per-
+  // plugin sizes. Scanning those is the only way to show the user which
+  // Waves plugins they actually own. dirFilter keeps the walk out of
+  // WaveShells V* (would re-find shell WPAPI .bundles), Data/,
+  // Applications V*/ and "Unused Plug-Ins V*" (deactivated by Waves
+  // Central).
+  Waves: {
+    extensions: ['.bundle'],
+    paths: ['/Applications/Waves'],
+    maxDepth: 3,
+    dirFilter: (name, depth) => (depth === 0 ? /^Plug-Ins V\d+$/i.test(name) : true),
+  },
 };
 
 const KNOWN_EXT = new Set(['.vst3', '.component', '.vst', '.aaxplugin', '.clap', '.app']);
@@ -123,7 +140,7 @@ async function listDirSafe(p) {
  * Supports limited recursion through non-bundle folders so that vendor-grouped
  * plugin folders (e.g. ".../VST3/FabFilter/FabFilter Pro-Q 3.vst3") are found.
  */
-async function* walkBundles(rootDir, extensions, maxDepth = 4, currentDepth = 0) {
+async function* walkBundles(rootDir, extensions, maxDepth = 4, currentDepth = 0, dirFilter = null) {
   if (!fsSync.existsSync(rootDir)) return;
   const entries = await listDirSafe(rootDir);
   for (const entry of entries) {
@@ -136,8 +153,11 @@ async function* walkBundles(rootDir, extensions, maxDepth = 4, currentDepth = 0)
       continue;
     }
 
-    if (entry.isDirectory() && currentDepth < maxDepth && !hasKnownExt(entry.name)) {
-      yield* walkBundles(fullPath, extensions, maxDepth, currentDepth + 1);
+    if (
+      entry.isDirectory() && currentDepth < maxDepth && !hasKnownExt(entry.name) &&
+      (!dirFilter || dirFilter(entry.name, currentDepth))
+    ) {
+      yield* walkBundles(fullPath, extensions, maxDepth, currentDepth + 1, dirFilter);
     }
   }
 }
@@ -181,10 +201,25 @@ async function scanFormat(format) {
   const def = FORMATS[format];
   const items = [];
   for (const root of def.paths) {
-    for await (const found of walkBundles(root, def.extensions, def.maxDepth || 4)) {
+    for await (const found of walkBundles(root, def.extensions, def.maxDepth || 4, 0, def.dirFilter || null)) {
       try {
         const info = await readBundleInfo(found.path);
         if (!info) continue;
+
+        // Waves payload bundles: the FILENAME is the product name
+        // ("H-Delay.bundle"); the plist name embeds the version
+        // ("H-Delay 16.0.23") which would break cross-item grouping.
+        // The generation comes from the parent folder ("Plug-Ins V16")
+        // and becomes part of duplicate-group identity — Waves
+        // generations coexist by design (sessions pin to a shell
+        // major), so V12/V13/V16 copies of one plugin must never
+        // OLD-flag each other.
+        let wavesGeneration = null;
+        if (format === 'Waves') {
+          info.name = found.name.replace(/\.[^.]+$/, '');
+          const genMatch = found.path.match(/Plug-Ins (V\d+)/i);
+          wavesGeneration = genMatch ? genMatch[1].toUpperCase() : null;
+        }
 
         // Look up registry entry and categorize.
         const registryEntry = lookupRegistry({
@@ -252,6 +287,7 @@ async function scanFormat(format) {
           name: displayName,
           bundleName: info.bundleName,
           format,
+          wavesGeneration: wavesGeneration || undefined,
           path: found.path,
           identifier: info.identifier,
           auKeys,
@@ -545,6 +581,19 @@ async function scanLibrary(options = {}) {
   }
   all.length = 0;
   all.push(...byReal.values());
+
+  // Fix generic app names. Some vendors ship one wrapper app per
+  // product but give ALL of them the same plist name — Waves'
+  // standalone plugins ("Bass Slapper.app", "CODEX.app", …) each
+  // identify as "AudioPluginHost" in their Info.plist, so the library
+  // showed a wall of identical "AudioPluginHost" cards that then
+  // cross-flagged as duplicates/OLD. When 2+ App items share a plist
+  // name but sit in differently-named .app files, the FILENAME is the
+  // real identity — rename to it. Apps sharing the same filename
+  // (a true copy in two locations) are left alone so genuine duplicate
+  // detection still works. App format only: plugin formats must keep
+  // plist/component naming for cross-format family grouping.
+  fixGenericAppNames(all);
 
   // Compute size-on-disk for every item (in parallel, capped concurrency).
   if (includeSizes) {
@@ -886,6 +935,33 @@ function propagateByName(items) {
         it.category = donorCat.category;
         it.subcategory = donorCat.subcategory;
         it.categorySource = (it.categorySource || 'fallback') + '+propagated-by-name';
+      }
+    }
+  }
+}
+
+/**
+ * See the call site in scanLibrary: rename App items to their on-disk
+ * filename when 2+ apps share one plist name across different files
+ * (Waves "AudioPluginHost" wrapper-app case).
+ */
+function fixGenericAppNames(items) {
+  const appsByName = new Map();
+  for (const it of items) {
+    if (it.format !== 'App' || !it.name) continue;
+    const key = it.name.toLowerCase().trim();
+    if (!appsByName.has(key)) appsByName.set(key, []);
+    appsByName.get(key).push(it);
+  }
+  for (const group of appsByName.values()) {
+    if (group.length < 2) continue;
+    const stems = new Set(group.map((it) => String(it.bundleName || '').replace(/\.app$/i, '').toLowerCase()));
+    if (stems.size < 2) continue; // same filename everywhere → genuine copies of one app
+    for (const it of group) {
+      const stem = String(it.bundleName || '').replace(/\.app$/i, '');
+      if (stem && stem.toLowerCase() !== it.name.toLowerCase()) {
+        it.name = stem;
+        it.nameFromFilename = true;
       }
     }
   }

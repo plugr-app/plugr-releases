@@ -79,7 +79,7 @@ import ProjectsView, { AudioVolumeProvider } from './components/ProjectsView.jsx
 import DealsView from './components/DealsView.jsx';
 import ToolsView from './components/ToolsView.jsx';
 
-const FORMAT_LIST = ['VST3', 'AU', 'VST2', 'AAX', 'CLAP', 'App'];
+const FORMAT_LIST = ['VST3', 'AU', 'VST2', 'AAX', 'CLAP', 'Waves', 'App'];
 
 const api = (typeof window !== 'undefined' && window.pluginHub) || {
   scanLibrary: async () => ({ ok: true, data: SAMPLE_LIBRARY }),
