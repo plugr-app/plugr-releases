@@ -488,7 +488,8 @@ function applyCommunityAdditions(items, communityData) {
       registry: {
         ...(it.registry || {}),
         updateUrl: it.registry && it.registry.updateUrl ? it.registry.updateUrl : e.updateUrl,
-        versionRegex: it.registry && it.registry.versionRegex ? it.registry.versionRegex : e.versionRegex,
+        versionRegex: it.registry && it.registry.versionRegex ? it.registry.versionRegex : (e.versionRegex || ''),
+        downloadUrl: it.registry && it.registry.downloadUrl ? it.registry.downloadUrl : (e.downloadUrl || undefined),
       },
       registryAddedByCommunity: !(it.registry && it.registry.updateUrl),
     };

@@ -308,7 +308,10 @@ function main() {
     stats.additionsConsidered++;
     const item = itemByKey.get(key);
     if (!item) { stats.additionsWithoutMatchingItem++; continue; }
-    if (!add || !add.updateUrl || !add.versionRegex) continue;
+    // updateUrl is required; versionRegex is NOT — a link-only source
+    // (page with no version number) promotes as a manual-check link so
+    // other users get the clickable page without a false update claim.
+    if (!add || !add.updateUrl) continue;
 
     // Honor the user's developer override if they renamed this
     // plugin's developer in the UI. Otherwise fall back to whatever
@@ -327,8 +330,10 @@ function main() {
     const merged = {
       ...existing,
       updateUrl: add.updateUrl,
-      versionRegex: add.versionRegex,
+      versionRegex: add.versionRegex || '',     // '' = link-only (manual-check)
     };
+    // Optional separate download page, promoted only when the user set one.
+    if (add.downloadUrl) merged.downloadUrl = add.downloadUrl;
     if (existing.updateUrl || existing.versionRegex) stats.productMatchersUpdated++;
     else stats.productMatchersCreated++;
     devEntry.productMatchers[productKey] = merged;

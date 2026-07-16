@@ -498,6 +498,7 @@ export default function DiscoverModal({
         format: item.format,
         updateUrl: addition.updateUrl,
         versionRegex: addition.versionRegex,
+        downloadUrl: addition.downloadUrl || undefined,
         detectedVersion: result && result.latestVersion,
       });
     } catch { /* silent — community submit is best-effort */ }

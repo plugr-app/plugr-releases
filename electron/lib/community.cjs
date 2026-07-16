@@ -109,6 +109,12 @@ const SUBMIT_FIELDS = {
   versionRegex:    'entry.1943901942',
   detectedVersion: 'entry.557445586',
   appVersion:      'entry.1853576775',
+  // Separate download/product page (release-notes page ≠ download page).
+  // TODO(josh): add a "Download page" question to the Google Form, then
+  // paste its entry.NNN id here. Until then this stays '' and submitAddition
+  // simply skips it (see the `if (!formField) continue;` guard), so nothing
+  // breaks — the field just isn't transmitted yet.
+  downloadUrl:     '',
 };
 
 const ADDITIONS_TTL_MS = 24 * 60 * 60 * 1000;     // 24 hours
@@ -172,14 +178,19 @@ async function fetchCommunityAdditions() {
     const safeEntries = [];
     for (const e of data.entries) {
       if (!e || typeof e !== 'object') continue;
-      if (!e.key || !e.updateUrl || !e.versionRegex) continue;
-      try { new RegExp(e.versionRegex); } catch { continue; }
+      // updateUrl is mandatory; versionRegex is optional (a link-only
+      // source for a page with no version number). Validate the regex
+      // ONLY when one is present, so a bad pattern is still rejected but
+      // a legitimately empty one is allowed through as manual-check.
+      if (!e.key || !e.updateUrl) continue;
+      if (e.versionRegex) { try { new RegExp(e.versionRegex); } catch { continue; } }
       safeEntries.push({
         key: String(e.key),
         pluginName: String(e.pluginName || ''),
         developer: String(e.developer || ''),
         updateUrl: String(e.updateUrl),
-        versionRegex: String(e.versionRegex),
+        versionRegex: e.versionRegex ? String(e.versionRegex) : '',
+        downloadUrl: e.downloadUrl ? String(e.downloadUrl) : null,
       });
     }
     // Normalize companion-app patches. Each patch identifies a developer

@@ -246,6 +246,10 @@ function lookupRegistry({ identifier, pluginName }) {
     subcategory: productEntry && productEntry.subcategory,
     updateUrl: productEntry && productEntry.updateUrl,
     versionRegex: productEntry && productEntry.versionRegex,
+    // Optional per-product download page (release-notes page ≠ download
+    // page). Surfaced so a promoted/bundled source can route the CTA the
+    // same way a user-added one does.
+    downloadUrl: productEntry && productEntry.downloadUrl,
     matchedProduct: productEntry && productEntry.matchedKey,
   };
 }
