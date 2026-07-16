@@ -301,3 +301,20 @@ Conversational, specific, honest about limits, never corporate. "Every plugin, a
 | Mirror link | Child plugin borrows a parent's update status (`mirrorFromId`, e.g. Serum FX → Serum). |
 | Sparkle appcast | App's `SUFeedURL`; most reliable update source when present. |
 | shared-dev-page | One changelog URL covering a whole catalog (Kilohearts-style); applied to siblings verbatim. |
+
+## 15. Community submission review & publish (Option A — human-reviewed)
+
+The community feed's missing middle step is a **Claude-in-the-loop review**, run on demand when Josh says something like "review new Plugr submissions." Both setup pieces are DONE (see 2026-07-16 session log): the form's responses Sheet is readable via the Drive connector, and the `plugr-app/plugr-community-registry` repo (holds `additions.json`, served at plugr-app.github.io/plugr-community-registry) is connectable so approved entries can be written and Josh pushes them live.
+
+**IDs:** form `1e6r1uJQCzvaskY2_jXQsjQa0PvtoNVkIx1wPd1Q9CGQ`; responses sheet `1dFzt5EzssBSdQ03EKx2A2G1XyJ4fjLZgDVRsAsu8W_s` (Drive `read_file_content`). Sheet columns: Timestamp, Plugin name, Developer, Identifier, Format, Update URL, Download page, Version regex, Detected Version, App Version.
+
+**Procedure each review:**
+1. Read the responses sheet via the Google Drive connector; read the live `additions.json` (from the connected registry repo, or the ADDITIONS_URL).
+2. Diff — a submission is NEW if no existing entry has the same `key` (+ same `updateUrl`). Present each new one to Josh in plain English.
+3. **Red-flag before approving:** `versionRegex` fails `new RegExp()` (a link-only/empty regex is FINE post-2026-07-14 — that's a manual-check source); `updateUrl`/`downloadUrl` not https or on an unexpected domain for the developer; identifier malformed; obvious spam/junk. Empty regex is allowed; empty updateUrl is not.
+4. Josh approves the keepers. Write ONLY approved ones into `additions.json`.
+5. **Entry schema** (matches `community.cjs` fetch/merge + `applyCommunityAdditions`): `{ key: <plugin identifier, lowercased on merge>, pluginName, developer, updateUrl, versionRegex (optional, '' = link-only), downloadUrl (optional) }`. Top-level file: `{ version:1, lastUpdated:<ISO now>, entries:[...], companionAppPatches?:[...] }`. Bump `lastUpdated`.
+6. Validate: `node -e` parse the JSON + `new RegExp` every non-empty regex before committing.
+7. Josh pushes the registry repo (never Claude): `cd ~/plugr-community-registry && rm -f .git/*.lock; git add -A && git commit && git push`. Users pick up within 24h (ADDITIONS_TTL_MS).
+
+**Fields already wired app-side (2026-07-14 c/d):** `downloadUrl` and link-only (no-regex) entries flow all the way through submit → sheet → `additions.json` → fetch/merge → `reg.downloadUrl` → CTA. The Google Form "Download page" field id `entry.1633676877` is live in `community.cjs`.
