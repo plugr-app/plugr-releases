@@ -110,11 +110,9 @@ const SUBMIT_FIELDS = {
   detectedVersion: 'entry.557445586',
   appVersion:      'entry.1853576775',
   // Separate download/product page (release-notes page ≠ download page).
-  // TODO(josh): add a "Download page" question to the Google Form, then
-  // paste its entry.NNN id here. Until then this stays '' and submitAddition
-  // simply skips it (see the `if (!formField) continue;` guard), so nothing
-  // breaks — the field just isn't transmitted yet.
-  downloadUrl:     '',
+  // Google Form "Download page" question, verified against the same form
+  // id as SUBMIT_URL (1FAIpQLScCtmbSBU5hKdrmPaql4j5RS10HIUIMykfkPJ6M4L0YDKPwCg).
+  downloadUrl:     'entry.1633676877',
 };
 
 const ADDITIONS_TTL_MS = 24 * 60 * 60 * 1000;     // 24 hours
