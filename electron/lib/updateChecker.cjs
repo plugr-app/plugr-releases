@@ -277,8 +277,34 @@ async function checkUpdatesForItems(items, opts = {}) {
   return { results, checkedAt: new Date().toISOString() };
 }
 
+/**
+ * Test a candidate update source WITHOUT saving it: fetch the page and
+ * try the regex, returning why it failed so the UI can explain the cause.
+ *   { ok:true,  version:'1.2.3' }                 — version detected
+ *   { ok:false, reason:'no-match' }               — page loaded, but no
+ *                                                    version found with the
+ *                                                    pattern (JS-rendered
+ *                                                    page, non-text version,
+ *                                                    or wrong pattern)
+ *   { ok:false, reason:'fetch-failed', error }    — page couldn't be loaded
+ *                                                    (down / moved / blocking)
+ */
+async function testSource(url, regexSource) {
+  if (!url) return { ok: false, reason: 'fetch-failed', error: 'No URL provided' };
+  let text;
+  try {
+    text = await fetchText(url);
+  } catch (err) {
+    return { ok: false, reason: 'fetch-failed', error: String((err && err.message) || err) };
+  }
+  const version = extractVersion(text, regexSource);
+  if (version) return { ok: true, version };
+  return { ok: false, reason: 'no-match' };
+}
+
 module.exports = {
   checkUpdatesForItems,
   compareVersions,
   extractVersion,
+  testSource,
 };

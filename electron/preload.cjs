@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld('pluginHub', {
   checkUpdates: (items) => ipcRenderer.invoke('updates:check', items),
   discoverUpdate: (item) => ipcRenderer.invoke('updates:discover', item),
   deriveSourceFromVersion: (payload) => ipcRenderer.invoke('updates:deriveFromVersion', payload),
+  testSource: (payload) => ipcRenderer.invoke('updates:testSource', payload),
   discoverAllUpdates: (items) => ipcRenderer.invoke('updates:discoverAll', items),
   tryTemplateForSiblings: (payload) => ipcRenderer.invoke('updates:tryTemplate', payload),
   applySharedSource: (payload) => ipcRenderer.invoke('updates:applySharedSource', payload),

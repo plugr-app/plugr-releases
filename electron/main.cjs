@@ -28,7 +28,7 @@ protocol.registerSchemesAsPrivileged([
   },
 ]);
 const { scanLibrary } = require('./lib/scanners.cjs');
-const { checkUpdatesForItems } = require('./lib/updateChecker.cjs');
+const { checkUpdatesForItems, testSource } = require('./lib/updateChecker.cjs');
 const { loadCache, saveCache, clearCache, cacheFilePath } = require('./lib/cache.cjs');
 const {
   loadProjectStore,
@@ -1287,6 +1287,19 @@ ipcMain.handle('updates:deriveFromVersion', async (_event, payload) => {
     return await deriveRegexFromVersion({ url: cleanUrl(url), knownVersion, name });
   } catch (err) {
     return { ok: false, error: String(err && err.message || err) };
+  }
+});
+
+// Test a candidate source (URL + regex) without saving it — powers the
+// verify-on-save step in DiscoverModal. Returns {ok, version} on success,
+// or {ok:false, reason:'no-match'|'fetch-failed'} so the UI can explain
+// the likely cause and offer a link-only save.
+ipcMain.handle('updates:testSource', async (_event, payload) => {
+  try {
+    const { url, regex } = payload || {};
+    return await testSource(cleanUrl(url), regex);
+  } catch (err) {
+    return { ok: false, reason: 'fetch-failed', error: String(err && err.message || err) };
   }
 });
 

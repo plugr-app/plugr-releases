@@ -22,7 +22,7 @@ export default function DiscoverModal({
   // Default non-edit-mode opens to a chooser screen: user picks
   // "Search automatically" or "Enter manually". Edit mode jumps to
   // 'found' to show the existing saved source for tweaking.
-  const [phase, setPhase] = useState(isEditMode ? 'found' : 'chooser');     // 'chooser' | 'searching' | 'found' | 'notfound' | 'manual' | 'saving' | 'saved' | 'sharing' | 'error'
+  const [phase, setPhase] = useState(isEditMode ? 'found' : 'chooser');     // 'chooser' | 'searching' | 'found' | 'notfound' | 'manual' | 'verifying' | 'verifyfail' | 'saving' | 'saved' | 'sharing' | 'error'
   const [result, setResult] = useState(isEditMode ? {
     url: existingAddition && existingAddition.updateUrl ? cleanUrl(existingAddition.updateUrl) : null,
     versionRegex: existingAddition && existingAddition.versionRegex,
@@ -64,6 +64,9 @@ export default function DiscoverModal({
   const [manualVersion, setManualVersion] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [manualError, setManualError] = useState(null);
+  // Verify-on-save: when a saved URL+regex can't detect a version, we stop
+  // and explain rather than persist a source that would just "Check failed".
+  const [verifyFail, setVerifyFail] = useState(null);   // { reason, error, returnPhase } | null
 
   // Manual-URL fallback: when guess-based discovery fails, the user can
   // paste the developer's actual website URL and we re-run discovery
@@ -334,7 +337,46 @@ export default function DiscoverModal({
   // "Found" auto-discover save: the URL+regex are already in state from
   // the discoverUpdate result; just hand them to saveAddition.
   async function save() {
-    await saveAddition({ urlToSave: url, regexToSave: regex, addedBy: 'auto-discover' });
+    await verifyThenSave({
+      urlToSave: url,
+      regexToSave: regex,
+      addedBy: isEditMode ? 'edit' : 'auto-discover',
+      returnPhase: 'found',
+    });
+  }
+
+  // Confirm a URL+regex actually detects a version on the page BEFORE
+  // persisting it. A source that can't be parsed would only ever show
+  // "Check failed", so instead of saving it we surface WHY (JS-rendered
+  // page, non-text version, wrong pattern, or an unreachable page) and let
+  // the user save it as a link only. An empty regex is already a
+  // deliberate link-only save, so it skips the check.
+  async function verifyThenSave({ urlToSave, regexToSave, addedBy, returnPhase }) {
+    const u = (urlToSave || '').trim();
+    const r = (regexToSave || '').trim();
+    if (!u) return;
+    if (!r) {
+      await saveAddition({ urlToSave: u, regexToSave: '', addedBy, downloadUrlToSave: downloadUrl });
+      return;
+    }
+    setVerifyFail(null);
+    setPhase('verifying');
+    let res;
+    try {
+      res = await api.testSource({ url: u, regex: r });
+    } catch (e) {
+      res = { ok: false, reason: 'fetch-failed', error: String((e && e.message) || e) };
+    }
+    if (res && res.ok && res.version) {
+      await saveAddition({ urlToSave: u, regexToSave: r, addedBy, downloadUrlToSave: downloadUrl });
+      return;
+    }
+    setVerifyFail({
+      reason: (res && res.reason) || 'no-match',
+      error: res && res.error,
+      returnPhase: returnPhase || 'found',
+    });
+    setPhase('verifyfail');
   }
 
   // "Save URL only" fallback: used when version derivation failed (page
@@ -381,9 +423,10 @@ export default function DiscoverModal({
       return;
     }
 
-    // Advanced path: user provided a regex by hand. Use it directly.
+    // Advanced path: user provided a regex by hand. Verify it detects a
+    // version on the page before saving (same guard as every other path).
     if (showAdvanced && r) {
-      await saveAddition({ urlToSave: u, regexToSave: r, addedBy: 'manual-regex' });
+      await verifyThenSave({ urlToSave: u, regexToSave: r, addedBy: 'manual-regex', returnPhase: 'manual' });
       return;
     }
 
@@ -838,6 +881,26 @@ export default function DiscoverModal({
                 </label>
               </details>
 
+              {/* Always-available link-only escape hatch. For pages that
+               *  show no version number at all (or JS-rendered pages), the
+               *  user can save just the URL as a clickable link — no need
+               *  to fail a version save first. Hidden for companion-managed
+               *  plugins (saving URL-only would drop the better companion
+               *  status). */}
+              {!(item && item.registry && item.registry.companionApp) && (
+                <div className="discover-linkonly" style={{ marginTop: 2 }}>
+                  <button
+                    type="button"
+                    className="linkish"
+                    onClick={saveUrlOnly}
+                    disabled={!url.trim()}
+                    title="Save just this page as a clickable link, with no version checking. Use it when the page shows no version number."
+                  >
+                    No version on that page? Save it as a link only
+                  </button>
+                </div>
+              )}
+
               {manualError && (
                 <div className="discover-status notfound" style={{ marginTop: 8 }}>
                   <span className="warn" aria-hidden="true">!</span>
@@ -886,6 +949,23 @@ export default function DiscoverModal({
           </>
         )}
 
+        {phase === 'verifying' && <div className="discover-status searching"><div className="spinner" /> Checking the page for a version…</div>}
+        {phase === 'verifyfail' && (
+          <div className="discover-status notfound" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
+            <div className="discover-status-title"><span className="warn" aria-hidden="true">!</span> Couldn&rsquo;t detect a version on that page</div>
+            <div className="muted" style={{ lineHeight: 1.5 }}>
+              {verifyFail && verifyFail.reason === 'fetch-failed' ? (
+                <>Plugr couldn&rsquo;t load that page. The site may be down, the address may have changed, or it may be blocking automated requests. Double-check the URL above — or save it as a link only so you can still click through.</>
+              ) : (
+                <>Plugr loaded the page but couldn&rsquo;t find a version number with this pattern. The most common cause is a page that builds its content with <strong>JavaScript</strong> — Plugr reads the raw page, so a version that only appears after scripts run is invisible to it. It can also happen when the version isn&rsquo;t written as plain text, or when the pattern doesn&rsquo;t match how the version appears. Saving as a link only gives you a clean, clickable page with no false &ldquo;update available.&rdquo;</>
+              )}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button type="button" className="btn primary" onClick={keepAsLinkOnly}>Save as link only</button>
+              <button type="button" className="btn ghost" onClick={() => setPhase((verifyFail && verifyFail.returnPhase) || 'found')}>Back</button>
+            </div>
+          </div>
+        )}
         {phase === 'saving' && <div className="discover-status searching"><div className="spinner" /> Saving…</div>}
         {phase === 'saved' && !showShareCard && <div className="discover-status found"><span className="check">✓</span> Saved!</div>}
         {phase === 'sharing' && <div className="discover-status searching"><div className="spinner" /> Sharing with community…</div>}

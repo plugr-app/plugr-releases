@@ -86,6 +86,7 @@ const api = (typeof window !== 'undefined' && window.pluginHub) || {
   checkUpdates: async () => ({ ok: true, data: { results: [], checkedAt: new Date().toISOString() } }),
   discoverUpdate: async () => ({ ok: true, data: { url: null, versionRegex: null, latestVersion: null, tried: [], message: 'Browser preview — discover only works in the desktop app.' } }),
   deriveSourceFromVersion: async () => ({ ok: false, error: 'Browser preview — version derivation only works in the desktop app.' }),
+  testSource: async () => ({ ok: true, version: '0.0.0' }),
   discoverAllUpdates: async () => ({ ok: true, data: { total: 0, foundCount: 0, additions: {}, mergedAdditions: {} } }),
   openInFinder: async () => ({ ok: true }),
   openApp: async () => ({ ok: true }),
