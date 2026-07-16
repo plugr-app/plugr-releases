@@ -341,20 +341,6 @@ export default function DetailPanel({
         {update && update.latestVersion && (
           <span className="detail-status-text">
             installed <code>v{item.version || '?'}</code> · latest <code>v{update.latestVersion}</code>
-            {update.status === 'outdated' && !updateDismissed && !isIgnored && !formatLagAcknowledged && (
-              <>
-                {canEditSource && (
-                  <>
-                    {' · '}
-                    <button type="button" className="linkish" title="The detected version or source looks wrong — edit the update page URL or version pattern, or type the version you actually see and Plugr will fix the pattern for you" onClick={handleEditSource}>Wrong version or source? Fix it…</button>
-                  </>
-                )}
-                {' · '}
-                <button type="button" className="linkish" title="Ignore this update — removes it from Updates available until a newer version is detected" onClick={() => onSetOverride({ ignoredUpdateVersion: update.latestVersion })}>Ignore this update</button>
-                {' · '}
-                <button type="button" className="linkish" title="Never show update alerts for this plugin" onClick={() => onSetOverride({ ignoreAllUpdates: true })}>Ignore all updates</button>
-              </>
-            )}
             {isIgnored && (
               <> · <span style={{ opacity: 0.65 }}>{item.ignoreAllUpdates ? 'All updates ignored' : 'Update ignored'}</span>{' · '}<button type="button" className="linkish" onClick={() => onSetOverride(item.ignoreAllUpdates ? { ignoreAllUpdates: null, ignoredUpdateVersion: null } : { ignoredUpdateVersion: null })}>Undo</button></>
             )}
@@ -417,6 +403,17 @@ export default function DetailPanel({
                 )}
               </>
             )}
+          </span>
+        )}
+        {/* Ignore actions on their own tidy line, below the source row.
+         *  Previously these sat inline on the version line alongside a
+         *  duplicate "Fix it…" link (same action as the source row's
+         *  "Edit source…", now removed). */}
+        {update && update.status === 'outdated' && !updateDismissed && !isIgnored && !formatLagAcknowledged && (
+          <span className="detail-status-text muted">
+            <button type="button" className="linkish" title="Ignore this update — removes it from Updates available until a newer version is detected" onClick={() => onSetOverride({ ignoredUpdateVersion: update.latestVersion })}>Ignore this update</button>
+            {' · '}
+            <button type="button" className="linkish" title="Never show update alerts for this plugin — ignores all versions, not just this one" onClick={() => onSetOverride({ ignoreAllUpdates: true })}>Ignore all</button>
           </span>
         )}
       </div>
