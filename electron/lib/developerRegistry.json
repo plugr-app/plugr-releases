@@ -4800,13 +4800,13 @@
           "category": "Effect",
           "subcategory": "Utility",
           "updateUrl": "https://a1audio.alexhilton.net/downloads",
-          "versionRegex": "1.44"
+          "downloadUrl": "https://a1audio.alexhilton.net/downloads"
         },
         "A1TriggerGate": {
           "category": "MIDI",
           "subcategory": "MIDI FX",
           "updateUrl": "https://a1audio.alexhilton.net/downloads",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://a1audio.alexhilton.net/downloads"
         }
       }
     },
