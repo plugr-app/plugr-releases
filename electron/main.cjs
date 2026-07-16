@@ -1529,6 +1529,7 @@ ipcMain.handle('registry:saveAddition', async (_event, { key, addition }) => {
       // copy-pasted into the cache during dev).
       const sanitized = { ...addition };
       if (sanitized.updateUrl) sanitized.updateUrl = cleanUrl(sanitized.updateUrl);
+      if (sanitized.downloadUrl) sanitized.downloadUrl = cleanUrl(sanitized.downloadUrl);
       additions[key] = { ...(additions[key] || {}), ...sanitized };
     }
     await patchCache({ userRegistryAdditions: additions });

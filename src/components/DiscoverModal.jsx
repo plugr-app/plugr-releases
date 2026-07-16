@@ -40,6 +40,11 @@ export default function DiscoverModal({
       : ''
   );
   const [regex, setRegex] = useState((isEditMode && existingAddition && existingAddition.versionRegex) || '');
+  // Optional separate download/product page. Left blank in the common case,
+  // where the "Get update" button just uses the version-source URL above.
+  // Set it only when the page Plugr reads the version from (e.g. a release-
+  // notes page) is NOT where the user actually downloads the update.
+  const [downloadUrl, setDownloadUrl] = useState((isEditMode && existingAddition && existingAddition.downloadUrl) || '');
   const [urlAtDiscovery, setUrlAtDiscovery] = useState((isEditMode && existingAddition && existingAddition.updateUrl) || '');
   const [reTestRunning, setReTestRunning] = useState(false);
   const [reTestError, setReTestError] = useState(null);
@@ -184,13 +189,18 @@ export default function DiscoverModal({
   // Core save: persist a registry addition and handle the follow-up
   // (community-share card, sibling-template offer, auto-close).
   // Shared by both the auto-discover "found" flow and the manual-entry flow.
-  async function saveAddition({ urlToSave, regexToSave, addedBy }) {
+  async function saveAddition({ urlToSave, regexToSave, addedBy, downloadUrlToSave }) {
     setPhase('saving');
     setError(null);
     const key = item.identifier || item.id;
+    // Optional separate download page. Default: reuse the passed state so
+    // every existing call site keeps its behavior; only persisted when the
+    // user actually entered a distinct URL.
+    const dl = (downloadUrlToSave !== undefined ? downloadUrlToSave : downloadUrl || '').trim();
     const addition = {
       updateUrl: cleanUrl(urlToSave.trim()),     // strip tracking junk
       versionRegex: regexToSave.trim(),
+      downloadUrl: dl ? cleanUrl(dl) : null,     // null = "same as update page"
       addedAt: new Date().toISOString(),
       addedBy,
     };
@@ -339,7 +349,19 @@ export default function DiscoverModal({
       setManualError('Please paste a URL first.');
       return;
     }
-    await saveAddition({ urlToSave: u, regexToSave: '', addedBy: 'manual-url-only' });
+    await saveAddition({ urlToSave: u, regexToSave: '', addedBy: 'manual-url-only', downloadUrlToSave: downloadUrl });
+  }
+
+  // Edit-mode escape hatch for the "right page, no version number" case
+  // (e.g. a product page that never lists the current build, so any regex
+  // just latches onto a bogus number). Keeps the URL as a clickable link
+  // and clears the version pattern → the checker returns 'manual-check',
+  // which surfaces the link with NO false "update available" claim. Any
+  // separate download page the user set is preserved.
+  async function keepAsLinkOnly() {
+    const u = url.trim();
+    if (!u) return;
+    await saveAddition({ urlToSave: u, regexToSave: '', addedBy: 'edit-link-only', downloadUrlToSave: downloadUrl });
   }
 
   // Manual-entry save. Two paths:
@@ -669,6 +691,38 @@ export default function DiscoverModal({
                   </div>
                 )}
               </div>
+
+              {/* "No version on this page" escape hatch. For product pages
+               *  that never print the current build, any pattern latches
+               *  onto a bogus number. This keeps the page as a clickable
+               *  link and stops version-checking entirely. */}
+              <div className="discover-linkonly" style={{ marginTop: 4 }}>
+                <button
+                  type="button"
+                  className="linkish"
+                  onClick={keepAsLinkOnly}
+                  title="This page has no version number — keep it as a clickable link and stop trying to detect a version. Plugr will no longer claim an update for this plugin."
+                >
+                  This page has no version number — keep it as a link only
+                </button>
+              </div>
+
+              {/* Optional separate download page. Blank in the common case;
+               *  the "Get update" button then just uses the page above. Set
+               *  it only when the version lives on one page (e.g. release
+               *  notes) but the download lives on another. */}
+              <label>
+                <span>Download page <span className="muted">(optional)</span></span>
+                <input
+                  className="dev-input"
+                  type="text"
+                  placeholder="Leave blank to use the page above"
+                  value={downloadUrl}
+                  onChange={(e) => setDownloadUrl(e.target.value)}
+                  onBlur={(e) => { const c = cleanUrl(e.target.value); if (c !== e.target.value) setDownloadUrl(c); }}
+                />
+                <div className="muted micro">Where the <em>Get update</em> button sends you, when that differs from the version page above.</div>
+              </label>
             </div>
           </>
         )}

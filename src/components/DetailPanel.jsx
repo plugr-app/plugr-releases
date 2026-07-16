@@ -87,6 +87,13 @@ export default function DetailPanel({
   // or pages where the version isn't in the static HTML). Counts as a
   // source so the "Updates not configured" card stays hidden.
   const hasManualCheckUrl = !!(reg.updateUrl && !reg.versionRegex);
+  // Where the "Get update" / "Open page" button sends the user. Prefer a
+  // separate download page when one was set; otherwise the version-source
+  // URL (the common case — a single link). Keeps single-link plugins
+  // behaving exactly as before while supporting release-notes-here /
+  // download-there sources.
+  const ctaUrl = reg.downloadUrl || reg.updateUrl;
+  const hasSeparateDownload = !!(reg.downloadUrl && reg.downloadUrl !== reg.updateUrl);
   const hasSparkle = !!item.sparkleFeedUrl;
   const updateIsWorking = !!(update && (
     update.status === 'outdated' ||
@@ -733,11 +740,11 @@ export default function DetailPanel({
          * becomes the primary update CTA when an update is available. */}
         {hasUpdateSource && reg.updateUrl && (
           update && update.status === 'outdated' && !reg.companionApp && !formatLagAcknowledged && !updateDismissed && !isIgnored ? (
-            <button className="btn primary update-cta" onClick={() => onOpenHomepage(reg.updateUrl)}>
+            <button className="btn primary update-cta" onClick={() => onOpenHomepage(ctaUrl)}>
               Update available — Get v{update.latestVersion}
             </button>
           ) : (
-            <button className="btn" onClick={() => onOpenHomepage(reg.updateUrl)}>Open update page</button>
+            <button className="btn" onClick={() => onOpenHomepage(ctaUrl)}>{hasSeparateDownload ? 'Open download page' : 'Open update page'}</button>
           )
         )}
 
