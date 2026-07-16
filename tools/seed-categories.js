@@ -584,7 +584,27 @@ function ensureDev(reg, devName) {
   return reg.developers[devName];
 }
 
+// Merge the external supplement file (category-seed-supplement.json) into
+// the inline CATEGORIES map. Keeps the big data-only table out of this
+// script while reusing all of its merge/backfill/alias machinery. Inline
+// CATEGORIES wins on any exact dev+product conflict (hand-curated).
+function loadSupplement() {
+  const p = path.join(__dirname, 'category-seed-supplement.json');
+  if (!fs.existsSync(p)) return;
+  let data;
+  try { data = JSON.parse(fs.readFileSync(p, 'utf8')); }
+  catch (e) { console.error('Could not parse category-seed-supplement.json:', e.message); process.exit(1); }
+  for (const [dev, products] of Object.entries(data)) {
+    if (dev.startsWith('_')) continue;   // skip _comment
+    CATEGORIES[dev] = CATEGORIES[dev] || {};
+    for (const [name, cat] of Object.entries(products)) {
+      if (!(name in CATEGORIES[dev])) CATEGORIES[dev][name] = cat;
+    }
+  }
+}
+
 function main() {
+  loadSupplement();
   const raw = fs.readFileSync(REGISTRY_PATH, 'utf8');
   const reg = JSON.parse(raw);
 
