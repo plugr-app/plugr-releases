@@ -95,6 +95,7 @@ contextBridge.exposeInMainWorld('pluginHub', {
 
   // Community-contribution APIs (opt-in)
   submitToCommunity: (addition) => ipcRenderer.invoke('community:submit', addition),
+  submitCategoryGaps: (payload) => ipcRenderer.invoke('community:submitGaps', payload),
   fetchCommunityAdditions: (opts) => ipcRenderer.invoke('community:fetchAdditions', opts || {}),
   setCommunityConsent: (consent) => ipcRenderer.invoke('community:setConsent', consent),
 

@@ -1817,6 +1817,19 @@ ipcMain.handle('community:submit', async (_event, addition) => {
   }
 });
 
+// Opt-in category-gap report (CLAUDE.md §16 Tier 1). No-ops until the gap
+// form is configured in community.cjs. Only name+developer+appVersion.
+ipcMain.handle('community:submitGaps', async (_event, payload) => {
+  try {
+    return await community.submitCategoryGaps({
+      ...(payload || {}),
+      appVersion: app.getVersion(),
+    });
+  } catch (err) {
+    return { ok: false, error: String(err && err.message || err) };
+  }
+});
+
 // Fetch the latest community-curated additions list. Caches inside the
 // usual cache file with a 24h TTL.
 ipcMain.handle('community:fetchAdditions', async (_event, { force } = {}) => {

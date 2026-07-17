@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { naturalCompare } from './util/format.js';
+import { isUncategorized } from './util/taxonomy.js';
 import Toolbar, { VolumeControl } from './components/Toolbar.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import LibraryView from './components/LibraryView.jsx';
@@ -134,6 +135,7 @@ const api = (typeof window !== 'undefined' && window.pluginHub) || {
   tryTemplateForSiblings: async () => ({ ok: true, data: { foundCount: 0, total: 0, mergedAdditions: null } }),
   applySharedSource: async () => ({ ok: true, data: { savedCount: 0, total: 0, mergedAdditions: null } }),
   submitToCommunity: async () => ({ ok: false, error: 'browser-preview' }),
+  submitCategoryGaps: async () => ({ ok: false, error: 'browser-preview' }),
   fetchCommunityAdditions: async () => ({ ok: true, data: null }),
   setCommunityConsent: async () => ({ ok: true }),
   getDeals: async () => ({ ok: true, data: { items: [], fetchedAt: null }, fromCache: false }),
@@ -3092,6 +3094,30 @@ export default function App() {
     if (selectedIds.size === 0) return [];
     return filteredItems.filter((it) => selectedIds.has(it.id));
   }, [filteredItems, selectedIds]);
+
+  // Silent category-gap report (CLAUDE.md §16 Tier 1). Opt-in: only fires
+  // when the user has granted community-share consent. Sends ONLY the
+  // {name, developer} of plugins Plugr couldn't categorize — never library
+  // contents/paths/identifiers — as one compact list, so Josh can fix them
+  // centrally in the registry for everyone. Guarded to once per session,
+  // and the backend no-ops until the gap form is configured, so this is
+  // dormant + harmless until then.
+  const gapsReportedRef = useRef(false);
+  useEffect(() => {
+    if (gapsReportedRef.current) return;
+    if (communityConsent !== 'allowed') return;
+    if (!api.submitCategoryGaps) return;
+    if (!displayedItems || displayedItems.length === 0) return;
+    const seen = new Map();
+    for (const it of displayedItems) {
+      if (!isUncategorized(it)) continue;
+      const key = `${(it.developer || '').toLowerCase()}|${(it.name || '').toLowerCase()}`;
+      if (!seen.has(key)) seen.set(key, { name: it.name, developer: it.developer });
+    }
+    if (seen.size === 0) return;
+    gapsReportedRef.current = true;   // once per session, even if the POST fails
+    api.submitCategoryGaps({ gaps: [...seen.values()] }).catch(() => { /* best-effort */ });
+  }, [displayedItems, communityConsent]);
 
   // Unified selection handler. The library view forwards click events
   // with optional { toggle, range } modifiers — toggle on Cmd-click,

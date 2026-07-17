@@ -119,8 +119,69 @@ const ADDITIONS_TTL_MS = 24 * 60 * 60 * 1000;     // 24 hours
 const FETCH_TIMEOUT_MS = 8000;
 const UA = 'Plugr/0.1 (community fetch)';
 
+// Category-gap reporting (CLAUDE.md §16 Tier 1). Opt-in (gated on the same
+// community-share consent): the app sends the {name, developer} pairs of
+// plugins it couldn't categorize, as ONE compact JSON list per report, so
+// they can be fixed centrally in the bundled registry for EVERYONE on their
+// next scan. Only plugin names + developers + app version leave the machine
+// — never library contents, paths, identifiers, or anything else. Uses a
+// SEPARATE Google Form from the per-plugin community submissions (the shape
+// is a bulk list, not a single registry entry).
+// TODO(josh): create a "Plugr Category Gaps" Google Form with two questions
+// — a long-answer "Gaps" field (holds the JSON array) and a short "App
+// Version" field — link a responses Sheet, then paste the formResponse URL
+// + the two entry.NNN ids below. Until then submitCategoryGaps() no-ops, so
+// nothing is ever sent and nothing breaks.
+const GAPS_SUBMIT_URL = '';   // e.g. https://docs.google.com/forms/d/e/XXXX/formResponse
+const GAP_FIELDS = {
+  gaps:       '',   // entry.NNN — long-answer field; receives JSON.stringify([{name,developer}])
+  appVersion: '',   // entry.NNN — short answer
+};
+
 function isConfigured() {
   return Boolean(SUBMIT_URL) && Boolean(ADDITIONS_URL);
+}
+
+function gapsConfigured() {
+  return Boolean(GAPS_SUBMIT_URL) && Boolean(GAP_FIELDS.gaps);
+}
+
+// Report uncategorized {name, developer} pairs. Strictly name + developer;
+// deduped + capped so a huge library can't produce an oversized payload.
+async function submitCategoryGaps({ gaps, appVersion } = {}) {
+  if (!gapsConfigured()) return { ok: false, error: 'not-configured' };
+  if (!Array.isArray(gaps)) return { ok: false, error: 'no-gaps' };
+  const seen = new Set();
+  const clean = [];
+  for (const g of gaps) {
+    if (!g || !g.name || !g.developer) continue;
+    const key = `${String(g.developer).toLowerCase()}|${String(g.name).toLowerCase()}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    clean.push({ name: String(g.name), developer: String(g.developer) });
+    if (clean.length >= 2000) break;   // hard cap — well beyond any real library
+  }
+  if (clean.length === 0) return { ok: false, error: 'no-gaps' };
+
+  const params = new URLSearchParams();
+  params.set(GAP_FIELDS.gaps, JSON.stringify(clean));
+  if (GAP_FIELDS.appVersion && appVersion) params.set(GAP_FIELDS.appVersion, String(appVersion));
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(GAPS_SUBMIT_URL, {
+      method: 'POST',
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': UA },
+      body: params.toString(),
+    });
+    return { ok: res.ok || (res.status >= 200 && res.status < 400), count: clean.length };
+  } catch (err) {
+    return { ok: false, error: String((err && err.message) || err) };
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function submitAddition(addition) {
@@ -283,6 +344,8 @@ async function writePatchesToDisk(patches) {
 
 module.exports = {
   submitAddition,
+  submitCategoryGaps,
+  gapsConfigured,
   fetchCommunityAdditions,
   applyCompanionPatches,
   writePatchesToDisk,
