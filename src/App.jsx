@@ -67,6 +67,7 @@ import AlertsManager from './components/AlertsManager.jsx';
 // Useful for batch update workflows.
 import CompanionAppsView from './components/CompanionAppsView.jsx';
 import DiscoverModal from './components/DiscoverModal.jsx';
+import CategorizeModal from './components/CategorizeModal.jsx';
 import MirrorPickerModal from './components/MirrorPickerModal.jsx';
 import ContextMenu from './components/ContextMenu.jsx';
 import ThemePicker from './components/ThemePicker.jsx';
@@ -1027,6 +1028,8 @@ export default function App() {
   const [showHelp, setShowHelp] = useState(false);
   const [helpInitialTab, setHelpInitialTab] = useState('preferences');
   const [discoverItem, setDiscoverItem] = useState(null);
+  // AI-assisted bulk categorization modal (CLAUDE.md §16 Tier 2).
+  const [categorizeOpen, setCategorizeOpen] = useState(false);
   // When set, the DiscoverModal opens in 'edit' mode with these prefilled
   // URL+regex values instead of running auto-discover. Cleared when the
   // modal closes.
@@ -3726,6 +3729,24 @@ export default function App() {
     toastWithUndo(`Reclassified ${targets.length} plugin${targets.length === 1 ? '' : 's'} as "${label}".`);
   }, [displayedItems, overrides, pushToast, recordUndoOp, toastWithUndo]);
 
+  // Bulk-apply AI-assisted categorizations (CategorizeModal). assignments =
+  // [{ id, category, subcategory }]. Persists as userOverrides, same as a
+  // manual per-plugin category edit — so the user can still tweak any of
+  // them afterward, and they never touch the shared registry.
+  const applyBulkCategories = useCallback(async (assignments) => {
+    if (!Array.isArray(assignments) || assignments.length === 0) return;
+    const next = { ...overrides };
+    for (const a of assignments) {
+      if (!a || !a.id || !a.category) continue;
+      next[a.id] = { ...(next[a.id] || {}), category: a.category, subcategory: a.subcategory || null };
+    }
+    setOverrides(next);
+    for (const a of assignments) {
+      if (!a || !a.id || !a.category) continue;
+      await api.setOverride(a.id, { category: a.category, subcategory: a.subcategory || null });
+    }
+  }, [overrides]);
+
   const knownCategories = useMemo(() => {
     const map = new Map();
     const ensure = (c, s) => {
@@ -4128,6 +4149,7 @@ export default function App() {
         checking={checking}
         onScan={runScan}
         onCheckUpdates={runUpdateCheck}
+        onCategorize={() => setCategorizeOpen(true)}
         search={search}
         onSearchChange={setSearch}
         searchRef={searchRef}
@@ -4585,6 +4607,15 @@ export default function App() {
               }
             } catch { /* silent — user can manually re-check */ }
           }}
+        />
+      )}
+
+      {categorizeOpen && (
+        <CategorizeModal
+          open={categorizeOpen}
+          onClose={() => setCategorizeOpen(false)}
+          items={displayedItems}
+          onApply={applyBulkCategories}
         />
       )}
 

@@ -10,7 +10,7 @@ const SORTS = [
 ];
 
 export default function Toolbar({
-  scanning, checking, onScan, onCheckUpdates,
+  scanning, checking, onScan, onCheckUpdates, onCategorize,
   search, onSearchChange, searchRef,
   sortBy, onSortChange,
   view, onViewChange,
@@ -76,6 +76,12 @@ export default function Toolbar({
         <button className="btn" onClick={onScan} disabled={scanning} title="Scan plugin and application folders">
           {scanning ? 'Scanning…' : 'Scan Library'}
         </button>
+
+        {onCategorize && (
+          <button className="btn" onClick={onCategorize} title="Categorize your undefined plugins with help from your own AI (stays on your Mac)">
+            Categorize…
+          </button>
+        )}
 
         <button className="btn primary" onClick={onCheckUpdates} disabled={checking || totalCount === 0} title="Check for updates against the developer registry">
           {checking ? 'Checking…' : 'Check for Updates'}
