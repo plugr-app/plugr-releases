@@ -20,6 +20,12 @@ This merges Josh's locally-discovered update sources into the bundled registry s
 
 ---
 
+## Planned features (specced, not built)
+
+- **Crowd-sourced plugin categorization** (3-tier: gap-reporting → Josh reviews → registry; self-serve AI-assist fallback; manual edit). Full spec in `CLAUDE.md` §16. Reuses the §15 community-review pipeline.
+
+---
+
 ## Open smoke tests (manual, no code)
 
 These are legacy roadmap items that need manual verification — no code changes expected.
