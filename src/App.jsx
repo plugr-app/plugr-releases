@@ -651,6 +651,10 @@ export default function App() {
   // calculation inside performUndo compares a stale "after" against the
   // snapshotted "before" and concludes nothing changed → no-op undo.
   const registryAdditionsRef = useRef({});
+  // Latest merged items, for callbacks (like performUndo) defined before
+  // displayedItems exists — used to map addition keys back to item ids
+  // when clearing stale update results on undo.
+  const libraryItemsRef = useRef([]);
   useEffect(() => { registryAdditionsRef.current = registryAdditions; }, [registryAdditions]);
   const [tutorialDismissed, setTutorialDismissed] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -778,6 +782,7 @@ export default function App() {
       const after = registryAdditionsRef.current || {};
       const allKeys = new Set([...Object.keys(before), ...Object.keys(after)]);
       setRegistryAdditions(before);
+      const removedKeys = [];   // additions the undo is DELETING (action had added them)
       for (const k of allKeys) {
         const hadBefore = !!before[k];
         const hasAfter = !!after[k];
@@ -787,6 +792,7 @@ export default function App() {
         } else if (!hadBefore && hasAfter) {
           // Wasn't there, got added by the action → remove it
           try { await api.saveRegistryAddition(k, null); } catch {}
+          removedKeys.push(k);
         } else if (hadBefore && hasAfter) {
           // Changed → restore prior value (skip if identical)
           const sameUrl = before[k].updateUrl === after[k].updateUrl;
@@ -794,6 +800,27 @@ export default function App() {
           if (!sameUrl || !sameRegex) {
             try { await api.saveRegistryAddition(k, before[k]); } catch {}
           }
+        }
+      }
+      // Clear stale update-check results for sources the undo just deleted.
+      // Without this, a sibling that was checked while the now-removed
+      // source was active keeps its cached "manual-check"/version result,
+      // and the DetailPanel keeps treating that as a live source — hiding
+      // the normal "Find update source" / Edit affordance (only the
+      // right-click menu still worked). Mirrors clearRegistryAddition +
+      // the bulk-remove path.
+      if (removedKeys.length > 0) {
+        const keySet = new Set(removedKeys);
+        const ids = (libraryItemsRef.current || [])
+          .filter((it) => keySet.has(it.identifier || it.id))
+          .map((it) => it.id);
+        if (ids.length > 0) {
+          setUpdates((prev) => {
+            const next = { ...prev };
+            for (const id of ids) delete next[id];
+            return next;
+          });
+          try { await api.clearUpdatesForIds(ids); } catch { /* in-memory already fixed */ }
         }
       }
     }
@@ -1127,6 +1154,7 @@ export default function App() {
   // would otherwise close over a stale snapshot.
   useEffect(() => {
     exportStateRef.current = { items: displayedItems, updates, checkedAt: updatesCheckedAt };
+    libraryItemsRef.current = displayedItems;
   }, [displayedItems, updates, updatesCheckedAt]);
 
   // Cross-reference scanned DAW projects with the installed library.

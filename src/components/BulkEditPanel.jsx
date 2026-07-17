@@ -50,6 +50,9 @@ export default function BulkEditPanel({
   const [sourceVersion, setSourceVersion] = useState('');
   const [sourceAdvanced, setSourceAdvanced] = useState(false);
   const [sourceRegex, setSourceRegex] = useState('');
+  // "This page has no version" — save URL-only (manual-check) for pages
+  // that don't show a version number (JS-rendered pages, download pages).
+  const [sourceLinkOnly, setSourceLinkOnly] = useState(false);
   // Tri-state: false (default — don't touch), true (remove saved source
   // from every selected plugin). Used to clean up after a bulk-apply
   // misfire or to clear sources before re-discovering.
@@ -127,13 +130,18 @@ export default function BulkEditPanel({
     pendingChanges.push(`− Tags: ${removeTags.map((t) => `#${t}`).join(' ')}`);
   }
 
-  if (sourceUrl.trim() && ((sourceAdvanced && sourceRegex.trim()) || sourceVersion.trim())) {
+  if (sourceUrl.trim() && (sourceLinkOnly || (sourceAdvanced && sourceRegex.trim()) || sourceVersion.trim())) {
     changes.updateSource = {
       url: sourceUrl.trim(),
-      version: sourceVersion.trim(),
-      regex: sourceAdvanced ? sourceRegex.trim() : '',
+      // Link-only: empty version + empty regex → backend saves URL-only,
+      // which the checker surfaces as "Check manually" (a clickable link,
+      // no false update).
+      version: sourceLinkOnly ? '' : sourceVersion.trim(),
+      regex: sourceLinkOnly ? '' : (sourceAdvanced ? sourceRegex.trim() : ''),
     };
-    pendingChanges.push(`Update source → ${sourceUrl.trim()}${sourceAdvanced && sourceRegex.trim() ? ' (custom regex)' : ` (version ${sourceVersion.trim()})`}`);
+    pendingChanges.push(sourceLinkOnly
+      ? `Update source → ${sourceUrl.trim()} (link only, no version)`
+      : `Update source → ${sourceUrl.trim()}${sourceAdvanced && sourceRegex.trim() ? ' (custom regex)' : ` (version ${sourceVersion.trim()})`}`);
   }
   if (removeSource) {
     changes.removeUpdateSource = true;
@@ -446,6 +454,21 @@ export default function BulkEditPanel({
             </div>
           </label>
         </details>
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 8 }}>
+          <input
+            type="checkbox"
+            checked={sourceLinkOnly}
+            onChange={(e) => setSourceLinkOnly(e.target.checked)}
+          />
+          <span>
+            This page has no version number — save it as a link only
+            <div className="muted micro">
+              Saves the URL for all selected plugins as <strong>Check manually</strong> —
+              a clickable link with no version detection. Use for pages that don't show a
+              version (or build it with JavaScript). No version field needed.
+            </div>
+          </span>
+        </label>
         <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--line)' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <input
