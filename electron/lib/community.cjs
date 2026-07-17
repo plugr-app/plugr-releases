@@ -132,10 +132,10 @@ const UA = 'Plugr/0.1 (community fetch)';
 // Version" field — link a responses Sheet, then paste the formResponse URL
 // + the two entry.NNN ids below. Until then submitCategoryGaps() no-ops, so
 // nothing is ever sent and nothing breaks.
-const GAPS_SUBMIT_URL = '';   // e.g. https://docs.google.com/forms/d/e/XXXX/formResponse
+const GAPS_SUBMIT_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeNQm_3reTdyXMv1eFCqFvAljo69kbuLQ9fvoCL0ejtBaWrbw/formResponse';
 const GAP_FIELDS = {
-  gaps:       '',   // entry.NNN — long-answer field; receives JSON.stringify([{name,developer}])
-  appVersion: '',   // entry.NNN — short answer
+  gaps:       'entry.327910536',    // "Gaps" long-answer field; receives JSON.stringify([{name,developer}])
+  appVersion: 'entry.1182732714',   // "App Version" short answer
 };
 
 function isConfigured() {
