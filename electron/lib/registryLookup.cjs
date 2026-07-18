@@ -230,10 +230,23 @@ function findProductEntry(developerName, pluginName) {
  * Build a registryEntry suitable for passing to categorize().
  * Combines developer + product info into a single record.
  */
-function lookupRegistry({ identifier, pluginName }) {
+function lookupRegistry({ identifier, pluginName, developerName }) {
   const developerFromId = findDeveloperByIdentifier(identifier);
-  const developer = developerFromId;
-  const productEntry = developer ? findProductEntry(developer, pluginName) : null;
+  let developer = developerFromId;
+  let productEntry = developer ? findProductEntry(developer, pluginName) : null;
+  // Fallback: if the bundle IDENTIFIER didn't resolve to a registered
+  // developer (or resolved to one that doesn't carry this product), try the
+  // plugin's scanned developer NAME. This lets registry entries keyed by
+  // developer name — e.g. the category-seed supplement, whose developers
+  // often have no identifierPrefix — actually apply. Only adopted when it
+  // yields a product match, so a stray name never mis-attributes a plugin.
+  if (!productEntry && developerName) {
+    const byName = findProductEntry(developerName, pluginName);
+    if (byName) {
+      productEntry = byName;
+      if (!developer) developer = developerName;
+    }
+  }
   const devEntry = developer ? getDeveloperEntry(developer) : null;
   if (!developer) return null;
   return {

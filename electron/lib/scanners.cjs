@@ -221,10 +221,15 @@ async function scanFormat(format) {
           wavesGeneration = genMatch ? genMatch[1].toUpperCase() : null;
         }
 
-        // Look up registry entry and categorize.
+        // Look up registry entry and categorize. Pass the metadata-derived
+        // developer name too, so registry entries keyed by name (the
+        // category-seed supplement) apply even when the bundle identifier
+        // isn't covered by an identifierPrefix.
+        const metaDeveloper = inferDeveloper({ bundleInfo: info, registryEntry: null });
         const registryEntry = lookupRegistry({
           identifier: info.identifier,
           pluginName: info.name,
+          developerName: metaDeveloper,
         });
 
         const cat = categorize({ bundleInfo: info, format, registryEntry });
@@ -346,9 +351,11 @@ async function scanCustomFolder(rootDir, format, extensions, maxDepth) {
     try {
       const info = await readBundleInfo(found.path);
       if (!info) continue;
+      const metaDeveloper = inferDeveloper({ bundleInfo: info, registryEntry: null });
       const registryEntry = lookupRegistry({
         identifier: info.identifier,
         pluginName: info.name,
+        developerName: metaDeveloper,
       });
       const cat = categorize({ bundleInfo: info, format, registryEntry });
       const developer = inferDeveloper({ bundleInfo: info, registryEntry });
