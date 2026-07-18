@@ -16,7 +16,7 @@ const os = require('node:os');
 
 const { readBundleInfo } = require('./plistParser.cjs');
 const { categorize, inferDeveloper } = require('./categorize.cjs');
-const { lookupRegistry, getDeveloperEntry, invalidateRegistryCache } = require('./registryLookup.cjs');
+const { lookupRegistry, getDeveloperEntry, findProductEntry, invalidateRegistryCache } = require('./registryLookup.cjs');
 
 /**
  * When the bundle identifier doesn't match any registry prefix, but the
@@ -1142,7 +1142,28 @@ function enrichAllRegistryByDeveloperName(items) {
     // (companion app, homepage, etc.) so they don't stay pointing at
     // the wrong vendor.
     it.registry = enrichRegistryByDeveloperName(it.registry, it.developer, overrodeByName);
+
+    // Backfill CATEGORY from the product registry using the FINAL developer
+    // name. The scan-time registry lookup ran with the raw inferred
+    // developer (before unification/name-override/cross-format propagation),
+    // so a plugin whose developer was only corrected afterward — or resolved
+    // on one format but not another — can still be missing its category even
+    // though a matching registry productMatcher exists (e.g. NI "Guitar Rig
+    // 7", NSA "Freestyle AU"). Only fills blanks; never overrides an existing
+    // category or a user override.
+    const uncat = U_CAT(it.category) || ((it.category === 'Effect' || it.category === 'Instrument') && U_CAT(it.subcategory));
+    if (uncat && it.developer && it.developer !== 'Unknown') {
+      const pe = findProductEntry(it.developer, it.name);
+      if (pe && pe.category) {
+        it.category = pe.category;
+        it.subcategory = (pe.subcategory && String(pe.subcategory).trim()) ? pe.subcategory : null;
+        it.categorySource = (it.categorySource ? it.categorySource + '+' : '') + 'registry-name-backfill';
+      }
+    }
   }
 }
+
+// Uncategorized test used by the post-unification category backfill.
+function U_CAT(v) { return !v || v === 'Undefined' || v === 'Unknown'; }
 
 module.exports = { scanLibrary, FORMATS, unifyCrossFormatCategories, unifyCrossFormatDevelopers, unifyCaseOnlyDevelopers, propagateByName, enrichAllRegistryByDeveloperName };

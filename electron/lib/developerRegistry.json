@@ -1751,6 +1751,10 @@
         "dbx-160": {
           "category": "Effect",
           "subcategory": "Dynamics"
+        },
+        "PlaylistRider": {
+          "category": "Effect",
+          "subcategory": "Dynamics"
         }
       }
     },
@@ -6170,6 +6174,10 @@
         "VocalShaper": {
           "category": "Effect",
           "subcategory": "Multi-Effect"
+        },
+        "Obsidian": {
+          "category": "Effect",
+          "subcategory": "Creative"
         }
       }
     },
@@ -6500,6 +6508,26 @@
         "Widener": {
           "category": "Effect",
           "subcategory": "Imaging"
+        },
+        "American Mainstayer": {
+          "category": "Effect",
+          "subcategory": "Distortion"
+        },
+        "Bass Standard Line V8": {
+          "category": "Effect",
+          "subcategory": "Distortion"
+        },
+        "Custom 100W": {
+          "category": "Effect",
+          "subcategory": "Distortion"
+        },
+        "Top Boost": {
+          "category": "Effect",
+          "subcategory": "Distortion"
+        },
+        "Empirical Labs Prof Punch-Knuckles": {
+          "category": "Effect",
+          "subcategory": "Distortion"
         }
       }
     },

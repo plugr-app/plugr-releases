@@ -263,6 +263,11 @@
     "Talkback Send": { "category": "Effect", "subcategory": "Utility" }
   },
   "Softube": {
+    "American Mainstayer": { "category": "Effect", "subcategory": "Distortion" },
+    "Bass Standard Line V8": { "category": "Effect", "subcategory": "Distortion" },
+    "Custom 100W": { "category": "Effect", "subcategory": "Distortion" },
+    "Top Boost": { "category": "Effect", "subcategory": "Distortion" },
+    "Empirical Labs Prof Punch-Knuckles": { "category": "Effect", "subcategory": "Distortion" },
     "Acoustic Feedback": { "category": "Effect", "subcategory": "Creative" },
     "American Class A": { "category": "Effect", "subcategory": "Multi-Effect" },
     "Amplifiers": { "category": "Effect", "subcategory": "Distortion" },
@@ -382,6 +387,7 @@
     "Beeper": { "category": "Effect", "subcategory": "Utility" }
   },
   "W. A. Production": {
+    "Obsidian": { "category": "Effect", "subcategory": "Creative" },
     "CHORDS": { "category": "MIDI", "subcategory": null },
     "CHORDSPro": { "category": "MIDI", "subcategory": null },
     "CHORDSPro+NOTES": { "category": "MIDI", "subcategory": null },
@@ -575,6 +581,7 @@
     "PAZ": { "category": "Effect", "subcategory": "Utility" },
     "PRS Supermodels": { "category": "Effect", "subcategory": "Distortion" },
     "PS22": { "category": "Effect", "subcategory": "Imaging" },
+    "PlaylistRider": { "category": "Effect", "subcategory": "Dynamics" },
     "PuigChild": { "category": "Effect", "subcategory": "Dynamics" },
     "PuigTec": { "category": "Effect", "subcategory": "EQ" },
     "Q-Clone": { "category": "Effect", "subcategory": "EQ" },
