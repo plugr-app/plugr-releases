@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import UpdateBadge from './UpdateBadge.jsx';
+import FormatTag from './FormatTag.jsx';
 import { formatBytes, displaySubcategory, displayCategory } from '../util/format.js';
 
 // Sentinel used in the category/subcategory dropdowns to mean "let me type
@@ -275,7 +276,7 @@ export default function DetailPanel({
 
       <div className="detail-header">
         <div className={`detail-art cat-${(item.category || 'other').toLowerCase()}`}>
-          <span className={`fmt-text fmt-${item.format.toLowerCase()}`}>{item.format}</span>
+          <FormatTag item={item} />
         </div>
         <div className="detail-title">
           <div className="detail-title-row">
@@ -574,7 +575,7 @@ export default function DetailPanel({
               <div className="cleanup-list-title">Other copies in this group</div>
               {groupMembers.map((m) => (
                 <button key={m.id} type="button" className="cleanup-list-item" onClick={() => onSelect && onSelect(m.id)} title={m.path}>
-                  <span className={`fmt-pill fmt-${m.format.toLowerCase()}`}>{m.format}</span>
+                  <FormatTag item={m} variant="pill" />
                   <span className="cleanup-list-version">v{m.version || '?'}</span>
                   <span className="cleanup-list-size">{formatBytes(m.sizeBytes)}</span>
                 </button>
@@ -909,7 +910,7 @@ export default function DetailPanel({
         <div className="section-title">Plugin info</div>
         <div className="plugin-info-inline">
           {[
-            item.format,
+            (item.formats && item.formats.length) ? item.formats.join(' · ') : item.format,
             item.version ? `v${item.version}` : null,
             formatBytes(item.sizeBytes),
             item.minimumSystemVersion ? `macOS ${item.minimumSystemVersion}+` : null,

@@ -81,7 +81,10 @@ import ProjectsView, { AudioVolumeProvider } from './components/ProjectsView.jsx
 import DealsView from './components/DealsView.jsx';
 import ToolsView from './components/ToolsView.jsx';
 
-const FORMAT_LIST = ['VST3', 'AU', 'VST2', 'AAX', 'CLAP', 'Waves', 'App'];
+// Real plugin formats only. Waves plugins no longer have a synthetic "Waves"
+// format — they carry item.formats (the real formats their shells provide)
+// and match under each of them.
+const FORMAT_LIST = ['VST3', 'AU', 'VST2', 'AAX', 'CLAP', 'App'];
 
 const api = (typeof window !== 'undefined' && window.pluginHub) || {
   scanLibrary: async () => ({ ok: true, data: SAMPLE_LIBRARY }),
@@ -2984,7 +2987,12 @@ export default function App() {
       }
     }
     if (favoritesOnly && !it.favorite) return false;
-    if (!skip.format && !activeFormats.has(it.format)) return false;
+    if (!skip.format) {
+      // Multi-format (Waves) items match if ANY of their real formats is
+      // active; single-format items match on their one format as before.
+      const fmts = (it.formats && it.formats.length) ? it.formats : [it.format];
+      if (!fmts.some((f) => activeFormats.has(f))) return false;
+    }
     if (!skip.category && activeCategory) {
       if (activeCategory.subcategory) {
         if (it.subcategory !== activeCategory.subcategory) return false;

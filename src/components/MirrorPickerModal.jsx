@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import FormatTag from './FormatTag.jsx';
 import { naturalCompare } from '../util/format.js';
 
 // MirrorPickerModal
@@ -117,7 +118,7 @@ export default function MirrorPickerModal({ item, allItems, onClose, onPick }) {
 
         <div className="discover-head">
           <div className={`detail-art cat-${(item.category || 'other').toLowerCase()}`}>
-            <span className={`fmt-text fmt-${item.format.toLowerCase()}`}>{item.format}</span>
+            <FormatTag item={item} />
           </div>
           <div className="discover-head-text">
             <h2>Mirror updates from another plugin</h2>
@@ -201,7 +202,7 @@ export default function MirrorPickerModal({ item, allItems, onClose, onPick }) {
                   <span style={{ fontSize: 11, color: 'var(--muted)', whiteSpace: 'nowrap' }}>
                     {c.developer || 'Unknown'}{isSameDev ? '' : ''}
                   </span>
-                  <span className={`fmt-pill fmt-${(c.format || '').toLowerCase()}`}>{c.format}</span>
+                  <FormatTag item={c} variant="pill" />
                   {isSuggested && (
                     <span
                       title="Auto-suggested based on the plugin name"

@@ -1,5 +1,6 @@
 import React from 'react';
 import UpdateBadge from './UpdateBadge.jsx';
+import FormatTag from './FormatTag.jsx';
 import { formatBytes, displaySubcategory } from '../util/format.js';
 
 function dupTitle(d) {
@@ -37,7 +38,7 @@ export default function PluginCard({ item, update, selected, onClick, onContextM
       title={`${item.name} — ${item.developer}${dupTitle(dup) && !formatLagAcknowledged ? '\n' + dupTitle(dup) : ''}`}
     >
       <div className={`card-strip cat-${cat}`}>
-        <span className={`fmt-text fmt-${item.format.toLowerCase()}`}>{item.format}</span>
+        <FormatTag item={item} />
         <span className="card-strip-cat">{displaySubcategory(item) || item.category}</span>
         {dup && dup.status && !formatLagAcknowledged && (
           <span className={`dup-pill dup-${dup.status} on-strip`} title={dupTitle(dup)}>

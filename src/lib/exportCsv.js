@@ -121,7 +121,7 @@ function rowFor(item, update, checkedAt) {
     item.category || '',
     item.subcategory || '',
     extraCats,
-    item.format || '',
+    (item.formats && item.formats.length) ? item.formats.join(' / ') : (item.format || ''),
     item.version || '',
     item.buildVersion || '',
     (update && update.latestVersion) || '',

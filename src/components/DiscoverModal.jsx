@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import FormatTag from './FormatTag.jsx';
 import { cleanUrl } from '../util/format.js';
 
 // Discover-update-source flow.
@@ -600,7 +601,7 @@ export default function DiscoverModal({
 
         <div className="discover-head">
           <div className={`detail-art cat-${(item.category || 'other').toLowerCase()}`}>
-            <span className={`fmt-text fmt-${item.format.toLowerCase()}`}>{item.format}</span>
+            <FormatTag item={item} />
           </div>
           <div className="discover-head-text">
             <h2>Find update source</h2>

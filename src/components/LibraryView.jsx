@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PluginCard from './PluginCard.jsx';
 import UpdateBadge from './UpdateBadge.jsx';
+import FormatTag from './FormatTag.jsx';
 import { formatBytes, displaySubcategory, displayCategory } from '../util/format.js';
 
 // Column metadata for the list view. `min` is the minimum width (the
@@ -261,7 +262,7 @@ function LibraryView({
               </span>
               <span className="col-developer">{it.developer}</span>
               <span className="col-category">{displaySubcategory(it) || it.category}</span>
-              <span className="col-format"><span className={`fmt-pill fmt-${it.format.toLowerCase()}`}>{it.format}</span></span>
+              <span className="col-format"><FormatTag item={it} variant="pill" /></span>
               <span className="col-version">{it.version || '—'}</span>
               <span className="col-size">{formatBytes(it.sizeBytes)}</span>
               <span className="col-update"><UpdateBadge item={it} update={u} compact /></span>

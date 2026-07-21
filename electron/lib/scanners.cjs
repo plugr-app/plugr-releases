@@ -652,6 +652,14 @@ async function scanLibrary(options = {}) {
   // nothing) if no manifests can be parsed.
   await flagOrphanWaveShells(all);
 
+  // Waves plugins aren't installed as per-format files — one payload bundle
+  // is loaded by shared WaveShells that provide every format at once. So
+  // instead of a synthetic "Waves" format, stamp each Waves item with the
+  // REAL formats its installed shells provide (detected from the scanned
+  // WaveShell items). `format` stays 'Waves' internally (dedup/grouping key);
+  // `formats` drives display, filtering, and the per-format counts below.
+  attachWavesFormats(all);
+
   // Build summary counts.
   const byFormat = {};
   const byCategory = {};
@@ -662,7 +670,10 @@ async function scanLibrary(options = {}) {
   let duplicateCount = 0;
   let supersededCount = 0;
   for (const item of all) {
-    byFormat[item.format] = (byFormat[item.format] || 0) + 1;
+    // Multi-format (Waves) items count under EACH real format they provide;
+    // everything else counts under its single format. No 'Waves' bucket.
+    const fmts = (item.formats && item.formats.length) ? item.formats : [item.format];
+    for (const f of fmts) byFormat[f] = (byFormat[f] || 0) + 1;
     byCategory[item.category] = (byCategory[item.category] || 0) + 1;
     byDeveloper[item.developer] = (byDeveloper[item.developer] || 0) + 1;
     if (item.sizeBytes) totalBytes += item.sizeBytes;
@@ -1031,6 +1042,37 @@ async function flagOrphanWaveShells(items) {
     if (!required.has(key)) {
       it.wavesShellOrphaned = true;
     }
+  }
+}
+
+/**
+ * Stamp each 'Waves'-format payload item with the REAL plugin formats it's
+ * available in, detected from the installed WaveShell items already in the
+ * scan. A Waves plugin isn't a per-format file — one payload bundle is
+ * loaded by shared shells (WaveShell1-VST3 / -AU / -AAX), so a Waves plugin
+ * is available in whichever formats the user installed shells for. We reflect
+ * that instead of inventing a "Waves" format. Leaves `item.format` as 'Waves'
+ * (still the dedup/grouping key); sets `item.formats` = ['VST3','AU',...] for
+ * display / filtering / counts. Falls back to the common Mac set if — oddly —
+ * no shells were scanned, so Waves cards never end up with an empty format.
+ */
+const WAVESHELL_FMT_RE = /^WaveShell\d+-(VST3|VST|AU|AAX)(?:-ARA)?\b/i;
+function attachWavesFormats(items) {
+  const shellFormats = new Set();
+  for (const it of items) {
+    const m = String(it.bundleName || '').match(WAVESHELL_FMT_RE);
+    if (m) {
+      let f = m[1].toUpperCase();
+      if (f === 'VST') f = 'VST2';   // WaveShell1-VST is the VST2 shell
+      shellFormats.add(f);
+    }
+  }
+  // Preserve a stable, sensible display order.
+  const ORDER = ['VST3', 'AU', 'VST2', 'AAX'];
+  let formats = ORDER.filter((f) => shellFormats.has(f));
+  if (formats.length === 0) formats = ['VST3', 'AU', 'AAX'];   // fail-safe
+  for (const it of items) {
+    if (it.format === 'Waves') it.formats = formats.slice();
   }
 }
 
