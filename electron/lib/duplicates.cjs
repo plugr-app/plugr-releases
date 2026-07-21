@@ -82,11 +82,15 @@ function groupKey(item) {
   const dev = (item.developer || 'unknown').toLowerCase().trim();
   const vm = (item.name || '').match(/\(([a-zA-Z][a-zA-Z\s]*)\)\s*$/);
   const variant = vm ? `|${vm[1].toLowerCase().trim()}` : '';
-  // Waves generation is part of identity: V12/V13/V16 payload bundles
-  // of the same plugin coexist BY DESIGN (sessions pin to a shell
-  // major), so "H-Delay" V13 must never be flagged OLD against V16.
-  const gen = item.wavesGeneration ? `|${String(item.wavesGeneration).toLowerCase()}` : '';
-  return `${dev}|${fam}${variant}${gen}`;
+  // Waves generation is NOT part of identity (2026-07-17, Josh's call):
+  // V15 "Stream" and V16 "Stream" are the same plugin, so the older
+  // generation should be flagged OLD/superseded like any other outdated
+  // version — consistent with the rest of the app. (Old DAW sessions can
+  // still pin to an older shell, so treat OLD as a cleanup hint, and lean
+  // on "used in projects" + the orphan-shell "safe to remove" detector to
+  // decide what's actually removable.) Versions sort across generations
+  // naturally (15.x < 16.x), so the newest generation is the kept copy.
+  return `${dev}|${fam}${variant}`;
 }
 
 function compareSemver(a, b) {
