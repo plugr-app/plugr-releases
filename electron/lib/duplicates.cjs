@@ -40,34 +40,56 @@ const semver = require('semver');
 //   "CS-80 V4"   → "cs 80"     "Pre 1973"   → "pre 1973"
 //   "Pro-Q 3"    → "pro q"     "ARP 2600 V" → "arp 2600"
 //   "Mini V3"    → "mini"      "Pigments"   → "pigments"
-function normalizeName(name, version) {
+// Strip a developer's trailing legal-entity suffix ("Acon Digital AS" →
+// "Acon Digital", "Foo GmbH" → "Foo") so a vendor that ships some plugins
+// under "X" and others under "X AS/GmbH/Ltd" is treated as ONE developer.
+// Requires a separator before the suffix so single-token names ("AAS",
+// "Waves") are never touched. Loops to peel "Foo Inc Ltd"-style stacks.
+function stripLegalSuffix(dev) {
+  let s = String(dev || '');
+  let prev;
+  do {
+    prev = s;
+    s = s.replace(/[\s,]+(?:a\/s|as|gmbh|ltd|llc|inc|corp|ab|oy|b\.?v|s\.?l|s\.?r\.?l|kg|ug|pty|plc|k\.?k)\.?$/i, '').trim();
+  } while (s !== prev);
+  return s;
+}
+
+function normalizeName(name, version, developer) {
   if (!name) return '';
   let s = String(name);
-  // Trailing-number handling needs the item's VERSION to disambiguate:
-  // "Neutron 3" (version suffix — the product is v3.x) must group with
-  // "Neutron 4", but "RC 48" (model number — the product is v1.4.11)
-  // must NOT group with "RC 24". Syntactically identical; semantically
-  // distinguishable because a genuine version suffix matches the
-  // installed major version (Neutron 3 → v3.x, SEM V2 → v2.13.2,
-  // Ozone 11 → v11.x, Mini V3 → v3.5) while a model number doesn't
-  // (RC 48 → v1.4.11, Pre V76 → v1.8.1). Only strip when they agree.
-  // Unknown version → keep the number (conservative; unknown-version
-  // items are excluded from superseded marking anyway).
-  const m = s.match(/\s+V?(\d{1,2})\s*$/i);
+  // Strip the developer's own name off the FRONT of the plugin name. Some
+  // vendors name one format "Acon Digital DeClick 2" and another "DeClick2";
+  // dropping the leading vendor name lets those group. Guarded so we never
+  // strip the name down to nothing (a plugin literally named after its dev).
+  const cdev = stripLegalSuffix(developer);
+  if (cdev) {
+    const re = new RegExp('^' + cdev.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s:_-]*', 'i');
+    const stripped = s.replace(re, '');
+    if (stripped && stripped.trim().length >= 2) s = stripped;
+  }
+  // strip "(stereo)" / "(m)" etc before the trailing-number check
+  s = s.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
+  // Trailing-number handling — disambiguates a VERSION suffix from a MODEL
+  // number by requiring the number to equal the installed MAJOR version:
+  // "Neutron 3" → v3 (strip, groups with Neutron 4), "SEM V2" → v2.13 (strip),
+  // vs "RC 48" → v1.4.11 (keep), "Pre V76" → v1.8.1 (keep), "MC77" → v1 (keep).
+  // Whitespace is OPTIONAL so "DeClick2" and "DeClick 2" behave identically —
+  // the major-version gate still protects model numbers ("1176" → v1 keeps).
+  // Unknown version → keep (unknown-version items aren't marked superseded).
+  const m = s.match(/\s*V?(\d{1,2})\s*$/i);
   if (m) {
     const sv = semver.coerce(String(version || ''));
     if (sv && sv.major === parseInt(m[1], 10)) {
       s = s.slice(0, m.index);
     }
   }
-  // Trailing bare " V" (Arturia's unnumbered line naming: "ARP 2600 V",
-  // "Mini V") is always a version marker — strip unconditionally.
+  // Trailing bare " V" (Arturia "ARP 2600 V", "Mini V") is a version marker.
   s = s.replace(/\s+V\s*$/i, '');
-  return s
-    .toLowerCase()
-    .replace(/\s*\([^)]*\)\s*/g, ' ')   // strip "(stereo)" etc
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
+  // Strip ALL non-alphanumerics (matching the registry's product matcher) so
+  // spacing / punctuation differences ("Auto-Align 2" vs "AutoAlign2",
+  // "Helper-Equalizer 2" vs "HelperEqualizer2") never split a product.
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
 function groupKey(item) {
@@ -78,8 +100,8 @@ function groupKey(item) {
   // AU exists. Within the group, we still distinguish same-format
   // duplicates (multiple installs of the same plugin version) from
   // legit multi-format installs (Pro-Q 3 VST3 + Pro-Q 3 AU).
-  const fam = normalizeName(item.name, item.version);
-  const dev = (item.developer || 'unknown').toLowerCase().trim();
+  const fam = normalizeName(item.name, item.version, item.developer);
+  const dev = stripLegalSuffix(item.developer || 'unknown').toLowerCase().trim();
   const vm = (item.name || '').match(/\(([a-zA-Z][a-zA-Z\s]*)\)\s*$/);
   const variant = vm ? `|${vm[1].toLowerCase().trim()}` : '';
   // Waves generation is NOT part of identity (2026-07-17, Josh's call):
