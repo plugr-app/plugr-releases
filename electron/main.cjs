@@ -2892,7 +2892,11 @@ ipcMain.handle('backup:apply', async (_event, backup) => {
 ipcMain.handle('shell:pickCompanionApp', async () => {
   try {
     const result = await dialog.showOpenDialog(mainWindow, {
-      properties: ['openFile', 'treatPackageAsDirectory'],
+      // NOTE: do NOT add 'treatPackageAsDirectory' — it makes macOS treat
+      // an .app bundle as a folder, so with 'openFile' the app can't be
+      // selected (the Open button stays disabled). Default behavior treats
+      // .app as a selectable file, which is exactly what we want here.
+      properties: ['openFile'],
       filters: [{ name: 'Applications', extensions: ['app'] }],
       defaultPath: '/Applications',
       title: 'Choose a companion app',
