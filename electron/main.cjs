@@ -1023,6 +1023,9 @@ ipcMain.handle('overrides:set', async (_event, { id, patch }) => {
       if (overrides[id].dismissedUpdateVersion === null) delete overrides[id].dismissedUpdateVersion;
       if (overrides[id].ignoredUpdateVersion === null) delete overrides[id].ignoredUpdateVersion;
       if (overrides[id].ignoreAllUpdates === null || overrides[id].ignoreAllUpdates === false) delete overrides[id].ignoreAllUpdates;
+      // Per-plugin companion app — an object when set; null/absent = cleared.
+      if (!overrides[id].companionApp) delete overrides[id].companionApp;
+      if (!overrides[id].noCompanion) delete overrides[id].noCompanion;
       if (Object.keys(overrides[id]).length === 0) delete overrides[id];
     }
     await patchCache({ userOverrides: overrides });

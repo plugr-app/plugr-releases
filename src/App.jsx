@@ -278,6 +278,8 @@ function resolveCompanionForDeveloper(rawDev) {
 function applyRegistryCompanions(items) {
   return items.map((it) => {
     const reg = it.registry || {};
+    // A per-plugin override that set OR explicitly cleared the companion wins.
+    if (it.companionSuppressed) return it;
     if (reg.companionApp) return it;
     const entry = resolveCompanionForDeveloper(it.developer);
     if (!entry || !entry.companionApp) return it;
@@ -373,6 +375,21 @@ function applyOverrides(items, overrides) {
       next.notDuplicate = true;
       next.duplicate = null;
     }
+    // Per-PLUGIN companion app. Overrides both the bundled-registry companion
+    // and the per-developer companion (applyDevCompanions only fills blanks
+    // and skips companionSuppressed), so a single plugin — e.g. the AIR Music
+    // Tech plugins delivered only via Pro Tools/Avid Link — can point at a
+    // different manager than the rest of its developer's catalog.
+    if (o.companionApp && typeof o.companionApp === 'object') {
+      next.registry = { ...(next.registry || {}), companionApp: o.companionApp };
+      next.companionFromUser = true;
+    } else if (o.noCompanion) {
+      // Explicitly "this plugin has no companion" — clear any bundled one and
+      // stop applyDevCompanions from re-adding the developer default.
+      next.registry = { ...(next.registry || {}), companionApp: null };
+      next.companionSuppressed = true;
+      next.companionFromUser = true;
+    }
     return next;
   });
 }
@@ -460,8 +477,9 @@ function applyDevCompanions(items, devCompanions) {
     const dev = it.developer || '';
     const comp = devCompanions[dev];
     if (!comp) return it;
-    // If the registry already has a companion app, keep it; otherwise,
-    // attach the user-defined one.
+    // A per-PLUGIN override wins: skip if this item already has a companion
+    // (bundled or per-plugin) or was explicitly cleared for just this plugin.
+    if (it.companionSuppressed) return it;
     if (it.registry && it.registry.companionApp) return it;
     return {
       ...it,
@@ -623,7 +641,7 @@ export default function App() {
     // treat its update status as current — this works regardless of
     // the field name the prior implementation chose.
     const _rawById = new Map((library && library.items || []).map((it) => [it.id, it]));
-    const _benignFields = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion','notDuplicate']);
+    const _benignFields = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion','notDuplicate','companionApp','noCompanion']);
     for (const [id, o] of Object.entries(overrides)) {
       if (!o) continue;
       const u = out[id];
@@ -2552,7 +2570,7 @@ export default function App() {
       next[id] = { ...(next[id] || {}), ...(patch || {}) };
       if (next[id].favorite === false) delete next[id].favorite;
       if (next[id].hidden === false) delete next[id].hidden;
-      const _sib = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion','notDuplicate','__clear']);
+      const _sib = new Set(['favorite','hidden','developer','category','subcategory','extraCategories','notes','tags','mirrorFromId','dismissedMirrorSuggest','updateStatusOverride','acknowledgedLatestVersion','notDuplicate','companionApp','noCompanion','__clear']);
       if (patch && Object.keys(patch).some((k) => !_sib.has(k))) {
         const _u = updates[id];
         if (_u?.latestVersion && !next[id].acknowledgedLatestVersion) next[id].acknowledgedLatestVersion = _u.latestVersion;
@@ -2777,6 +2795,38 @@ export default function App() {
       durationMs: 5000,
     });
   }, [setDevCompanion, pushToast]);
+
+  // Pick a companion app for a single plugin, then ask whether to apply it
+  // to the WHOLE developer (the common case) or JUST this plugin (the
+  // exception — e.g. AIR Music Tech plugins delivered only via Avid Link,
+  // while AIR's own plugins use their own manager).
+  const pickAndSetCompanionScoped = useCallback(async (item) => {
+    if (!item) return;
+    const res = await api.pickCompanionApp();
+    if (!res.ok || res.canceled) return;
+    const app = res.data;
+    const dev = item.developer;
+    const canScopeDev = dev && dev !== 'Unknown';
+    const applyToDev = canScopeDev ? await requestConfirm({
+      title: `Set ${app.displayName} as companion app`,
+      body: (
+        <>
+          <p>Apply <strong>{app.displayName}</strong> to <strong>all {dev}</strong> plugins, or only <strong>{item.name}</strong>?</p>
+          <p className="muted">Most developers use one manager for their whole catalog — but you can scope it to just this plugin for exceptions.</p>
+        </>
+      ),
+      yesLabel: `All ${dev} plugins`,
+      noLabel: 'Just this plugin',
+      destructive: false,
+    }) : false;
+    if (applyToDev) {
+      await setDevCompanion(dev, app);
+      pushToast({ kind: 'success', message: `${app.displayName} is now the companion app for ${dev}.`, durationMs: 5000 });
+    } else {
+      await setItemOverride(item.id, { companionApp: app, noCompanion: null });
+      pushToast({ kind: 'success', message: `${app.displayName} is now the companion app for ${item.name} (this plugin only).`, durationMs: 5000 });
+    }
+  }, [requestConfirm, setDevCompanion, setItemOverride, pushToast]);
 
   // Easter egg trigger: 5 clicks on the brand mark within 2 seconds.
   const handleBrandClick = useCallback(() => {
@@ -3422,6 +3472,17 @@ export default function App() {
     }
     if (changes.clearMirrorFromId) {
       patch.mirrorFromId = null;
+    }
+    // Bulk companion app — always PER-PLUGIN (the selection IS the scope), so
+    // it overrides the developer default for just the chosen plugins. This is
+    // the "these specific plugins use a different manager" case.
+    if (changes.companionApp && typeof changes.companionApp === 'object') {
+      patch.companionApp = changes.companionApp;
+      patch.noCompanion = null;
+    }
+    if (changes.removeCompanion) {
+      patch.companionApp = null;
+      patch.noCompanion = true;
     }
     // Hidden: tri-state in the panel, two-state on the wire. true hides,
     // false unhides. The main.cjs cleanup drops hidden:false, so unhide
@@ -4419,6 +4480,7 @@ export default function App() {
             onClose={() => { setSelectedIds(new Set()); setLastSelectedId(null); }}
             onApply={applyBulkChanges}
             onAddCustomCategory={addCustomCategory}
+            onPickCompanionApp={() => api.pickCompanionApp()}
           />
         ) : selected && (
           <DetailPanel
@@ -4490,8 +4552,14 @@ export default function App() {
               }
             }}
             onShowAddSourceHelp={() => { setHelpInitialTab('updates'); setShowHelp(true); }}
-            onPickCompanion={() => pickAndSetDevCompanion(selected.developer)}
-            onClearCompanion={selected.companionFromUser ? () => setDevCompanion(selected.developer, null) : null}
+            onPickCompanion={() => pickAndSetCompanionScoped(selected)}
+            onClearCompanion={selected.companionFromUser ? () => {
+              // Clear whichever level set it: a per-plugin override reverts to
+              // the developer/registry default; otherwise clear the dev-level.
+              const perItem = overrides[selected.id] && overrides[selected.id].companionApp;
+              if (perItem) setItemOverride(selected.id, { companionApp: null, noCompanion: null });
+              else setDevCompanion(selected.developer, null);
+            } : null}
             onSetMirrorFrom={() => setMirrorPickerOpen(true)}
             onClearMirrorFrom={() => handleClearMirrorFrom(selected.id)}
             onLinkMirrorTo={(parent) => handleSetMirrorFrom(selected.id, parent)}

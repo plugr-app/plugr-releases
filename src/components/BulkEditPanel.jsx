@@ -23,6 +23,7 @@ export default function BulkEditPanel({
   onApply,                     // (changes, items) => Promise<void>
   onBulkTrash,                 // (items) => Promise<void> — move all selected to Trash
   onAddCustomCategory,         // (cat, sub?) => void
+  onPickCompanionApp,          // () => Promise<{ ok, data }> — native app picker
 }) {
   // Simple text input: blank = don't change, any text = set developer to
   // that value across the selected items.
@@ -53,6 +54,9 @@ export default function BulkEditPanel({
   // "This page has no version" — save URL-only (manual-check) for pages
   // that don't show a version number (JS-rendered pages, download pages).
   const [sourceLinkOnly, setSourceLinkOnly] = useState(false);
+  // Per-plugin companion app for the whole selection.
+  const [companionApp, setCompanionApp] = useState(null);   // picked {displayName,...} | null
+  const [removeCompanion, setRemoveCompanion] = useState(false);
   // Tri-state: false (default — don't touch), true (remove saved source
   // from every selected plugin). Used to clean up after a bulk-apply
   // misfire or to clear sources before re-discovering.
@@ -146,6 +150,15 @@ export default function BulkEditPanel({
   if (removeSource) {
     changes.removeUpdateSource = true;
     pendingChanges.push(`Remove saved update source from ${items.length} plugin${items.length === 1 ? '' : 's'}`);
+  }
+
+  // Companion app — applied per-plugin to just the selection.
+  if (companionApp) {
+    changes.companionApp = companionApp;
+    pendingChanges.push(`Companion app → ${companionApp.displayName} (these ${items.length} plugin${items.length === 1 ? '' : 's'} only)`);
+  } else if (removeCompanion) {
+    changes.removeCompanion = true;
+    pendingChanges.push(`Remove companion app from ${items.length} plugin${items.length === 1 ? '' : 's'}`);
   }
 
   // Mirror — either set a new parent or clear the existing link.
@@ -487,6 +500,35 @@ export default function BulkEditPanel({
           </label>
         </div>
       </div>
+
+      {onPickCompanionApp && (
+        <div className="detail-section">
+          <div className="section-title">Companion app</div>
+          <div className="muted micro" style={{ marginBottom: 6 }}>
+            Point the selected plugins at an installer / license-manager app (Native
+            Access, Waves Central, Avid Link…). This applies to <strong>just these {items.length} plugins</strong>,
+            overriding any developer-wide companion — for cases like plugins delivered
+            through a different vendor's app than the rest of their maker's catalog.
+          </div>
+          {companionApp ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, background: 'color-mix(in srgb, var(--accent) 10%, transparent)' }}>
+              <span style={{ flex: 1 }}><strong>{companionApp.displayName}</strong></span>
+              <button type="button" className="linkish" onClick={async () => { const r = await onPickCompanionApp(); if (r && r.ok && !r.canceled) { setCompanionApp(r.data); setRemoveCompanion(false); } }}>Change</button>
+              <button type="button" className="linkish" onClick={() => setCompanionApp(null)}>Clear</button>
+            </div>
+          ) : (
+            <button type="button" className="btn" disabled={removeCompanion} onClick={async () => { const r = await onPickCompanionApp(); if (r && r.ok && !r.canceled) { setCompanionApp(r.data); setRemoveCompanion(false); } }}>
+              Choose app…
+            </button>
+          )}
+          <div style={{ marginTop: 8 }}>
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+              <input type="checkbox" checked={removeCompanion} onChange={(e) => { setRemoveCompanion(e.target.checked); if (e.target.checked) setCompanionApp(null); }} />
+              <span>Remove companion app<div className="muted micro">Clears the companion for just these plugins (they'll show no manager).</div></span>
+            </label>
+          </div>
+        </div>
+      )}
 
       <div className="detail-section">
         <div className="section-title">Mirror updates from another plugin</div>
