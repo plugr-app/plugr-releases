@@ -5850,7 +5850,9 @@
         },
         "BeatQuake": {
           "category": "MIDI",
-          "subcategory": "MIDI FX"
+          "subcategory": "MIDI FX",
+          "updateUrl": "https://www.waproduction.com/plugins/view/beatquake",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/beatquake"
         },
         "ColorBox": {
           "category": "MIDI",
@@ -5882,7 +5884,9 @@
         },
         "KickShaper": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://www.waproduction.com/plugins/view/kickshaper",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/kickshaper"
         },
         "Loopademy": {
           "category": "Application",
@@ -5892,7 +5896,9 @@
         },
         "MakeMeScream": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.waproduction.com/plugins/view/makemescream",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/makemescream"
         },
         "NanoBeast": {
           "category": "Effect",
@@ -5908,7 +5914,9 @@
         },
         "PunchyWorm": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://www.waproduction.com/plugins/view/punchyworm",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/punchyworm"
         },
         "Pumper": {
           "category": "Effect",
@@ -6154,7 +6162,9 @@
         },
         "ComBear": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://www.waproduction.com/plugins/view/combear",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/combear"
         },
         "Helper-Equalizer": {
           "category": "Effect",
@@ -6218,7 +6228,9 @@
         },
         "Trivox": {
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "updateUrl": "https://www.waproduction.com/plugins/view/trivox",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/trivox"
         },
         "Venom": {
           "category": "Effect",
@@ -6274,43 +6286,63 @@
         },
         "ChromaBox": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.waproduction.com/plugins/view/chromabox",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/chromabox"
         },
         "Deres": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.waproduction.com/plugins/view/deres",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/deres"
         },
         "DJFX": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://www.waproduction.com/plugins/view/djfx",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/djfx"
         },
         "Drifter": {
           "category": "Effect",
-          "subcategory": "Modulation"
+          "subcategory": "Modulation",
+          "updateUrl": "https://www.waproduction.com/plugins/view/drifter",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/drifter"
         },
         "Dynawide": {
           "category": "Effect",
-          "subcategory": "Imaging"
+          "subcategory": "Imaging",
+          "updateUrl": "https://www.waproduction.com/plugins/view/dynawide",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/dynawide"
         },
         "Ignition": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://www.waproduction.com/plugins/view/ignition",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/ignition"
         },
         "NeonGlow": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.waproduction.com/plugins/view/neonglow",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/neonglow"
         },
         "Noizzer": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://www.waproduction.com/plugins/view/noizzer",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/noizzer"
         },
         "RedClip": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.waproduction.com/plugins/view/redclip",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/redclip"
         },
         "Spectron": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://www.waproduction.com/plugins/view/spectron",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/spectron"
         },
         "SphereDelay2": {
           "category": "Effect",
@@ -6318,11 +6350,31 @@
         },
         "VocalShaper": {
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "updateUrl": "https://www.waproduction.com/plugins/view/vocalshaper",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/vocalshaper"
         },
         "Obsidian": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://www.waproduction.com/plugins/view/obsidian",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/obsidian"
+        },
+        "BassShaper": {
+          "updateUrl": "https://www.waproduction.com/plugins/view/bassshaper",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/bassshaper"
+        },
+        "Hyperion": {
+          "updateUrl": "https://www.waproduction.com/plugins/view/hyperion",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/hyperion"
+        },
+        "Theia": {
+          "updateUrl": "https://www.waproduction.com/plugins/view/theia",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/theia"
+        },
+        "SessionDock": {
+          "updateUrl": "https://www.waproduction.com/plugins/view/sessiondock",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/sessiondock"
         }
       }
     },
