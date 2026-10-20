@@ -294,6 +294,11 @@ async function checkUpdatesForItems(items, opts = {}) {
         status: cmp,
         latestVersion: latest,
         installedVersion: item.version,
+        // Marks a result that only exists because the page was rendered in
+        // a browser. Without this a successful render is indistinguishable
+        // from a plain fetch, which made the feature look like it had never
+        // run at all when it had.
+        via: viaRender ? 'render' : undefined,
         homepage: reg.homepage,
         updateUrl: reg.updateUrl,
       };
