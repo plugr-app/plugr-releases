@@ -303,6 +303,30 @@ async function checkUpdatesForItems(items, opts = {}) {
         updateUrl: reg.updateUrl,
       };
     } catch (err) {
+      // A hard failure (403, connection reset) is worth one browser
+      // attempt too: some hosts reject a plain request outright instead
+      // of serving an interstitial, so there is no body to inspect and
+      // the looksBlockedOrEmpty() escalation above never gets a chance.
+      // valhalladsp.com is the case that prompted this.
+      if (!reg.render && renderAvailable()) {
+        try {
+          const rendered = await renderOnce(reg.updateUrl);
+          const latest = extractVersion(rendered, reg.versionRegex);
+          if (latest) {
+            const cmp = compareVersions(item.version, latest);
+            emitProgress(item);
+            return {
+              id: item.id,
+              status: cmp,
+              latestVersion: latest,
+              installedVersion: item.version,
+              via: 'render',
+              homepage: reg.homepage,
+              updateUrl: reg.updateUrl,
+            };
+          }
+        } catch { /* fall through to the error result below */ }
+      }
       emitProgress(item);
       return {
         id: item.id,

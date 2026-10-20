@@ -2614,7 +2614,8 @@
           "category": "Effect",
           "subcategory": "Reverb",
           "updateUrl": "https://valhalladsp.com/products/valhalladelay/products/valhallavintageverb",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "render": true
         },
         "ValhallaRoom": {
           "category": "Effect",
@@ -2632,23 +2633,27 @@
           "category": "Effect",
           "subcategory": "Delay",
           "updateUrl": "https://valhalladsp.com/products/valhalladelay",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "render": true
         },
         "ValhallaSupermassive": {
           "category": "Effect",
           "subcategory": "Reverb",
           "updateUrl": "https://valhalladsp.com/products/valhalladelay/products/valhallasupermassive",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "render": true
         },
         "ValhallaFreqEcho": {
           "category": "Effect",
           "subcategory": "Delay",
           "updateUrl": "https://valhalladsp.com/shop/delay/valhalla-freq-echo/",
-          "versionRegex": "urrent\\s+Version:\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "urrent\\s+Version:\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "render": true
         },
         "ValhallaSpaceModulator": {
           "updateUrl": "https://valhalladsp.com/shop/modulation/valhalla-space-modulator/",
-          "versionRegex": "urrent\\s+Version:\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "urrent\\s+Version:\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "render": true
         }
       }
     },
@@ -3110,7 +3115,7 @@
           "category": "Effect",
           "subcategory": "EQ",
           "updateUrl": "https://www.plugin-alliance.com/products/free-ranger",
-          "versionRegex": "SPL[\\s\\-_:.]*Free[\\s\\-_:.]*Ranger[\\s\\S]{0,300}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "SPL HawkEye": {
           "category": "Effect",
@@ -3496,7 +3501,7 @@
         },
         "Virtual Mix Rack": {
           "updateUrl": "https://slatedigital.com",
-          "versionRegex": "Virtual[\\s\\-_:.]*Mix[\\s\\-_:.]*Rack[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://slatedigital.com"
         },
         "Complete Access Hub": {
           "updateUrl": "https://support.slatedigital.com/hc/en-us/articles/4402433908755-Complete-Access-Hub-formerly-Slate-Digital-Connect-Release-Notes",
@@ -3565,15 +3570,15 @@
         },
         "ShaperBox 2": {
           "updateUrl": "https://www.cableguys.com/shaperbox",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "downloadUrl": "https://www.cableguys.com/shaperbox"
         },
         "ShaperBox 3": {
           "updateUrl": "https://www.cableguys.com/shaperbox",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "downloadUrl": "https://www.cableguys.com/shaperbox"
         }
       }
     },
@@ -4108,7 +4113,7 @@
           "category": "Instrument",
           "subcategory": "Synth",
           "updateUrl": "https://www.airmusictech.com/virtual-instruments/the-riser/",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.airmusictech.com/virtual-instruments/the-riser/"
         },
         "Xpand": {
           "category": "Instrument",
@@ -4116,9 +4121,9 @@
         },
         "Xpand!2": {
           "updateUrl": "https://www.airmusictech.com/virtual-instruments/xpand-2/",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Instrument",
-          "subcategory": "Synth"
+          "subcategory": "Synth",
+          "downloadUrl": "https://www.airmusictech.com/virtual-instruments/xpand-2/"
         },
         "AIREnhancer": {
           "category": "Effect",
@@ -4868,7 +4873,7 @@
         },
         "Auto-Tune EFX+": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBQGQwhlJToYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBTrsUFlJToLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJBL2hjL2VuLXVzL2FydGljbGVzLzQxMTE1ODYwNTM0ODA0LUF1dG8tVHVuZS1FRlgtMTAtSGVscC1QYWdlBjsIVDoJcmFua2kG--cc9c7fa6df49d5c5586505aba84a635e5089a0ec",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBQGQwhlJToYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBTrsUFlJToLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJBL2hjL2VuLXVzL2FydGljbGVzLzQxMTE1ODYwNTM0ODA0LUF1dG8tVHVuZS1FRlgtMTAtSGVscC1QYWdlBjsIVDoJcmFua2kG--cc9c7fa6df49d5c5586505aba84a635e5089a0ec"
         },
         "Harmony Engine 4x": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41108335074580-Harmony-Engine-Help-Page",
@@ -4886,9 +4891,9 @@
         },
         "AVOX ASPIRE": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBSBmrOgKzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBRzD%2B9kJToLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI7L2hjL2VuLXVzL2FydGljbGVzLzQ3OTY5MjA4MDA4OTgwLUFzcGlyZS1SZWxlYXNlLU5vdGVzBjsIVDoJcmFua2kK--f56e6dcbb66c50f20a35fe2431c3bfe131db90ac",
-          "versionRegex": "Aspire[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBSBmrOgKzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBRzD%2B9kJToLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI7L2hjL2VuLXVzL2FydGljbGVzLzQ3OTY5MjA4MDA4OTgwLUFzcGlyZS1SZWxlYXNlLU5vdGVzBjsIVDoJcmFua2kK--f56e6dcbb66c50f20a35fe2431c3bfe131db90ac"
         },
         "Auto-Tune Vocal Compressor": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41117241499028-Vocal-Compressor-Release-Notes",
@@ -4928,9 +4933,9 @@
         },
         "AVOX WARM": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBREoLagKzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJQHFLigKzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI5L2hjL2VuLXVzL2FydGljbGVzLzQ3OTY5MjU4NzE4MjI4LVdhcm0tUmVsZWFzZS1Ob3RlcwY7CFQ6CXJhbmtpBw%3D%3D--e088f4a6487b5cd27586f8c9266fb74e60487922",
-          "versionRegex": "Warm[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBREoLagKzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJQHFLigKzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI5L2hjL2VuLXVzL2FydGljbGVzLzQ3OTY5MjU4NzE4MjI4LVdhcm0tUmVsZWFzZS1Ob3RlcwY7CFQ6CXJhbmtpBw%3D%3D--e088f4a6487b5cd27586f8c9266fb74e60487922"
         },
         "Vocal De-Esser": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47968350562196-Vocal-De-Esser-Release-Notes",
@@ -5788,9 +5793,9 @@
         },
         "Newfangled EQuivocate": {
           "updateUrl": "https://www.newfangledaudio.com/equivocate-release-notes",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "EQ"
+          "subcategory": "EQ",
+          "downloadUrl": "https://www.newfangledaudio.com/equivocate-release-notes"
         }
       }
     },
@@ -5987,7 +5992,7 @@
           "category": "Instrument",
           "subcategory": "Synth",
           "updateUrl": "https://www.waproduction.com/plugins/view/uplifting-trance-for-imperfect",
-          "versionRegex": "ImPerfect[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.waproduction.com/plugins/view/uplifting-trance-for-imperfect"
         },
         "BeatQuake": {
           "category": "MIDI",
@@ -5999,7 +6004,7 @@
           "category": "MIDI",
           "subcategory": "MIDI FX",
           "updateUrl": "https://www.waproduction.com/plugins/view/colorbox/products/colorbox",
-          "versionRegex": "ColorBox[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.waproduction.com/plugins/view/colorbox/products/colorbox"
         },
         "DodgePro": {
           "category": "Effect",
@@ -6011,7 +6016,7 @@
           "category": "MIDI",
           "subcategory": "MIDI FX",
           "updateUrl": "https://www.waproduction.com/plugins/view/hardstyle-2-for-instachord-2",
-          "versionRegex": "Instachord[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.waproduction.com/plugins/view/hardstyle-2-for-instachord-2"
         },
         "Instascale": {
           "category": "MIDI",
@@ -6051,7 +6056,7 @@
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.waproduction.com/plugins/view/presser",
-          "versionRegex": "Presser[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.waproduction.com/plugins/view/presser"
         },
         "PunchyWorm": {
           "category": "Effect",
@@ -6093,9 +6098,9 @@
         },
         "Instachord 2": {
           "updateUrl": "https://www.waproduction.com/plugins/view/hardstyle-2-for-instachord-2",
-          "versionRegex": "Instachord[\\s\\-_:.]*2[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "MIDI",
-          "subcategory": null
+          "subcategory": null,
+          "downloadUrl": "https://www.waproduction.com/plugins/view/hardstyle-2-for-instachord-2"
         },
         "ChopBeast": {
           "updateUrl": "https://www.waproduction.com/plugins/view/chopbeast-2",
@@ -6247,9 +6252,9 @@
         },
         "TheKing2": {
           "updateUrl": "https://www.waproduction.com/plugins/view/the-king",
-          "versionRegex": "d\\s+arm64\\s+New\\s+Features\\s+in\\s+version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/the-king"
         },
         "VINAIXTT": {
           "updateUrl": "https://www.waproduction.com/plugins/view/xtt-by-vinai",
@@ -6297,9 +6302,9 @@
         },
         "TheKing": {
           "updateUrl": "https://www.waproduction.com/plugins/view/the-king",
-          "versionRegex": "d\\s+arm64\\s+New\\s+Features\\s+in\\s+version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/the-king"
         },
         "ComBear": {
           "category": "Effect",
@@ -6355,7 +6360,7 @@
           "category": "Effect",
           "subcategory": "Multi-Effect",
           "updateUrl": "https://www.waproduction.com/plugins/view/put-me-on-drums",
-          "versionRegex": "t\\.\\s+Update\\s+log\\s+v\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.waproduction.com/plugins/view/put-me-on-drums"
         },
         "SphereQuad": {
           "category": "Effect",
@@ -6935,9 +6940,9 @@
         },
         "Unfiltered Audio Bass Mint": {
           "updateUrl": "https://www.plugin-alliance.com/products/bass-mint",
-          "versionRegex": "ers\\s+Installer\\s+v\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "downloadUrl": "https://www.plugin-alliance.com/products/bass-mint"
         },
         "Unfiltered Audio Dent 2": {
           "updateUrl": "https://www.plugin-alliance.com/products/dent-2",
@@ -6953,9 +6958,9 @@
         },
         "Unfiltered Audio G8": {
           "updateUrl": "https://www.plugin-alliance.com/products/g8",
-          "versionRegex": "ers\\s+Installer\\s+v\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "downloadUrl": "https://www.plugin-alliance.com/products/g8"
         },
         "Unfiltered Audio Indent 2": {
           "updateUrl": "https://www.plugin-alliance.com/products/indent-2",
@@ -8243,7 +8248,7 @@
         },
         "USYNTH": {
           "updateUrl": "https://www.ujam.com/usynth",
-          "versionRegex": "USYNTH[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.ujam.com/usynth"
         },
         "UJAM": {
           "updateUrl": "https://www.ujam.com",
