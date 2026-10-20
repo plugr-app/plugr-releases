@@ -2477,9 +2477,7 @@
         },
         "Crystallizer": {
           "category": "Effect",
-          "subcategory": "Creative",
-          "updateUrl": "https://www.soundtoys.com/products/crystallizer",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "subcategory": "Creative"
         },
         "Little AlterBoy": {
           "category": "Effect",
@@ -2495,9 +2493,7 @@
         },
         "PrimalTap": {
           "category": "Effect",
-          "subcategory": "Delay",
-          "updateUrl": "https://www.soundtoys.com/products/primaltap",
-          "versionRegex": "PrimalTap[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "subcategory": "Delay"
         },
         "Radiator": {
           "category": "Effect",
@@ -2523,14 +2519,8 @@
           "category": "Effect",
           "subcategory": "Modulation"
         },
-        "SpaceBlender": {
-          "updateUrl": "https://www.soundtoys.com/new-spaceblender/",
-          "versionRegex": "SpaceBlender[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
-        },
-        "SuperPlate": {
-          "updateUrl": "https://www.soundtoys.com/superplate-explained-plates-preamps-auto-decay/",
-          "versionRegex": "SuperPlate[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
-        }
+        "SpaceBlender": {},
+        "SuperPlate": {}
       },
       "updateUrl": "https://www.soundtoys.com/release-log/",
       "versionRegex": "Soundtoys\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)\\s+Update"
