@@ -1202,6 +1202,34 @@ function enrichAllRegistryByDeveloperName(items) {
         it.categorySource = (it.categorySource ? it.categorySource + '+' : '') + 'registry-name-backfill';
       }
     }
+
+    // Backfill the UPDATE SOURCE for exactly the same reason, which until
+    // now only categories were rescued from. The scan-time lookup ran with
+    // the RAW inferred developer and the pre-rename plugin name, so an item
+    // can end up with no updateUrl even though the registry already holds a
+    // productMatcher for its FINAL developer + name. Measured against Josh's
+    // 4498-item library on 2026-10-20: 55 items / 30 products across Blue
+    // Cat Audio (its AU variants), Xfer, TAL, Cableguys, Initial Audio,
+    // Newfangled, New Sonic Arts, AIR and W. A. Production.
+    //
+    // Fills blanks ONLY — it never replaces a source the lookup already
+    // found. User-added sources merge later in the renderer and are
+    // untouched. Developer-level sources need no backfill: lookupRegistry
+    // applies those from the identifier at scan time.
+    const reg0 = it.registry || {};
+    if (!reg0.updateUrl && it.developer && it.developer !== 'Unknown') {
+      const pe = findProductEntry(it.developer, it.name);
+      if (pe && pe.updateUrl) {
+        it.registry = {
+          ...reg0,
+          updateUrl: pe.updateUrl,
+          versionRegex: pe.versionRegex || '',
+          ...(pe.downloadUrl ? { downloadUrl: pe.downloadUrl } : {}),
+          matchedProduct: reg0.matchedProduct || pe.matchedKey,
+          sourceBackfilled: true,
+        };
+      }
+    }
   }
 }
 
