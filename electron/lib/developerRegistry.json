@@ -604,7 +604,7 @@
           "category": "Instrument",
           "subcategory": "Synth",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/synths/massive/downloads/",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/synths/massive/downloads/"
         },
         "Massive X": {
           "category": "Instrument",
@@ -616,7 +616,7 @@
           "category": "Instrument",
           "subcategory": "Synth",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/synths/fm8/downloads/",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/synths/fm8/downloads/"
         },
         "Reaktor": {
           "category": "Instrument",
@@ -638,13 +638,13 @@
           "category": "Effect",
           "subcategory": "Delay",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/replika/download-demo/",
-          "versionRegex": "m\\s+post\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/replika/download-demo/"
         },
         "Raum": {
           "category": "Effect",
           "subcategory": "Reverb",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/raum/download-demo/",
-          "versionRegex": "rsions\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/raum/download-demo/"
         },
         "Supercharger": {
           "category": "Effect",
@@ -654,91 +654,91 @@
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/solid-mix-series/download-demo/",
-          "versionRegex": "sound\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/solid-mix-series/download-demo/"
         },
         "Solid EQ": {
           "category": "Effect",
           "subcategory": "EQ",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/solid-mix-series/download-demo/",
-          "versionRegex": "sound\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/solid-mix-series/download-demo/"
         },
         "Bite": {
           "category": "Effect",
           "subcategory": "Distortion",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-crush-pack/download-demo/",
-          "versionRegex": "tremes\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-crush-pack/download-demo/"
         },
         "Choral": {
           "category": "Effect",
           "subcategory": "Modulation",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-mod-pack/download-demo/",
-          "versionRegex": "ffects\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-mod-pack/download-demo/"
         },
         "Dirt": {
           "category": "Effect",
           "subcategory": "Distortion",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-crush-pack/download-demo/",
-          "versionRegex": "tremes\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-crush-pack/download-demo/"
         },
         "Driver": {
           "category": "Effect",
           "subcategory": "Distortion",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/driver/download-demo/",
-          "versionRegex": "mayhem\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/driver/download-demo/"
         },
         "Flair": {
           "category": "Effect",
           "subcategory": "Modulation",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-mod-pack/download-demo/",
-          "versionRegex": "ffects\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-mod-pack/download-demo/"
         },
         "Freak": {
           "category": "Effect",
           "subcategory": "Modulation",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-crush-pack/download-demo/",
-          "versionRegex": "tremes\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-crush-pack/download-demo/"
         },
         "Phasis": {
           "category": "Effect",
           "subcategory": "Modulation",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-mod-pack/download-demo/",
-          "versionRegex": "ffects\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/effects-series-mod-pack/download-demo/"
         },
         "RC 24": {
           "category": "Effect",
           "subcategory": "Reverb",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/rc-24/download-demo/",
-          "versionRegex": "curacy\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/rc-24/download-demo/"
         },
         "RC 48": {
           "category": "Effect",
           "subcategory": "Reverb",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/rc-48/download-demo/",
-          "versionRegex": "vocals\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/rc-48/download-demo/"
         },
         "Solid Dynamics": {
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/solid-mix-series/download-demo/",
-          "versionRegex": "sound\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/solid-mix-series/download-demo/"
         },
         "VC 160": {
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/vintage-compressors/download-demo/",
-          "versionRegex": "of\\s+use\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/vintage-compressors/download-demo/"
         },
         "VC 2A": {
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/vintage-compressors/download-demo/",
-          "versionRegex": "of\\s+use\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/vintage-compressors/download-demo/"
         },
         "VC 76": {
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/vintage-compressors/download-demo/",
-          "versionRegex": "eo\\s+bus\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/vintage-compressors/download-demo/"
         },
         "Absynth 5": {
           "updateUrl": "https://community.native-instruments.com/discussion/49105",
@@ -802,19 +802,19 @@
         },
         "Replika XT": {
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/replika-xt/download-demo/",
-          "versionRegex": "ration\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Delay"
+          "subcategory": "Delay",
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/replika-xt/download-demo/"
         },
         "Supercharger GT": {
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/supercharger-gt/download-demo/",
-          "versionRegex": "OWNLOAD\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/supercharger-gt/download-demo/"
         },
         "Transient Master": {
           "updateUrl": "https://www.native-instruments.com/en/products/komplete/effects/transient-master/download-demo/",
-          "versionRegex": "ur\\s+mix\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/effects/transient-master/download-demo/"
         },
         "Reaktor 6 FX": {
           "category": "Effect",
@@ -1852,7 +1852,7 @@
           "category": "Instrument",
           "subcategory": "Synth",
           "updateUrl": "https://xferrecords.com/product_downloads/serum",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://xferrecords.com/product_downloads/serum"
         },
         "OTT": {
           "category": "Effect",
@@ -1864,7 +1864,7 @@
           "category": "Effect",
           "subcategory": "Modulation",
           "updateUrl": "https://xferrecords.com/product_downloads/lfo-tool",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://xferrecords.com/product_downloads/lfo-tool"
         },
         "Cthulhu": {
           "category": "MIDI",
@@ -1900,15 +1900,15 @@
         },
         "Serum 2": {
           "updateUrl": "https://xferrecords.com/product_downloads/serum-2",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Instrument",
-          "subcategory": "Synth"
+          "subcategory": "Synth",
+          "downloadUrl": "https://xferrecords.com/product_downloads/serum-2"
         },
         "Serum2": {
           "updateUrl": "https://xferrecords.com/product_downloads/serum-2",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Instrument",
-          "subcategory": "Synth"
+          "subcategory": "Synth",
+          "downloadUrl": "https://xferrecords.com/product_downloads/serum-2"
         }
       }
     },
@@ -2292,8 +2292,8 @@
         "Phase Plant": {
           "category": "Instrument",
           "subcategory": "Synth",
-          "updateUrl": "https://kilohearts.com/download",
-          "versionRegex": "Phase[\\s\\-_:.]*Plant[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://kilohearts.com/changelog",
+          "versionRegex": "earts\\s+Installer\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "kHs ONE": {
           "category": "Instrument",
@@ -2302,14 +2302,14 @@
         "Disperser": {
           "category": "Effect",
           "subcategory": "Creative",
-          "updateUrl": "https://kilohearts.com/download",
-          "versionRegex": "Disperser[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://kilohearts.com/changelog",
+          "versionRegex": "earts\\s+Installer\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Faturator": {
           "category": "Effect",
           "subcategory": "Distortion",
-          "updateUrl": "https://kilohearts.com/download",
-          "versionRegex": "Faturator[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://kilohearts.com/changelog",
+          "versionRegex": "earts\\s+Installer\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Channel Mixer": {
           "category": "Effect",
@@ -2364,22 +2364,22 @@
         "Multipass": {
           "category": "Effect",
           "subcategory": "Multi-Effect",
-          "updateUrl": "https://kilohearts.com/download",
-          "versionRegex": "Multipass[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://kilohearts.com/changelog",
+          "versionRegex": "earts\\s+Installer\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Snap Heap": {
           "category": "Effect",
           "subcategory": "Multi-Effect",
-          "updateUrl": "https://kilohearts.com/download",
-          "versionRegex": "Snap[\\s\\-_:.]*Heap[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://kilohearts.com/changelog",
+          "versionRegex": "earts\\s+Installer\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Slice EQ": {
-          "updateUrl": "https://kilohearts.com/download",
-          "versionRegex": "Slice[\\s\\-_:.]*EQ[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://kilohearts.com/changelog",
+          "versionRegex": "earts\\s+Installer\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Carve EQ": {
-          "updateUrl": "https://kilohearts.com/download",
-          "versionRegex": "Carve[\\s\\-_:.]*EQ[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://kilohearts.com/changelog",
+          "versionRegex": "earts\\s+Installer\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "kHs 3-Band EQ": {
           "updateUrl": "https://kilohearts.com/changelog",
@@ -4514,35 +4514,35 @@
         },
         "Voxengo MSED": {
           "updateUrl": "https://www.voxengo.com/downloads",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Imaging"
+          "subcategory": "Imaging",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Voxengo SPAN": {
           "updateUrl": "https://www.voxengo.com/downloads",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Voxengo Stereo Touch": {
           "updateUrl": "https://www.voxengo.com/downloads",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Imaging"
+          "subcategory": "Imaging",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Voxengo Sound Delay": {
           "updateUrl": "https://www.voxengo.com/downloads",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Voxengo Tube Amp": {
           "updateUrl": "https://www.voxengo.com/downloads",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Voxengo OldSkoolVerb": {
           "updateUrl": "https://www.voxengo.com/downloads",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "MSED": {
           "category": "Effect",
@@ -5634,7 +5634,7 @@
         },
         "Initial 808 Studio II": {
           "updateUrl": "https://initialaudio.com/808-studio-2-bass-synthesizer",
-          "versionRegex": "Latest\\s+version:\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://initialaudio.com/808-studio-2-bass-synthesizer"
         }
       }
     },
@@ -5949,17 +5949,17 @@
       "productMatchers": {
         "Deleight": {
           "updateUrl": "https://www.audiority.com/products/deleight",
-          "versionRegex": "Deleight[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "versionRegex": "\\bv(\\d+\\.\\d+\\.\\d+)\\b",
           "category": "Effect",
           "subcategory": "Delay"
         },
         "Distortion 1": {
           "updateUrl": "https://www.audiority.com/products/deleight/products/distortion-1",
-          "versionRegex": "Distortion[\\s\\-_:.]*1[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv(\\d+\\.\\d+\\.\\d+)\\b"
         },
         "Distortion 1 mkII": {
           "updateUrl": "https://www.audiority.com/shop/distortion-1/",
-          "versionRegex": "\\bv(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv(\\d+\\.\\d+\\.\\d+)\\b"
         }
       }
     },
@@ -6401,7 +6401,7 @@
         },
         "SphereDelay": {
           "updateUrl": "https://www.waproduction.com/plugins/view/spheredelay",
-          "versionRegex": "C\\s+New\\s+Features\\s+in\\s+version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.waproduction.com/plugins/view/spheredelay"
         },
         "MIDIQ": {
           "updateUrl": "https://www.waproduction.com/plugins/view/midiq",
@@ -6530,25 +6530,25 @@
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
-          "versionRegex": "nveil\\s+#\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/"
         },
         "TrackSpacer": {
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
-          "versionRegex": "nveil\\s+#\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/"
         },
         "TrackSpacerx64": {
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
-          "versionRegex": "nveil\\s+#\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/"
         },
         "Trackspacer 2.5": {
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
-          "versionRegex": "nveil\\s+#\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/"
         },
         "Re-Esser": {
           "category": "Effect",
@@ -7051,7 +7051,7 @@
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.flux.audio/products",
-          "versionRegex": "BitterSweet[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.flux.audio/products"
         },
         "Elixir": {
           "category": "Effect",
@@ -7183,35 +7183,35 @@
         },
         "Tal-Filter": {
           "updateUrl": "https://tal-software.com/products/tal-filter",
-          "versionRegex": "minute\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv?(\\d+\\.\\d+\\.\\d+)\\b"
         },
         "TAL-Filter-2": {
           "updateUrl": "https://tal-software.com/products/tal-filter",
-          "versionRegex": "TAL-Filter-2[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv?(\\d+\\.\\d+\\.\\d+)\\b"
         },
         "TAL-Reverb-4": {
           "updateUrl": "https://tal-software.com/products/tal-reverb-4",
-          "versionRegex": "minute\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv?(\\d+\\.\\d+\\.\\d+)\\b"
         },
         "Tal-Reverb-2": {
           "updateUrl": "https://tal-software.com/products/tal-reverb-4",
-          "versionRegex": "minute\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv?(\\d+\\.\\d+\\.\\d+)\\b"
         },
         "TAL-Chorus-LX": {
           "updateUrl": "https://tal-software.com/products/tal-chorus-lx",
-          "versionRegex": "minute\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv?(\\d+\\.\\d+\\.\\d+)\\b"
         },
         "TAL-NoiseMaker": {
           "updateUrl": "https://tal-software.com/products/tal-noisemaker",
-          "versionRegex": "imilar\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv?(\\d+\\.\\d+\\.\\d+)\\b"
         },
         "TAL-Vocoder": {
           "updateUrl": "https://tal-software.com/products/tal-vocoder",
-          "versionRegex": "minute\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv?(\\d+\\.\\d+\\.\\d+)\\b"
         },
         "TAL-Vocoder-2": {
           "updateUrl": "https://tal-software.com/products/tal-vocoder",
-          "versionRegex": "minute\\.\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "\\bv?(\\d+\\.\\d+\\.\\d+)\\b"
         }
       }
     },
@@ -8205,37 +8205,37 @@
           "category": "Effect",
           "subcategory": "Multi-Effect",
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher",
-          "versionRegex": "ges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher"
         },
         "FIN-FLUXX": {
           "category": "Effect",
           "subcategory": "Multi-Effect",
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher",
-          "versionRegex": "ges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher"
         },
         "FIN-MICRO": {
           "category": "Effect",
           "subcategory": "Multi-Effect",
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher",
-          "versionRegex": "ges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher"
         },
         "FIN-NEO": {
           "category": "Effect",
           "subcategory": "Multi-Effect",
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher",
-          "versionRegex": "ges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher"
         },
         "FIN-RETRO": {
           "category": "Effect",
           "subcategory": "Multi-Effect",
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher",
-          "versionRegex": "ges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher"
         },
         "FIN-VOOD": {
           "category": "Effect",
           "subcategory": "Multi-Effect",
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher",
-          "versionRegex": "ges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650245377052-Changelog-Finisher"
         },
         "USYNTH": {
           "updateUrl": "https://www.ujam.com/usynth",
@@ -8247,125 +8247,125 @@
         },
         "BM-DOPE": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-EDEN": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-GLORY": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Instrument",
-          "subcategory": "Drums"
+          "subcategory": "Drums",
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-HUSTLE": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-HYPE": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-IDOL": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-KANDY": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-NEMESIS": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-VICE": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "BM-VOID": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
-          "versionRegex": "nges\\s+Oct\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker"
         },
         "GM-ONE": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650405035548-Changelog-Groovemate",
-          "versionRegex": "IGO\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20650405035548-Changelog-Groovemate"
         },
         "SE-DRUMS": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20666496828956-Changelog-Symphonic-Elements",
-          "versionRegex": "ges\\s+May\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20666496828956-Changelog-Symphonic-Elements"
         },
         "SE-STRIIIINGS": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20666496828956-Changelog-Symphonic-Elements",
-          "versionRegex": "ges\\s+May\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20666496828956-Changelog-Symphonic-Elements"
         },
         "VB-DANDY": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist",
-          "versionRegex": "ges\\s+Nov\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist"
         },
         "VB-MELLOW": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist",
-          "versionRegex": "ges\\s+Nov\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist"
         },
         "VB-ROWDY": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist",
-          "versionRegex": "ges\\s+Nov\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist"
         },
         "VB-ROYAL": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist",
-          "versionRegex": "ges\\s+Nov\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist"
         },
         "VB-SLAP": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist",
-          "versionRegex": "ges\\s+Nov\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649899864604-Changelog-Virtual-Bassist"
         },
         "VD-BRUTE": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer",
-          "versionRegex": "nges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer"
         },
         "VD-DEEP": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer",
-          "versionRegex": "nges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer"
         },
         "VD-HEAVY": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer",
-          "versionRegex": "nges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer"
         },
         "VD-PHAT": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer",
-          "versionRegex": "nges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer"
         },
         "VD-SOLID": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer",
-          "versionRegex": "nges\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20666192427036-Changelog-Virtual-Drummer"
         },
         "VG-AMBER": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist",
-          "versionRegex": "xed\\s+in\\s+AMBER2\\s+\\(\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist"
         },
         "VG-CARBON": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist",
-          "versionRegex": "REAM\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist"
         },
         "VG-IRON": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist",
-          "versionRegex": "REAM\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist"
         },
         "VG-IRON2": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist",
-          "versionRegex": "xed\\s+in\\s+AMBER2\\s+\\(\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist"
         },
         "VG-SILK": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist",
-          "versionRegex": "REAM\\s+Sep\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist"
         },
         "VG-SPARKLE": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist",
-          "versionRegex": "and\\s+SPARKLE2\\s+\\(\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20649429631132-Changelog-Virtual-Guitarist"
         },
         "Virtual Pianist": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20667185301404-Changelog-Virtual-Pianist",
-          "versionRegex": "ase\\s+Dec\\s+\\d+\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://support.ujam.com/hc/en-us/articles/20667185301404-Changelog-Virtual-Pianist"
         }
       }
     },
