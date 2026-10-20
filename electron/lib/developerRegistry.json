@@ -6576,13 +6576,17 @@
           "category": "Effect",
           "subcategory": "Utility",
           "updateUrl": "https://a1audio.alexhilton.net/downloads",
-          "downloadUrl": "https://a1audio.alexhilton.net/downloads"
+          "downloadUrl": "https://a1audio.alexhilton.net/downloads",
+          "versionRegex": "A1StereoControl[^\\n]{0,60}?v(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "render": true
         },
         "A1TriggerGate": {
           "category": "MIDI",
           "subcategory": "MIDI FX",
           "updateUrl": "https://a1audio.alexhilton.net/downloads",
-          "downloadUrl": "https://a1audio.alexhilton.net/downloads"
+          "downloadUrl": "https://a1audio.alexhilton.net/downloads",
+          "versionRegex": "A1TriggerGate[^\\n]{0,60}?v(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "render": true
         }
       }
     },
