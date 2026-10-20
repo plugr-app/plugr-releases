@@ -2221,6 +2221,50 @@
         "Filter SEM": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/sem-filter",
           "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Augmented GRAND PIANO": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/augmented-grand-piano",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Augmented MALLETS": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/augmented-mallets",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Augmented WOODWINDS": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/augmented-woodwinds",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Augmented YANGTZE": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/augmented-yangtze",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "CP-70 V": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/cp-70-v",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Jup-8000 V": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/jup-8000-v",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Mini V4": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/mini-v",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "MiniBrute V": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/minibrute-v",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Pure LoFi": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/pure-lofi",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Synthx V": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/synthx-v",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Wurli V3": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/wurli-v",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         }
       }
     },
