@@ -218,7 +218,9 @@ Update-source additions propagate across a plugin's formats via `familyKeyFor()`
 2. **Never ask Josh to do work you can do.** Minimize his required actions to approximately zero.
 3. **Edit files directly.** The paste-script era is over (see §0). If you ever must hand him something to run, it's ONE self-contained block, as short as possible, no verbose comments.
 4. **Assume a handed-off step happened if he doesn't respond** and moves on.
-5. **`git push` is always Josh, from his Terminal.** You may `git add`/`commit` locally when asked; never push.
+5. **Push policy — gate what PUBLISHES, not what backs up (revised 2026-10-20).** The original rule was "never push, you don't have credentials" (`HANDOFF.md` line 230, v0.2.1, paste-script era). That rationale is **obsolete**: `GH_TOKEN` is in Josh's login env on both Macs and the bridge can reach his shell, so the capability gap is gone. Current rule, by consequence rather than capability:
+   - **Claude MAY push the APP repo** (`~/plugr` → `plugr-app/plugr-releases`). It is a private code backup: no deploy, no users affected, nothing public.
+   - **Claude must NEVER push the WEBSITE repo** (GitHub Pages → plugr.co is live within ~1 minute) **or the COMMUNITY REGISTRY** (`additions.json` reaches every user's app within 24h). Those two publish to other people; Josh pushes them himself, every time.
 6. **Version bumps happen at RELEASE time, not per fix** (Josh's call, 2026-07-12 — supersedes the old auto-bump-per-feature-set rule). During dev, leave the version at the last-released number. When Josh says he's releasing: one `chore: bump vX.Y.Z` commit touching package.json + package-lock.json, then he runs release:mac. Never prompt him to release.
 7. **Never hedge with "if that exists" about his own codebase.** Read the live file and KNOW. If you genuinely can't access something, say exactly that, in one sentence, with the concrete fix.
 8. **Verify after editing** — read the diff, syntax-check. Never claim done without verifying.
@@ -236,7 +238,7 @@ Update-source additions propagate across a plugin's formats via `familyKeyFor()`
 3. **Never call the app "Plugin Hub"** in any user-facing string — competitor's name. (Internal `window.pluginHub` bridge name is legacy and fine.)
 4. **Never widen an `identifierPrefix`** below two dot-segments.
 5. **Never change cache schema without bumping `CACHE_VERSION`.**
-6. **Never `git push` from the sandbox.**
+6. **Never `git push` the website or community-registry repos** — both are live publishes to other people (see §7.5). The app repo is fine to push.
 7. **Never present copy as final** — Josh has strong tone opinions; present options.
 8. **Never write patch scripts against unverified/stale file copies.** (The cardinal sin of June–July 2026.)
 
@@ -352,7 +354,7 @@ The community feed's missing middle step is a **Claude-in-the-loop review**, run
 4. Josh approves the keepers. Write ONLY approved ones into `additions.json`.
 5. **Entry schema** (matches `community.cjs` fetch/merge + `applyCommunityAdditions`): `{ key: <plugin identifier, lowercased on merge>, pluginName, developer, updateUrl, versionRegex (optional, '' = link-only), downloadUrl (optional) }`. Top-level file: `{ version:1, lastUpdated:<ISO now>, entries:[...], companionAppPatches?:[...] }`. Bump `lastUpdated`.
 6. Validate: `node -e` parse the JSON + `new RegExp` every non-empty regex before committing.
-7. Josh pushes the registry repo (never Claude): `cd ~/plugr-community-registry && rm -f .git/*.lock; git add -A && git commit && git push`. Users pick up within 24h (ADDITIONS_TTL_MS).
+7. Josh pushes the registry repo (never Claude — this is a publishing gate, see §7.5): `cd ~/plugr-community-registry && rm -f .git/*.lock; git add -A && git commit && git push`. Users pick up within 24h (ADDITIONS_TTL_MS).
 
 **Fields already wired app-side (2026-07-14 c/d):** `downloadUrl` and link-only (no-regex) entries flow all the way through submit → sheet → `additions.json` → fetch/merge → `reg.downloadUrl` → CTA. The Google Form "Download page" field id `entry.1633676877` is live in `community.cjs`.
 
