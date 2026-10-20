@@ -22,6 +22,11 @@ const MAX_CONCURRENT = 6;
 // stack — same as a real browser tab) when available. Falls back to
 // global fetch() for tests. See httpFetch.cjs.
 const { httpGet, UA } = require('./httpFetch.cjs');
+// Browser-rendered fallback for pages a plain fetch cannot read: bot
+// challenges (Cloudflare) and JS-built pages. Opt-in per source via
+// `render: true`, plus a one-shot automatic retry when a fetched page
+// looks blocked or empty. See renderFetch.cjs for the rules.
+const { renderText, looksBlockedOrEmpty, isAvailable: renderAvailable } = require('./renderFetch.cjs');
 
 async function fetchOnce(url) {
   return httpGet(url, { timeoutMs: FETCH_TIMEOUT_MS, redirect: 'follow' });
@@ -168,6 +173,14 @@ async function checkUpdatesForItems(items, opts = {}) {
   let done = 0;
 
   const pageCache = new Map(); // url -> Promise<text>
+  const renderCache = new Map(); // url -> Promise<text> (browser-rendered)
+
+  function renderOnce(url) {
+    if (renderCache.has(url)) return renderCache.get(url);
+    const p = renderText(url);
+    renderCache.set(url, p);
+    return p;
+  }
 
   function fetchOnce(url) {
     if (pageCache.has(url)) return pageCache.get(url);
@@ -239,16 +252,39 @@ async function checkUpdatesForItems(items, opts = {}) {
       };
     }
     try {
-      const html = await fetchOnce(reg.updateUrl);
-      const latest = extractVersion(html, reg.versionRegex);
+      let html;
+      let viaRender = false;
+      // Sources known to need a browser go straight there; everything else
+      // takes the cheap path first.
+      if (reg.render && renderAvailable()) {
+        html = await renderOnce(reg.updateUrl);
+        viaRender = true;
+      } else {
+        html = await fetchOnce(reg.updateUrl);
+      }
+      let latest = extractVersion(html, reg.versionRegex);
+      // One-shot escalation: the pattern failed AND what came back looks
+      // like a bot check or an empty JS shell rather than a real page.
+      // This is what lets a vendor that silently starts using Cloudflare
+      // keep working without anyone editing the registry.
+      if (!latest && !viaRender && renderAvailable() && looksBlockedOrEmpty(html)) {
+        try {
+          html = await renderOnce(reg.updateUrl);
+          viaRender = true;
+          latest = extractVersion(html, reg.versionRegex);
+        } catch { /* render failed; fall through to parse-failed below */ }
+      }
       if (!latest) {
         emitProgress(item);
         return {
           id: item.id,
           status: 'parse-failed',
-          message: 'Fetched page but version pattern did not match',
+          message: viaRender
+            ? 'Opened the page in a browser but the version pattern did not match'
+            : 'Fetched page but version pattern did not match',
           homepage: reg.homepage,
           updateUrl: reg.updateUrl,
+          via: viaRender ? 'render' : undefined,
         };
       }
       const cmp = compareVersions(item.version, latest);
@@ -292,14 +328,29 @@ async function checkUpdatesForItems(items, opts = {}) {
 async function testSource(url, regexSource) {
   if (!url) return { ok: false, reason: 'fetch-failed', error: 'No URL provided' };
   let text;
+  let viaRender = false;
   try {
     text = await fetchText(url);
   } catch (err) {
-    return { ok: false, reason: 'fetch-failed', error: String((err && err.message) || err) };
+    // A hard failure is still worth one browser attempt: some hosts reject
+    // the plain request outright rather than serving an interstitial.
+    if (renderAvailable()) {
+      try { text = await renderText(url); viaRender = true; }
+      catch { return { ok: false, reason: 'fetch-failed', error: String((err && err.message) || err) }; }
+    } else {
+      return { ok: false, reason: 'fetch-failed', error: String((err && err.message) || err) };
+    }
   }
-  const version = extractVersion(text, regexSource);
-  if (version) return { ok: true, version };
-  return { ok: false, reason: 'no-match' };
+  let version = extractVersion(text, regexSource);
+  if (!version && !viaRender && renderAvailable() && looksBlockedOrEmpty(text)) {
+    try {
+      text = await renderText(url);
+      viaRender = true;
+      version = extractVersion(text, regexSource);
+    } catch { /* keep the no-match result below */ }
+  }
+  if (version) return viaRender ? { ok: true, version, via: 'render' } : { ok: true, version };
+  return { ok: false, reason: 'no-match', via: viaRender ? 'render' : undefined };
 }
 
 module.exports = {

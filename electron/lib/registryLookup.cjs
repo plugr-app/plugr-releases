@@ -340,6 +340,13 @@ function lookupRegistry({ identifier, pluginName, developerName }) {
     registrySourceLevel: useDevSource
       ? 'developer'
       : (productEntry && productEntry.updateUrl ? 'product' : null),
+    // `render: true` sends this source straight to the browser-rendered
+    // fetch path (see renderFetch.cjs) instead of a plain HTTP read. Set
+    // it only on vendors whose page is a bot check or JS-built; it costs
+    // a hidden window and several seconds per URL.
+    render: useDevSource
+      ? Boolean(devEntry && devEntry.render)
+      : Boolean((productEntry && productEntry.render) || (devEntry && devEntry.render)),
     // Optional per-product download page (release-notes page ≠ download
     // page). Surfaced so a promoted/bundled source can route the CTA the
     // same way a user-added one does.
