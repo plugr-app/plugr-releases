@@ -2781,11 +2781,15 @@
         },
         "bx_distorange": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_distorange",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "bx_greenscreamer": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_greenscreamer",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "bx_hybrid": {
           "category": "Effect",
@@ -2811,7 +2815,9 @@
         },
         "bx_megasingle": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_megasingle",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "bx_metal": {
           "category": "Effect",
@@ -2819,7 +2825,9 @@
         },
         "bx_meter": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_meter",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "bx_opto": {
           "category": "Effect",
@@ -2857,7 +2865,9 @@
         },
         "bx_solo": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_solo",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "bx_stereomaker": {
           "category": "Effect",
@@ -2867,7 +2877,9 @@
         },
         "bx_subfilter": {
           "category": "Effect",
-          "subcategory": "EQ"
+          "subcategory": "EQ",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_subfilter",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "bx_subsynth": {
           "category": "Effect",
@@ -2877,7 +2889,9 @@
         },
         "bx_tuner": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_tuner",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "bx_XL": {
           "category": "Effect",
@@ -2885,7 +2899,9 @@
         },
         "bx_yellowdrive": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_yellowdrive",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Chandler GAV19T": {
           "category": "Effect",
@@ -3359,7 +3375,9 @@
         },
         "bx_crispytuner": {
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_crispytuner",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Cut Classic High Flyer": {
           "category": "Effect",
@@ -3384,6 +3402,22 @@
         "SpliceBridge": {
           "category": "Application",
           "subcategory": "Application"
+        },
+        "bx_blackdist2": {
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_blackdist2",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "bx_bluechorus2": {
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_bluechorus2",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "bx_cleansweep V2": {
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_cleansweep-v2",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "bx_metal2": {
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_metal2",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         }
       }
     },
