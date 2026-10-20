@@ -2531,7 +2531,9 @@
           "updateUrl": "https://www.soundtoys.com/superplate-explained-plates-preamps-auto-decay/",
           "versionRegex": "SuperPlate[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         }
-      }
+      },
+      "updateUrl": "https://www.soundtoys.com/release-log/",
+      "versionRegex": "Soundtoys\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)\\s+Update"
     },
     "Valhalla DSP": {
       "homepage": "https://valhalladsp.com",

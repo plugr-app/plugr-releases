@@ -3200,12 +3200,16 @@ export default function App() {
     // has run "Check for Updates" this session. userRegistryAdditions are
     // already merged into it.registry by applyRegistryAdditions, so a
     // source the user added themselves correctly counts as "has a source".
-    // Companion-managed plugins are NOT gaps — an update manager owns them.
+    // Companion-managed plugins still count — see the note below.
     const hasNoSource = (it) => {
       const reg = it.registry || {};
       if (reg.updateUrl) return false;
       if (it.sparkleFeedUrl) return false;
-      if (reg.companionApp) return false;
+      // Companion-managed plugins ARE still gaps (Josh, 2026-10-20): most
+      // vendors with an update manager still publish a version number
+      // somewhere, and "out of date" is far more useful to a user than
+      // "managed by Native Access". The companion banner and a real
+      // version source coexist fine in DetailPanel.
       return true;
     };
     const seen = new Map();
