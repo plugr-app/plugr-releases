@@ -205,24 +205,47 @@ function findProductEntry(developerName, pluginName) {
   // Prefer longest match (more specific wins).
   const keys = Object.keys(dev.productMatchers).sort((a, b) => b.length - a.length);
   // Pass 1: strict lowercased includes() — same as before.
+  // NOTE: a pass-1 hit is only returned IMMEDIATELY when it carries an
+  // updateUrl. Keys overlap ("BC Gain" and "BC Gain 3 (Stereo)" both
+  // match "BC Gain 3 AAX(Stereo)"), and the shorter, source-less key used
+  // to win and short-circuit pass 2, leaving the plugin with no source
+  // even though a sibling key had one. Remember the first hit and keep
+  // looking; prefer whichever match actually has a source.
+  let loose = null;
   for (const key of keys) {
     if (lowerName.includes(key.toLowerCase())) {
-      return { matchedKey: key, ...dev.productMatchers[key] };
+      const hit = { matchedKey: key, ...dev.productMatchers[key] };
+      if (hit.updateUrl) return hit;
+      if (!loose) loose = hit;
     }
   }
   // Pass 2: normalized fallback. Strip everything that isn't a letter or
   // number, then compare. Catches separator drift between formats.
-  const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+  //
+  // Standalone FORMAT tokens are dropped first, on both sides, because
+  // several vendors bake the format into the plugin name: Blue Cat ships
+  // "BC Chorus 4 AAX(Mono)" next to "BC Chorus 4 VST3(Mono)" and
+  // "BC Chorus 4 (Mono)", so a registry key written from one format's
+  // spelling missed the others entirely. Word-boundary anchored so it
+  // only removes the token itself — "AUDIO" keeps its AU, "CLAPTRAP" its
+  // CLAP.
+  const stripFormat = (s) =>
+    String(s || '').replace(/\b(?:VST3|VST2|VST|AAX|AudioUnit|AU|CLAP)\b/gi, ' ');
+  const norm = (s) => stripFormat(s).toLowerCase().replace(/[^a-z0-9]+/g, '');
   const normName = norm(pluginName);
   if (normName) {
     for (const key of keys) {
       const normKey = norm(key);
       if (normKey && normName.includes(normKey)) {
-        return { matchedKey: key, ...dev.productMatchers[key] };
+        const hit = { matchedKey: key, ...dev.productMatchers[key] };
+        if (hit.updateUrl) return hit;
+        if (!loose) loose = hit;
       }
     }
   }
-  return null;
+  // Nothing with a source matched; fall back to the best name match we saw
+  // (it still carries category/subcategory), exactly as before.
+  return loose;
 }
 
 
