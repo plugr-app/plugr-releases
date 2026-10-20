@@ -244,7 +244,22 @@ function lookupRegistry({ identifier, pluginName, developerName }) {
     const byName = findProductEntry(developerName, pluginName);
     if (byName) {
       productEntry = byName;
-      if (!developer) developer = developerName;
+      // Canonicalize through developerAliases rather than adopting the
+      // scanned string verbatim: vendors reach us under variant spellings
+      // ("Acon Digital AS", "Josephlyncheski", "- Minimal Audio") and
+      // reporting the variant splits one vendor across two cards, two
+      // sidebar groups and two dedup families.
+      if (!developer) developer = applyDeveloperAlias(developerName) || developerName;
+    }
+  }
+  if (!developer && developerName) {
+    // Same canonicalization for the case where NO product matched: the
+    // variant name alone is enough to attribute the plugin, as long as the
+    // canonical name is a developer we actually know.
+    const canonical = applyDeveloperAlias(developerName);
+    if (canonical && canonical !== developerName && getDeveloperEntry(canonical)) {
+      developer = canonical;
+      if (!productEntry) productEntry = findProductEntry(canonical, pluginName);
     }
   }
   const devEntry = developer ? getDeveloperEntry(developer) : null;

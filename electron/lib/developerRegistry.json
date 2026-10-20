@@ -192,7 +192,10 @@
     "waproduction-samples": "W. A. Production",
     "wizoo": "AIR Music Tech",
     "zplane.development": "Zplane",
-    "zplane gmbh": "Zplane"
+    "zplane gmbh": "Zplane",
+    "acon digital as": "Acon Digital",
+    "josephlyncheski": "Joseph Lyncheski",
+    "- minimal audio": "Minimal Audio"
   },
   "developerByName": {
     "_comment": "Force a plugin to a specific developer based on its name. Higher-priority than identifier-based attribution — useful when a plugin is distributed under one vendor's bundle ID but actually belongs to a different vendor (e.g. Splice plugins with Brainworx bundle IDs).",
@@ -5015,6 +5018,54 @@
         "Transfer": {
           "category": "Effect",
           "subcategory": "Utility"
+        },
+        "Acon Digital DeClick 2": {
+          "category": "Effect",
+          "subcategory": "Utility"
+        },
+        "Acon Digital DeClip 2": {
+          "category": "Effect",
+          "subcategory": "Utility"
+        },
+        "Acon Digital DeHum 2": {
+          "category": "Effect",
+          "subcategory": "Utility"
+        },
+        "Acon Digital DeNoise 2": {
+          "category": "Effect",
+          "subcategory": "Utility"
+        },
+        "Acon Digital Verberate 2": {
+          "category": "Effect",
+          "subcategory": "Reverb"
+        },
+        "Acon Digital Vitalize": {
+          "category": "Effect",
+          "subcategory": "Distortion"
+        },
+        "DeClick2": {
+          "category": "Effect",
+          "subcategory": "Utility"
+        },
+        "DeClip2": {
+          "category": "Effect",
+          "subcategory": "Utility"
+        },
+        "DeHum2": {
+          "category": "Effect",
+          "subcategory": "Utility"
+        },
+        "DeNoise2": {
+          "category": "Effect",
+          "subcategory": "Utility"
+        },
+        "Verberate2": {
+          "category": "Effect",
+          "subcategory": "Reverb"
+        },
+        "Vitalize": {
+          "category": "Effect",
+          "subcategory": "Distortion"
         }
       }
     },
@@ -8878,7 +8929,7 @@
         }
       }
     },
-    "- Minimal Audio": {
+    "Minimal Audio": {
       "identifierPrefix": [],
       "productMatchers": {
         "Rift": {
@@ -8897,59 +8948,6 @@
         "VerberateImmersive2": {
           "category": "Effect",
           "subcategory": "Reverb"
-        }
-      }
-    },
-    "Acon Digital AS": {
-      "identifierPrefix": [],
-      "productMatchers": {
-        "Acon Digital DeClick 2": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        },
-        "Acon Digital DeClip 2": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        },
-        "Acon Digital DeHum 2": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        },
-        "Acon Digital DeNoise 2": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        },
-        "Acon Digital Verberate 2": {
-          "category": "Effect",
-          "subcategory": "Reverb"
-        },
-        "Acon Digital Vitalize": {
-          "category": "Effect",
-          "subcategory": "Distortion"
-        },
-        "DeClick2": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        },
-        "DeClip2": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        },
-        "DeHum2": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        },
-        "DeNoise2": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        },
-        "Verberate2": {
-          "category": "Effect",
-          "subcategory": "Reverb"
-        },
-        "Vitalize": {
-          "category": "Effect",
-          "subcategory": "Distortion"
         }
       }
     },
@@ -9001,15 +8999,6 @@
       }
     },
     "Joseph Lyncheski": {
-      "identifierPrefix": [],
-      "productMatchers": {
-        "MiniMeters": {
-          "category": "Effect",
-          "subcategory": "Utility"
-        }
-      }
-    },
-    "Josephlyncheski": {
       "identifierPrefix": [],
       "productMatchers": {
         "MiniMeters": {

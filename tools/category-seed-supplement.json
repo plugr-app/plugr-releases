@@ -1,6 +1,6 @@
 {
   "_comment": "Supplement to seed-categories.js CATEGORIES map. Built 2026-07-16 from Josh's other-Mac library-cache.json (575 uncategorized products across 60 developers). dev -> product name -> {category, subcategory}. Merged (not overwritten) into the registry by seed-categories.js. MIDI uses subcategory null; Application uses 'Application'.",
-  "- Minimal Audio": {
+  "Minimal Audio": {
     "Rift": { "category": "Effect", "subcategory": "Distortion" }
   },
   "AIR Music Tech": {
@@ -37,9 +37,7 @@
     "ExtractDialogue": { "category": "Effect", "subcategory": "Utility" },
     "Limit": { "category": "Effect", "subcategory": "Dynamics" },
     "Remix": { "category": "Effect", "subcategory": "Utility" },
-    "Transfer": { "category": "Effect", "subcategory": "Utility" }
-  },
-  "Acon Digital AS": {
+    "Transfer": { "category": "Effect", "subcategory": "Utility" },
     "Acon Digital DeClick 2": { "category": "Effect", "subcategory": "Utility" },
     "Acon Digital DeClip 2": { "category": "Effect", "subcategory": "Utility" },
     "Acon Digital DeHum 2": { "category": "Effect", "subcategory": "Utility" },
@@ -138,9 +136,6 @@
     "Cryostasis": { "category": "Effect", "subcategory": "Reverb" }
   },
   "Joseph Lyncheski": {
-    "MiniMeters": { "category": "Effect", "subcategory": "Utility" }
-  },
-  "Josephlyncheski": {
     "MiniMeters": { "category": "Effect", "subcategory": "Utility" }
   },
   "Kilohearts": {
