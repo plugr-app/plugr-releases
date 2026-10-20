@@ -1116,7 +1116,7 @@ function fixGenericAppNames(items) {
  * passes may further mutate the name. This is the safety net.
  */
 function enrichAllRegistryByDeveloperName(items) {
-  const { applyDeveloperAlias, loadRegistry } = require('./registryLookup.cjs');
+  const { applyDeveloperAlias, loadRegistry, findDeveloperByIdentifier } = require('./registryLookup.cjs');
   // Build a name-keyed override map once. developerByName lets the
   // registry force-reattribute a plugin based on its name regardless
   // of the bundle ID. Useful when a vendor distributes plugins under
@@ -1180,6 +1180,26 @@ function enrichAllRegistryByDeveloperName(items) {
         it.developer = aliased;
       }
     }
+    // §6d puts identifierPrefix ABOVE raw plist metadata, but the final
+    // it.developer came from inferDeveloper(), which reads the bundle's own
+    // vendor/copyright strings. A vendor shipping inside another's namespace
+    // — Splice's Astra/Beatmaker/Bridge carry Brainworx metadata — therefore
+    // kept the WRONG name unless developerByName happened to list it by name,
+    // which is why "Bridge" stayed under Plugin Alliance while "Splice Bridge"
+    // was corrected. Honour the documented order: a bundle identifier that
+    // resolves to a registered developer beats a metadata string.
+    // Measured on Josh's 4498-item library before shipping: exactly 17 items
+    // change, ALL "Plugin Alliance" -> "Splice"; nothing else in the library
+    // disagrees. Name-override still wins (it is checked first), and user
+    // overrides win later in the renderer.
+    if (!overrodeByName && it.identifier) {
+      const byId = findDeveloperByIdentifier(it.identifier);
+      if (byId && byId !== it.developer) {
+        it.developer = byId;
+        it.developerSource = (it.developerSource || 'inferred') + '+identifier';
+      }
+    }
+
     // When name-override fired we also force-replace registry fields
     // (companion app, homepage, etc.) so they don't stay pointing at
     // the wrong vendor.
