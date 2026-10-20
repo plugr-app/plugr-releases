@@ -279,10 +279,19 @@ function lookupRegistry({ identifier, pluginName, developerName }) {
     // Same canonicalization for the case where NO product matched: the
     // variant name alone is enough to attribute the plugin, as long as the
     // canonical name is a developer we actually know.
+    // Adopt the scanned name when it (or its alias) names a developer we
+    // actually have an entry for. The alias-only form used to be the sole
+    // path here, which meant a vendor with an entry but no identifierPrefix
+    // and no productMatchers — common for the small vendors that only carry
+    // a developer-level link — never resolved at all, so its source could
+    // never apply.
     const canonical = applyDeveloperAlias(developerName);
-    if (canonical && canonical !== developerName && getDeveloperEntry(canonical)) {
-      developer = canonical;
-      if (!productEntry) productEntry = findProductEntry(canonical, pluginName);
+    const candidate =
+      (canonical && getDeveloperEntry(canonical)) ? canonical
+      : (getDeveloperEntry(developerName) ? developerName : null);
+    if (candidate) {
+      developer = candidate;
+      if (!productEntry) productEntry = findProductEntry(candidate, pluginName);
     }
   }
   const devEntry = developer ? getDeveloperEntry(developer) : null;

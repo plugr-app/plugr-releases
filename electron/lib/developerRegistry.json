@@ -195,7 +195,8 @@
     "zplane gmbh": "Zplane",
     "acon digital as": "Acon Digital",
     "josephlyncheski": "Joseph Lyncheski",
-    "- minimal audio": "Minimal Audio"
+    "- minimal audio": "Minimal Audio",
+    "gforcesoftware": "GForce"
   },
   "developerByName": {
     "_comment": "Force a plugin to a specific developer based on its name. Higher-priority than identifier-based attribution — useful when a plugin is distributed under one vendor's bundle ID but actually belongs to a different vendor (e.g. Splice plugins with Brainworx bundle IDs).",
@@ -1783,7 +1784,9 @@
           "category": "Effect",
           "subcategory": "Dynamics"
         }
-      }
+      },
+      "updateUrl": "https://www.waves.com/downloads/release-notes",
+      "downloadUrl": "https://www.waves.com/downloads/release-notes"
     },
     "u-he": {
       "homepage": "https://u-he.com",
@@ -1794,11 +1797,15 @@
       "productMatchers": {
         "Diva": {
           "category": "Instrument",
-          "subcategory": "Synth"
+          "subcategory": "Synth",
+          "updateUrl": "https://u-he.com/products/diva/",
+          "versionRegex": "Diva (\\d+\\.\\d+\\.\\d+)"
         },
         "Hive": {
           "category": "Instrument",
-          "subcategory": "Synth"
+          "subcategory": "Synth",
+          "updateUrl": "https://u-he.com/products/hive/",
+          "versionRegex": "Hive 2 (\\d+\\.\\d+\\.\\d+)"
         },
         "Repro": {
           "category": "Instrument",
@@ -1827,6 +1834,10 @@
         "Colour Copy": {
           "category": "Effect",
           "subcategory": "Delay"
+        },
+        "Repro-1": {
+          "updateUrl": "https://u-he.com/products/repro/",
+          "versionRegex": "Repro (\\d+\\.\\d+\\.\\d+)"
         }
       }
     },
@@ -3978,7 +3989,9 @@
           "category": "Effect",
           "subcategory": "Distortion"
         }
-      }
+      },
+      "updateUrl": "https://www.avid.com/pro-tools/whats-new",
+      "downloadUrl": "https://www.avid.com/pro-tools/whats-new"
     },
     "PreSonus": {
       "homepage": "https://www.presonus.com",
@@ -4135,7 +4148,9 @@
           "category": "Instrument",
           "subcategory": "Synth"
         }
-      }
+      },
+      "updateUrl": "https://www.airmusictech.com/downloads/",
+      "downloadUrl": "https://www.airmusictech.com/downloads/"
     },
     "Spitfire Audio": {
       "homepage": "https://www.spitfireaudio.com",
@@ -4449,7 +4464,21 @@
         },
         "TDR Molotok": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://www.tokyodawn.net/tdr-molotok/",
+          "versionRegex": "Latest version:\\s*(\\d+\\.\\d+\\.\\d+)"
+        },
+        "TDR Nova": {
+          "updateUrl": "https://www.tokyodawn.net/tdr-nova/",
+          "versionRegex": "Latest version:\\s*(\\d+\\.\\d+\\.\\d+)"
+        },
+        "TDR Kotelnikov": {
+          "updateUrl": "https://www.tokyodawn.net/tdr-kotelnikov/",
+          "versionRegex": "Latest version:\\s*(\\d+\\.\\d+\\.\\d+)"
+        },
+        "TDR VOS SlickEQ": {
+          "updateUrl": "https://www.tokyodawn.net/tdr-vos-slickeq/",
+          "versionRegex": "Latest version:\\s*(\\d+\\.\\d+\\.\\d+)"
         }
       }
     },
@@ -4652,7 +4681,13 @@
         },
         "Filterverse": {
           "category": "Effect",
-          "subcategory": "EQ"
+          "subcategory": "EQ",
+          "updateUrl": "https://polyversemusic.com/update",
+          "versionRegex": "Filterverse\\s*v?(\\d+\\.\\d+\\.\\d+)"
+        },
+        "Supermodal": {
+          "updateUrl": "https://polyversemusic.com/update",
+          "versionRegex": "Supermodal\\s*v?(\\d+\\.\\d+\\.\\d+)"
         }
       }
     },
@@ -4767,15 +4802,21 @@
         },
         "Mic Mod": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969213903252-Mic-Mod-Release-Notes",
+          "versionRegex": "Mic Mod \\((\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Mutator": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969241981844-Mutator-Release-Notes",
+          "versionRegex": "Mutator \\((\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Articulator": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969143783956-Articulator-Release-Notes",
+          "versionRegex": "Articulator \\((\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Aspire": {
           "category": "Effect",
@@ -4787,7 +4828,9 @@
         },
         "Duo": {
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969232133780-Duo-Release-Notes",
+          "versionRegex": "Duo \\((\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Punch": {
           "category": "Effect",
@@ -4904,6 +4947,22 @@
         "Vocal Reverb": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47968668073236-Vocal-Reverb-Release-Notes",
           "versionRegex": "Vocal\\s+Reverb\\s+\\(\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Auto-Tune Access": {
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41117275952020-Auto-Tune-Access-10-Release-Notes",
+          "versionRegex": "Auto-Tune Access 10 \\((\\d+\\.\\d+\\.\\d+)\\)"
+        },
+        "Auto-Tune Artist": {
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47968044541076-Auto-Tune-Artist-Release-Notes",
+          "versionRegex": "Auto-Tune Artist \\((\\d+\\.\\d+\\.\\d+)\\)"
+        },
+        "Auto-Tune Slice": {
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969246801044-Slice-Release-Notes",
+          "versionRegex": "Slice \\((\\d+\\.\\d+\\.\\d+)\\)"
+        },
+        "Auto-Tune Vocodist": {
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969287023764-Vocodist-Release-Notes",
+          "versionRegex": "Vocodist \\((\\d+\\.\\d+\\.\\d+)\\)"
         }
       }
     },
@@ -4921,7 +4980,13 @@
         },
         "Tonalic": {
           "category": "Instrument",
-          "subcategory": "Sampler"
+          "subcategory": "Sampler",
+          "updateUrl": "https://www.tonalic.com/release-notes.html",
+          "versionRegex": "Tonalic\\s*(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "Tonalic Instrument": {
+          "updateUrl": "https://www.tonalic.com/release-notes.html",
+          "versionRegex": "Tonalic\\s*(\\d+\\.\\d+\\.\\d+\\.\\d+)"
         }
       }
     },
@@ -4943,11 +5008,23 @@
         },
         "SoundID VoiceAI": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.sonarworks.com/soundid-produce/voiceai/release-notes",
+          "versionRegex": "Release notes for (\\d+\\.\\d+\\.\\d+)"
         },
         "SoundIDVoiceAI": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.sonarworks.com/soundid-produce/voiceai/release-notes",
+          "versionRegex": "Release notes for (\\d+\\.\\d+\\.\\d+)"
+        },
+        "SoundID Virtual Monitoring PRO Measure": {
+          "updateUrl": "https://www.sonarworks.com/download-center",
+          "versionRegex": "Current version (\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "SoundID Download Manager": {
+          "updateUrl": "https://www.sonarworks.com/soundid-produce/voiceai/release-notes",
+          "versionRegex": "Release notes for (\\d+\\.\\d+\\.\\d+)"
         }
       }
     },
@@ -5039,15 +5116,21 @@
         },
         "Convolve": {
           "category": "Effect",
-          "subcategory": "Reverb"
+          "subcategory": "Reverb",
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
         },
         "DeBird": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
         },
         "DeBuzz": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
         },
         "DeBuzz Dialogue": {
           "category": "Effect",
@@ -5063,7 +5146,9 @@
         },
         "DePlosive": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
         },
         "DePlosive Dialogue": {
           "category": "Effect",
@@ -5071,7 +5156,9 @@
         },
         "DeRustle": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
         },
         "DeRustle Dialogue": {
           "category": "Effect",
@@ -5079,7 +5166,9 @@
         },
         "DeWind": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
         },
         "DeWind Dialogue": {
           "category": "Effect",
@@ -5095,11 +5184,15 @@
         },
         "Extract Dialogue": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/extract-dialogue",
+          "versionRegex": "Acon Digital Extract:Dialogue (\\d+\\.\\d+\\.\\d+)"
         },
         "ExtractDialogue": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/extract-dialogue",
+          "versionRegex": "Acon Digital Extract:Dialogue (\\d+\\.\\d+\\.\\d+)"
         },
         "Limit": {
           "category": "Effect",
@@ -5107,7 +5200,9 @@
         },
         "Remix": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/remix",
+          "versionRegex": "Acon Digital Remix (\\d+\\.\\d+\\.\\d+)"
         },
         "Transfer": {
           "category": "Effect",
@@ -5159,7 +5254,41 @@
         },
         "Vitalize": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
+        },
+        "DeVerberate 3": {
+          "updateUrl": "https://acondigital.com/products/deverberate",
+          "versionRegex": "Acon Digital DeVerberate (3\\.\\d+\\.\\d+)"
+        },
+        "DeVerberate3": {
+          "updateUrl": "https://acondigital.com/products/deverberate",
+          "versionRegex": "Acon Digital DeVerberate (3\\.\\d+\\.\\d+)"
+        },
+        "Equalize 2": {
+          "updateUrl": "https://acondigital.com/products/equalize",
+          "versionRegex": "Acon Digital Equalize (2\\.\\d+\\.\\d+)"
+        },
+        "Equalize2": {
+          "updateUrl": "https://acondigital.com/products/equalize",
+          "versionRegex": "Acon Digital Equalize (2\\.\\d+\\.\\d+)"
+        },
+        "DeEssDialogue": {
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
+        },
+        "DeEss Dialogue": {
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
+        },
+        "PhonoFilter": {
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
+        },
+        "Phono Filter": {
+          "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
+          "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
         }
       }
     },
@@ -5219,6 +5348,18 @@
           "versionRegex": "\\bv(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
           "subcategory": "Distortion"
+        },
+        "Things Flip EQ": {
+          "updateUrl": "https://www.audiothing.net/effects/things-tilt/",
+          "versionRegex": "\\d{4}/\\d{2}/\\d{2}:\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
+        },
+        "ThingsFlipEQ": {
+          "updateUrl": "https://www.audiothing.net/effects/things-tilt/",
+          "versionRegex": "\\d{4}/\\d{2}/\\d{2}:\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
+        },
+        "ThingsTexture": {
+          "updateUrl": "https://www.audiothing.net/effects/things-texture/",
+          "versionRegex": "\\d{4}/\\d{2}/\\d{2}:\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
         }
       }
     },
@@ -6971,6 +7112,26 @@
           "versionRegex": "contents\\s+Build\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
           "subcategory": "Multi-Effect"
+        },
+        "SpatRevolution-Room": {
+          "updateUrl": "https://doc.flux.audio/spat-revolution/Appendix_D_release_notes.html",
+          "versionRegex": "Build (\\d+\\.\\d+\\.\\d+)"
+        },
+        "SpatRevolution-Send": {
+          "updateUrl": "https://doc.flux.audio/spat-revolution/Appendix_D_release_notes.html",
+          "versionRegex": "Build (\\d+\\.\\d+\\.\\d+)"
+        },
+        "SpatRevolution-Return": {
+          "updateUrl": "https://doc.flux.audio/spat-revolution/Appendix_D_release_notes.html",
+          "versionRegex": "Build (\\d+\\.\\d+\\.\\d+)"
+        },
+        "MiRA-SampleGrabber": {
+          "updateUrl": "https://doc.flux.audio/mira/release_notes.html",
+          "versionRegex": "MiRA (\\d+\\.\\d+)"
+        },
+        "StereoTool": {
+          "updateUrl": "https://www.flux.audio/download",
+          "downloadUrl": "https://www.flux.audio/download"
         }
       }
     },
@@ -8275,6 +8436,22 @@
         "FAST Balancer": {
           "category": "Effect",
           "subcategory": "Utility"
+        },
+        "Red 2 EQ": {
+          "updateUrl": "https://downloads.focusrite.com/focusrite/red-plugin-suite",
+          "versionRegex": "Red Plug-in Suite (\\d+\\.\\d+\\.\\d+)"
+        },
+        "Red 3 Compressor": {
+          "updateUrl": "https://downloads.focusrite.com/focusrite/red-plugin-suite",
+          "versionRegex": "Red Plug-in Suite (\\d+\\.\\d+\\.\\d+)"
+        },
+        "Control": {
+          "updateUrl": "https://downloads.focusrite.com/",
+          "downloadUrl": "https://downloads.focusrite.com/"
+        },
+        "Components": {
+          "updateUrl": "https://components.novationmusic.com/",
+          "downloadUrl": "https://components.novationmusic.com/"
         }
       }
     },
@@ -8559,7 +8736,9 @@
           "category": "Effect",
           "subcategory": "Modulation"
         }
-      }
+      },
+      "updateUrl": "https://www.uvi.net/all-products",
+      "downloadUrl": "https://www.uvi.net/all-products"
     },
     "UnitedPlugins": {
       "homepage": "https://www.unitedplugins.com",
@@ -8657,7 +8836,9 @@
           "category": "Effect",
           "subcategory": "Multi-Effect"
         }
-      }
+      },
+      "updateUrl": "https://unitedplugins.com/download/",
+      "downloadUrl": "https://unitedplugins.com/download/"
     },
     "JMG Sound": {
       "homepage": "https://www.unitedplugins.com",
@@ -8810,7 +8991,9 @@
           "category": "Effect",
           "subcategory": "Dynamics"
         }
-      }
+      },
+      "updateUrl": "https://mcdsp.com/downloads/plugin-downloads",
+      "downloadUrl": "https://mcdsp.com/downloads/plugin-downloads"
     },
     "Mixed In Key": {
       "identifierPrefix": [
@@ -8875,7 +9058,9 @@
           "category": "Instrument",
           "subcategory": "Drums"
         }
-      }
+      },
+      "updateUrl": "https://www.sonicacademy.com/products/kick-2",
+      "downloadUrl": "https://www.sonicacademy.com/products/kick-2"
     },
     "SoundRadix": {
       "identifierPrefix": [
@@ -8923,7 +9108,9 @@
           "category": "Effect",
           "subcategory": "Distortion"
         }
-      }
+      },
+      "updateUrl": "https://tailorednoise-downloads.com/",
+      "downloadUrl": "https://tailorednoise-downloads.com/"
     },
     "XynthAudio": {
       "identifierPrefix": [
@@ -9003,7 +9190,9 @@
       "productMatchers": {
         "Astra": {
           "category": "Instrument",
-          "subcategory": "Synth"
+          "subcategory": "Synth",
+          "updateUrl": "https://splice.com/tools/astra",
+          "downloadUrl": "https://splice.com/tools/astra"
         },
         "Splice Bridge": {
           "category": "Application"
@@ -9013,7 +9202,25 @@
         },
         "Beatmaker": {
           "category": "Instrument",
-          "subcategory": "Synth"
+          "subcategory": "Synth",
+          "updateUrl": "https://splice.com/tools/beatmaker",
+          "downloadUrl": "https://splice.com/tools/beatmaker"
+        },
+        "INSTRUMENT": {
+          "updateUrl": "https://support.splice.com/en/articles/12295094-splice-instrument-change-log",
+          "versionRegex": "Version (\\d+\\.\\d+\\.\\d+)"
+        },
+        "Bridge": {
+          "updateUrl": "https://support.splice.com/en/collections/7183390-splice-bridge",
+          "downloadUrl": "https://support.splice.com/en/collections/7183390-splice-bridge"
+        },
+        "SpliceBridge": {
+          "updateUrl": "https://support.splice.com/en/collections/7183390-splice-bridge",
+          "downloadUrl": "https://support.splice.com/en/collections/7183390-splice-bridge"
+        },
+        "Sounds Listener": {
+          "updateUrl": "https://splice.com/download",
+          "downloadUrl": "https://splice.com/download"
         }
       }
     },
@@ -9082,7 +9289,9 @@
           "category": "Effect",
           "subcategory": "Distortion"
         }
-      }
+      },
+      "updateUrl": "https://www.minimal.audio/",
+      "downloadUrl": "https://www.minimal.audio/"
     },
     "Acon AS": {
       "identifierPrefix": [],
@@ -9102,19 +9311,55 @@
       "productMatchers": {
         "Orion": {
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "updateUrl": "https://share.nuclino.com/p/Orion---Release-Notes-9qSlAwAMU3I2puJFIHJO5X",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
         },
         "The God Particle": {
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "updateUrl": "https://share.nuclino.com/p/The-God-Particle---Release-Notes-gQczwW4XIyWidszbYTDSAD",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
         },
         "The Spirit": {
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "updateUrl": "https://share.nuclino.com/p/The-Spirit---Release-Notes-Qc0f8aIRbgzgVAwHr4mgxV",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
         },
         "TheSpirit": {
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "updateUrl": "https://share.nuclino.com/p/The-Spirit---Release-Notes-Qc0f8aIRbgzgVAwHr4mgxV",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "Cradle Hub": {
+          "updateUrl": "https://share.nuclino.com/p/Cradle-Hub---Release-Notes-ETIJBVrr5i7io-1i4gK_xI",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "The Prince": {
+          "updateUrl": "https://share.nuclino.com/p/The-Prince---Release-Notes-WIv5y1HJXjuXq7ezaGEjxp",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "ThePrince": {
+          "updateUrl": "https://share.nuclino.com/p/The-Prince---Release-Notes-WIv5y1HJXjuXq7ezaGEjxp",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "State Machine Low End": {
+          "updateUrl": "https://share.nuclino.com/p/State-Machine-Low-End---Release-Notes-mU407-hEmXantOqCxCgJYq",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "State Machine Faded Keys": {
+          "updateUrl": "https://share.nuclino.com/p/State-Machine-Faded-Keys---Release-Notes-vqfvQmc_TfC3BCOAfOKzrk",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "State Machine Slow Drift": {
+          "updateUrl": "https://share.nuclino.com/p/State-Machine-Slow-Drift---Release-Notes-6UDuY7WPhb-WOG0UGx8fza",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
+        },
+        "State Machine Weird Strings": {
+          "updateUrl": "https://share.nuclino.com/p/State-Machine-Weird-Strings---Release-Notes-rKvhR8azjBcsG6UQrN_IBI",
+          "versionRegex": "v\\.?(\\d+\\.\\d+\\.\\d+\\.\\d+)"
         }
       }
     },
@@ -9123,15 +9368,21 @@
       "productMatchers": {
         "Immerse Studio Signature Edition": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://embody.co/pages/ivs-signature-edition-download-apple-music",
+          "versionRegex": "Latest Version \\(v(\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Immerse Virtual Studio": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://embody.co/pages/ivs-signature-edition-download-apple-music",
+          "versionRegex": "Latest Version \\(v(\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Immerse Virtual Studio Signature Edition": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://embody.co/pages/ivs-signature-edition-download-apple-music",
+          "versionRegex": "Latest Version \\(v(\\d+\\.\\d+\\.\\d+)\\)"
         }
       }
     },
@@ -9149,7 +9400,9 @@
       "productMatchers": {
         "MiniMeters": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://minimeters.app/changelog",
+          "versionRegex": "MiniMeters: v(\\d+\\.\\d+\\.\\d+)"
         }
       }
     },
@@ -9177,7 +9430,9 @@
           "category": "MIDI",
           "subcategory": null
         }
-      }
+      },
+      "updateUrl": "https://www.modalics.com/products",
+      "downloadUrl": "https://www.modalics.com/products"
     },
     "OKAYAudio": {
       "identifierPrefix": [],
@@ -9238,7 +9493,9 @@
           "category": "Effect",
           "subcategory": "Utility"
         }
-      }
+      },
+      "updateUrl": "https://www.sessionwire.com/download",
+      "downloadUrl": "https://www.sessionwire.com/download"
     },
     "Thehim": {
       "identifierPrefix": [],
@@ -9248,6 +9505,18 @@
           "subcategory": "Utility"
         }
       }
+    },
+    "GForce": {
+      "identifierPrefix": [],
+      "productMatchers": {},
+      "updateUrl": "https://www.gforcesoftware.com/support/updates-and-releases/",
+      "downloadUrl": "https://www.gforcesoftware.com/support/updates-and-releases/"
+    },
+    "Kushview": {
+      "identifierPrefix": [],
+      "productMatchers": {},
+      "updateUrl": "https://github.com/kushview/element/releases/latest",
+      "downloadUrl": "https://github.com/kushview/element/releases/latest"
     }
   },
   "identifierShortcuts": {
