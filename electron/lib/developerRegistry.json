@@ -397,7 +397,9 @@
         },
         "Relay": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.izotope.com/pages/release-notes/relay",
+          "versionRegex": "[Vv]ersion\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Vinyl": {
           "category": "Effect",
@@ -407,7 +409,9 @@
         },
         "Vocal Doubler": {
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "updateUrl": "https://www.izotope.com/pages/release-notes/vocal-doubler",
+          "versionRegex": "[Vv]ersion\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Insight 2": {
           "updateUrl": "https://www.izotope.com/downloads",
@@ -453,6 +457,14 @@
         },
         "Tonal Balance Control": {
           "updateUrl": "https://www.izotope.com/pages/release-notes/tonal-balance-control",
+          "versionRegex": "[Vv]ersion\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Ozone 12": {
+          "updateUrl": "https://www.izotope.com/pages/release-notes/ozone-advanced",
+          "versionRegex": "[Vv]ersion\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "RX 11": {
+          "updateUrl": "https://www.izotope.com/pages/release-notes/rx-advanced",
           "versionRegex": "[Vv]ersion\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         }
       }
