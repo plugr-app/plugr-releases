@@ -442,6 +442,18 @@
         "Nectar 3": {
           "updateUrl": "https://www.izotope.com/en/products/downloads/nectar-4-advanced",
           "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Neutron 5": {
+          "updateUrl": "https://www.izotope.com/pages/release-notes/neutron",
+          "versionRegex": "[Vv]ersion\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Nectar 4": {
+          "updateUrl": "https://www.izotope.com/pages/release-notes/nectar",
+          "versionRegex": "[Vv]ersion\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Tonal Balance Control": {
+          "updateUrl": "https://www.izotope.com/pages/release-notes/tonal-balance-control",
+          "versionRegex": "[Vv]ersion\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         }
       }
     },
