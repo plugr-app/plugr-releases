@@ -249,6 +249,31 @@ function lookupRegistry({ identifier, pluginName, developerName }) {
   }
   const devEntry = developer ? getDeveloperEntry(developer) : null;
   if (!developer) return null;
+
+  // Developer-level update source — FALLBACK ONLY.
+  //
+  // A few vendors ship their whole catalog on one version train from a
+  // single installer, so every plugin reports the same bundle version and
+  // one page carries it. Softube is the clearest case: all 400+ of its
+  // plugins report e.g. 2.6.40, and softube.com/us/release-notes publishes
+  // the current one. For those vendors a source on the DEVELOPER entry
+  // covers every product — including ones no productMatcher names, and
+  // ones the vendor releases after this registry shipped.
+  //
+  // Rules (read before adding `updateUrl` to a developer entry):
+  //   1. It NEVER overrides a product's own source — product wins always.
+  //   2. It is opt-in per developer: absent fields mean no change.
+  //   3. ONLY add it to a vendor whose catalog genuinely shares one
+  //      version. A vendor with per-product versions would get mass false
+  //      "outdated"/"ahead" verdicts on every unmatched plugin. The test
+  //      used when this landed: that vendor's working plugins all check
+  //      against ONE url AND the installed versions across its items are
+  //      near-uniform. Output failed this (its regex names one product);
+  //      Acon Digital failed it (12 distinct versions across 64 items).
+  const useDevSource = Boolean(
+    devEntry && devEntry.updateUrl && !(productEntry && productEntry.updateUrl),
+  );
+
   return {
     developer,
     homepage: devEntry && devEntry.homepage,
@@ -257,12 +282,23 @@ function lookupRegistry({ identifier, pluginName, developerName }) {
     companionApp: devEntry && devEntry.companionApp,
     category: productEntry && productEntry.category,
     subcategory: productEntry && productEntry.subcategory,
-    updateUrl: productEntry && productEntry.updateUrl,
-    versionRegex: productEntry && productEntry.versionRegex,
+    updateUrl: useDevSource ? devEntry.updateUrl : (productEntry && productEntry.updateUrl),
+    versionRegex: useDevSource
+      ? (devEntry.versionRegex || '')
+      : (productEntry && productEntry.versionRegex),
+    // 'developer' when the source came from the developer-level fallback
+    // above, 'product' when a productMatcher supplied it. Diagnostic: a
+    // wrong dev-level source is otherwise hard to tell from a wrong
+    // product one.
+    registrySourceLevel: useDevSource
+      ? 'developer'
+      : (productEntry && productEntry.updateUrl ? 'product' : null),
     // Optional per-product download page (release-notes page ≠ download
     // page). Surfaced so a promoted/bundled source can route the CTA the
     // same way a user-added one does.
-    downloadUrl: productEntry && productEntry.downloadUrl,
+    downloadUrl: useDevSource
+      ? (devEntry.downloadUrl || null)
+      : (productEntry && productEntry.downloadUrl),
     matchedProduct: productEntry && productEntry.matchedKey,
   };
 }

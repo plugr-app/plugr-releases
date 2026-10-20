@@ -148,6 +148,10 @@ function gapsConfigured() {
 
 // Report uncategorized {name, developer} pairs. Strictly name + developer;
 // deduped + capped so a huge library can't produce an oversized payload.
+// NOTE: name kept as submitCategoryGaps because it is the established
+// IPC/preload contract ('community:submitGaps' -> pluginHub.submitCategoryGaps).
+// It now carries BOTH category gaps and missing-update-source gaps; each
+// entry may carry kind:'source', and no kind means 'category'.
 async function submitCategoryGaps({ gaps, appVersion } = {}) {
   if (!gapsConfigured()) return { ok: false, error: 'not-configured' };
   if (!Array.isArray(gaps)) return { ok: false, error: 'no-gaps' };
@@ -155,10 +159,17 @@ async function submitCategoryGaps({ gaps, appVersion } = {}) {
   const clean = [];
   for (const g of gaps) {
     if (!g || !g.name || !g.developer) continue;
-    const key = `${String(g.developer).toLowerCase()}|${String(g.name).toLowerCase()}`;
+    // Two kinds of gap now share this feed: 'category' (Plugr couldn't
+    // categorize it) and 'source' (Plugr has no update source for it).
+    // 'category' is the implicit default so rows written before source
+    // gaps existed still read correctly, and so the payload stays small.
+    const kind = g.kind === 'source' ? 'source' : 'category';
+    const key = `${kind}|${String(g.developer).toLowerCase()}|${String(g.name).toLowerCase()}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    clean.push({ name: String(g.name), developer: String(g.developer) });
+    const entry = { name: String(g.name), developer: String(g.developer) };
+    if (kind === 'source') entry.kind = kind;
+    clean.push(entry);
     if (clean.length >= 2000) break;   // hard cap — well beyond any real library
   }
   if (clean.length === 0) return { ok: false, error: 'no-gaps' };

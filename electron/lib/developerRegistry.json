@@ -6529,7 +6529,9 @@
           "category": "Effect",
           "subcategory": "Distortion"
         }
-      }
+      },
+      "updateUrl": "https://www.softube.com/us/release-notes",
+      "versionRegex": "tes\\s+for\\s+version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
     },
     "Unfiltered Audio": {
       "homepage": "https://www.unfilteredaudio.com",
@@ -7589,7 +7591,9 @@
           "category": "Effect",
           "subcategory": "EQ"
         }
-      }
+      },
+      "updateUrl": "https://www.meldaproduction.com/changes",
+      "versionRegex": "version\\s+number\\.\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
     },
     "Blue Cat Audio": {
       "homepage": "https://www.bluecataudio.com",

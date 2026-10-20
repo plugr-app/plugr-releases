@@ -3183,7 +3183,8 @@ export default function App() {
 
   // Silent category-gap report (CLAUDE.md §16 Tier 1). Opt-in: only fires
   // when the user has granted community-share consent. Sends ONLY the
-  // {name, developer} of plugins Plugr couldn't categorize — never library
+  // {name, developer} of plugins Plugr couldn't categorize OR has no update
+  // source for (kind:'source') — never library
   // contents/paths/identifiers — as one compact list, so Josh can fix them
   // centrally in the registry for everyone. Guarded to once per session,
   // and the backend no-ops until the gap form is configured, so this is
@@ -3194,11 +3195,28 @@ export default function App() {
     if (communityConsent !== 'allowed') return;
     if (!api.submitCategoryGaps) return;
     if (!displayedItems || displayedItems.length === 0) return;
+    // A plugin with no update source at all. Derived from the item itself
+    // rather than from a check RESULT, so it works whether or not the user
+    // has run "Check for Updates" this session. userRegistryAdditions are
+    // already merged into it.registry by applyRegistryAdditions, so a
+    // source the user added themselves correctly counts as "has a source".
+    // Companion-managed plugins are NOT gaps — an update manager owns them.
+    const hasNoSource = (it) => {
+      const reg = it.registry || {};
+      if (reg.updateUrl) return false;
+      if (it.sparkleFeedUrl) return false;
+      if (reg.companionApp) return false;
+      return true;
+    };
     const seen = new Map();
     for (const it of displayedItems) {
-      if (!isUncategorized(it)) continue;
       const key = `${(it.developer || '').toLowerCase()}|${(it.name || '').toLowerCase()}`;
-      if (!seen.has(key)) seen.set(key, { name: it.name, developer: it.developer });
+      if (isUncategorized(it) && !seen.has(`c|${key}`)) {
+        seen.set(`c|${key}`, { name: it.name, developer: it.developer });
+      }
+      if (hasNoSource(it) && !seen.has(`s|${key}`)) {
+        seen.set(`s|${key}`, { name: it.name, developer: it.developer, kind: 'source' });
+      }
     }
     if (seen.size === 0) return;
     gapsReportedRef.current = true;   // once per session, even if the POST fails
