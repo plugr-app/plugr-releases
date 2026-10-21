@@ -2616,46 +2616,75 @@
         "ValhallaVintageVerb": {
           "category": "Effect",
           "subcategory": "Reverb",
-          "updateUrl": "https://valhalladsp.com/products/valhalladelay/products/valhallavintageverb",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
-          "render": true
+          "updateUrl": "https://valhalladsp.com/shop/reverb/valhalla-vintage-verb/",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "render": true,
+          "downloadUrl": "https://valhalladsp.com/shop/reverb/valhalla-vintage-verb/"
         },
         "ValhallaRoom": {
           "category": "Effect",
-          "subcategory": "Reverb"
+          "subcategory": "Reverb",
+          "updateUrl": "https://valhalladsp.com/shop/reverb/valhalla-room/",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://valhalladsp.com/shop/reverb/valhalla-room/",
+          "render": true
         },
         "ValhallaPlate": {
           "category": "Effect",
-          "subcategory": "Reverb"
+          "subcategory": "Reverb",
+          "updateUrl": "https://valhalladsp.com/shop/reverb/valhalla-plate/",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://valhalladsp.com/shop/reverb/valhalla-plate/",
+          "render": true
         },
         "ValhallaShimmer": {
           "category": "Effect",
-          "subcategory": "Reverb"
+          "subcategory": "Reverb",
+          "updateUrl": "https://valhalladsp.com/shop/reverb/valhalla-shimmer/",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://valhalladsp.com/shop/reverb/valhalla-shimmer/",
+          "render": true
         },
         "ValhallaDelay": {
           "category": "Effect",
           "subcategory": "Delay",
-          "updateUrl": "https://valhalladsp.com/products/valhalladelay",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
-          "render": true
+          "updateUrl": "https://valhalladsp.com/shop/delay/valhalladelay/",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "render": true,
+          "downloadUrl": "https://valhalladsp.com/shop/delay/valhalladelay/"
         },
         "ValhallaSupermassive": {
           "category": "Effect",
           "subcategory": "Reverb",
-          "updateUrl": "https://valhalladsp.com/products/valhalladelay/products/valhallasupermassive",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
-          "render": true
+          "updateUrl": "https://valhalladsp.com/shop/reverb/valhalla-supermassive/",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "render": true,
+          "downloadUrl": "https://valhalladsp.com/shop/reverb/valhalla-supermassive/"
         },
         "ValhallaFreqEcho": {
           "category": "Effect",
           "subcategory": "Delay",
           "updateUrl": "https://valhalladsp.com/shop/delay/valhalla-freq-echo/",
-          "versionRegex": "urrent\\s+Version:\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
-          "render": true
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "render": true,
+          "downloadUrl": "https://valhalladsp.com/shop/delay/valhalla-freq-echo/"
         },
         "ValhallaSpaceModulator": {
           "updateUrl": "https://valhalladsp.com/shop/modulation/valhalla-space-modulator/",
-          "versionRegex": "urrent\\s+Version:\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "render": true,
+          "downloadUrl": "https://valhalladsp.com/shop/modulation/valhalla-space-modulator/"
+        },
+        "ValhallaUberMod": {
+          "updateUrl": "https://valhalladsp.com/shop/delay/valhalla-uber-mod/",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://valhalladsp.com/shop/delay/valhalla-uber-mod/",
+          "render": true
+        },
+        "ValhallaFutureVerb": {
+          "updateUrl": "https://valhalladsp.com/shop/reverb/valhallafutureverb/",
+          "versionRegex": "urrent\\s+Version:?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://valhalladsp.com/shop/reverb/valhallafutureverb/",
           "render": true
         }
       }
@@ -2924,7 +2953,10 @@
         },
         "bx_shredspread": {
           "category": "Effect",
-          "subcategory": "Imaging"
+          "subcategory": "Imaging",
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_shredspread",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/bx_shredspread"
         },
         "bx_solo": {
           "category": "Effect",
@@ -2986,7 +3018,10 @@
         },
         "elysia karacter": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.plugin-alliance.com/products/karacter",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/karacter"
         },
         "elysia mpressor": {
           "category": "Effect",
@@ -2996,7 +3031,10 @@
         },
         "elysia museq": {
           "category": "Effect",
-          "subcategory": "EQ"
+          "subcategory": "EQ",
+          "updateUrl": "https://www.plugin-alliance.com/products/museq",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/museq"
         },
         "elysia nvelope": {
           "category": "Effect",
@@ -3098,11 +3136,15 @@
         },
         "Schoeps Double MS": {
           "category": "Effect",
-          "subcategory": "Imaging"
+          "subcategory": "Imaging",
+          "updateUrl": "https://www.plugin-alliance.com/pages/installation-manager",
+          "downloadUrl": "https://www.plugin-alliance.com/pages/installation-manager"
         },
         "Schoeps Mono Upmix": {
           "category": "Effect",
-          "subcategory": "Imaging"
+          "subcategory": "Imaging",
+          "updateUrl": "https://www.plugin-alliance.com/pages/installation-manager",
+          "downloadUrl": "https://www.plugin-alliance.com/pages/installation-manager"
         },
         "SPL Attacker": {
           "category": "Effect",
@@ -3146,7 +3188,9 @@
         },
         "SPL Vitalizer": {
           "category": "Effect",
-          "subcategory": "EQ"
+          "subcategory": "EQ",
+          "updateUrl": "https://www.plugin-alliance.com/pages/installation-manager",
+          "downloadUrl": "https://www.plugin-alliance.com/pages/installation-manager"
         },
         "Vertigo VSC": {
           "category": "Effect",
@@ -3434,7 +3478,9 @@
         },
         "bx_crispyscale": {
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "updateUrl": "https://www.plugin-alliance.com/pages/installation-manager",
+          "downloadUrl": "https://www.plugin-alliance.com/pages/installation-manager"
         },
         "bx_crispytuner": {
           "category": "Effect",
@@ -3444,7 +3490,10 @@
         },
         "Cut Classic High Flyer": {
           "category": "Effect",
-          "subcategory": "EQ"
+          "subcategory": "EQ",
+          "updateUrl": "https://www.plugin-alliance.com/products/high-flyer",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/high-flyer"
         },
         "elysia museq Master": {
           "category": "Effect",
@@ -3481,6 +3530,23 @@
         "bx_metal2": {
           "updateUrl": "https://www.plugin-alliance.com/products/bx_metal2",
           "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Dangerous BAX EQ": {
+          "updateUrl": "https://www.plugin-alliance.com/products/bax-eq",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/bax-eq"
+        },
+        "elysia alpha mix": {
+          "updateUrl": "https://www.plugin-alliance.com/pages/installation-manager",
+          "downloadUrl": "https://www.plugin-alliance.com/pages/installation-manager"
+        },
+        "PA-InstallationManager": {
+          "updateUrl": "https://www.plugin-alliance.com/pages/installation-manager",
+          "downloadUrl": "https://www.plugin-alliance.com/pages/installation-manager"
+        },
+        "PA-Installation": {
+          "updateUrl": "https://www.plugin-alliance.com/pages/installation-manager",
+          "downloadUrl": "https://www.plugin-alliance.com/pages/installation-manager"
         }
       }
     },
