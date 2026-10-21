@@ -207,7 +207,11 @@
     "TrackSpacer": "Wavesfactory",
     "TrackSpacerx64": "Wavesfactory",
     "Trackspacer 2.5": "Wavesfactory",
-    "Beatmaker": "Splice"
+    "Beatmaker": "Splice",
+    "Kontakt": "Native Instruments",
+    "Mini V3": "Arturia",
+    "Wurli V2": "Arturia",
+    "AvidAudioServer": "Avid"
   },
   "developers": {
     "FabFilter": {
@@ -2257,7 +2261,7 @@
         },
         "Mini V3": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/mini-v",
-          "versionRegex": "Mini[\\s\\-_:.]*V[\\s\\S]{0,300}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.arturia.com/support/downloads-manuals/product/mini-v"
         },
         "Prophet V3": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/prophet-v",
@@ -2289,7 +2293,7 @@
         },
         "Wurli V2": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/wurli-v",
-          "versionRegex": "Wurli[\\s\\-_:.]*V[\\s\\S]{0,300}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.arturia.com/support/downloads-manuals/product/wurli-v"
         },
         "Filter M12": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/m12-filter",
@@ -2346,6 +2350,14 @@
         "Wurli V3": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/wurli-v",
           "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "MiniFreak V": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/minifreak-v",
+          "downloadUrl": "https://www.arturia.com/support/downloads-manuals/product/minifreak-v"
+        },
+        "Software Center": {
+          "updateUrl": "https://www.arturia.com/support/downloads-manuals",
+          "downloadUrl": "https://www.arturia.com/support/downloads-manuals"
         }
       }
     },
@@ -9942,6 +9954,36 @@
       "productMatchers": {},
       "updateUrl": "https://github.com/kushview/element/releases/latest",
       "downloadUrl": "https://github.com/kushview/element/releases/latest"
+    },
+    "Google": {
+      "homepage": "https://www.google.com",
+      "_comment": "Only Chrome gets a version source. Docs/Sheets/Slides/Chat/Copper/Password Manager are Chrome PWA shims with their own shim versions - a developer-level source here would report Chrome's number for all of them.",
+      "productMatchers": {
+        "Chrome": {
+          "updateUrl": "https://versionhistory.googleapis.com/v1/chrome/platforms/mac/channels/stable/versions",
+          "versionRegex": "\"version\"\\s*:\\s*\"(\\d+\\.\\d+\\.\\d+\\.\\d+)\"",
+          "downloadUrl": "https://www.google.com/chrome/"
+        }
+      }
+    },
+    "MacPaw": {
+      "homepage": "https://macpaw.com",
+      "productMatchers": {
+        "The Unarchiver": {
+          "updateUrl": "https://theunarchiver.com/",
+          "versionRegex": "Latest\\s+version:\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://theunarchiver.com/"
+        }
+      }
+    },
+    "Room EQ Wizard": {
+      "homepage": "https://www.roomeqwizard.com",
+      "productMatchers": {
+        "REW": {
+          "updateUrl": "https://www.roomeqwizard.com/",
+          "downloadUrl": "https://www.roomeqwizard.com/"
+        }
+      }
     }
   },
   "identifierShortcuts": {
@@ -9951,7 +9993,9 @@
     "com.adobe.": "Adobe",
     "com.ableton.": "Ableton",
     "com.apple.logic": "Apple",
-    "com.cockos.reaper": "Cockos"
+    "com.cockos.reaper": "Cockos",
+    "cx.c3.theunarchiver": "MacPaw",
+    "roomeqwizard.": "Room EQ Wizard"
   },
   "_appPublishers_comment": "Companion apps for non-audio software vendors. These get matched against /Applications scans so that, e.g., a scanned Photoshop.app shows an 'Open Creative Cloud' button. Bundle IDs here are publicly documented and have been stable for many years.",
   "appPublishers": {
