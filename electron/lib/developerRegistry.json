@@ -2529,7 +2529,10 @@
           "category": "Effect",
           "subcategory": "Distortion"
         }
-      }
+      },
+      "updateUrl": "https://kilohearts.com/changelog",
+      "versionRegex": "earts\\s+Installer\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+      "downloadUrl": "https://kilohearts.com/downloads"
     },
     "Soundtoys": {
       "homepage": "https://www.soundtoys.com",
@@ -4495,27 +4498,45 @@
       "productMatchers": {
         "Span": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+SPAN\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "PrimeEQ": {
           "category": "Effect",
-          "subcategory": "EQ"
+          "subcategory": "EQ",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+PrimeEQ\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "GlissEQ": {
           "category": "Effect",
-          "subcategory": "EQ"
+          "subcategory": "EQ",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+GlissEQ\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Crunchessor": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Crunchessor\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Soniformer": {
           "category": "Effect",
-          "subcategory": "Multi-Effect"
+          "subcategory": "Multi-Effect",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Soniformer\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Elephant": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Elephant\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Voxengo MSED": {
           "updateUrl": "https://www.voxengo.com/downloads",
@@ -4551,7 +4572,10 @@
         },
         "MSED": {
           "category": "Effect",
-          "subcategory": "Imaging"
+          "subcategory": "Imaging",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+MSED\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "SPAN": {
           "category": "Effect",
@@ -4559,15 +4583,224 @@
         },
         "Stereo Touch": {
           "category": "Effect",
-          "subcategory": "Imaging"
+          "subcategory": "Imaging",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Stereo Touch\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Tube Amp": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Tube Amp\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         },
         "Beeper": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Beeper\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Tempo Delay": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Tempo Delay\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Shinechilla": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Shinechilla\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "BMS": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+BMS\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "OldSkoolVerb Plus": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+OldSkoolVerb Plus\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "HarmoniEQ": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+HarmoniEQ\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Latency Delay": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Latency Delay\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Marquis Compressor": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Marquis Compressor\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "CurveEQ": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+CurveEQ\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Sound Delay": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Sound Delay\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "OldSkoolVerb": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+OldSkoolVerb\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Overtone GEQ": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Overtone GEQ\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Shumovick": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Shumovick\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Peakbuster": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Peakbuster\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "TEOTE": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+TEOTE\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Deft Compressor": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Deft Compressor\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "AnSpec": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+AnSpec\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Marvel GEQ": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Marvel GEQ\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Boogex": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Boogex\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "TEQ-421": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+TEQ\\-421\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "SPAN Plus": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+SPAN Plus\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Polysquasher": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Polysquasher\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "PHA-979": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+PHA\\-979\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "EBusLim": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+EBusLim\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "CRTIV Tape Bus": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+CRTIV Tape Bus\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "OVC-128": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+OVC\\-128\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Powershaper": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Powershaper\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Water Chorus": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Water Chorus\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Sobor": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Sobor\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "TransGainer": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+TransGainer\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Spatifier": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Spatifier\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Correlometer": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Correlometer\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Drumformer": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Drumformer\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Warmifier": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Warmifier\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "LF Max Punch": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+LF Max Punch\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "VariSaturator": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+VariSaturator\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Voxformer": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Voxformer\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "r8brain PRO": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+r8brain PRO\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "r8brain": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+r8brain\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Recorder": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Recorder\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
+        },
+        "Deconvolver": {
+          "updateUrl": "https://www.voxengo.com/downloads",
+          "versionRegex": "Voxengo\\s+Deconvolver\\s+(?:free\\s+)?Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.voxengo.com/downloads"
         }
       }
     },
@@ -4658,15 +4891,24 @@
       "productMatchers": {
         "Manipulator": {
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "updateUrl": "https://polyversemusic.com/update",
+          "versionRegex": "Manipulator\\s+v(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://polyversemusic.com/update"
         },
         "Filtron": {
           "category": "Effect",
-          "subcategory": "Modulation"
+          "subcategory": "Modulation",
+          "updateUrl": "https://polyversemusic.com/update",
+          "versionRegex": "Filtron\\s+v(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://polyversemusic.com/update"
         },
         "I Wish": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://polyversemusic.com/update",
+          "versionRegex": "I Wish\\s+v(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://polyversemusic.com/update"
         },
         "Wider": {
           "category": "Effect",
@@ -4682,7 +4924,10 @@
         },
         "Gatekeeper": {
           "category": "Effect",
-          "subcategory": "Modulation"
+          "subcategory": "Modulation",
+          "updateUrl": "https://polyversemusic.com/update",
+          "versionRegex": "Gatekeeper\\s+v(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://polyversemusic.com/update"
         },
         "Filterverse": {
           "category": "Effect",
@@ -6535,7 +6780,8 @@
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
-          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/"
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)"
         },
         "TrackSpacer": {
           "category": "Effect",
@@ -6547,25 +6793,59 @@
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
-          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/"
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)"
         },
         "Trackspacer 2.5": {
           "category": "Effect",
           "subcategory": "Dynamics",
           "updateUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
-          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/"
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/trackspacer/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)"
         },
         "Re-Esser": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://www.wavesfactory.com/audio-plugins/re-esser/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/re-esser/"
         },
         "SK10": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://www.wavesfactory.com/free-vst-plugins",
+          "downloadUrl": "https://www.wavesfactory.com/free-vst-plugins"
         },
         "SnareBuzz": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://www.wavesfactory.com/free-vst-plugins",
+          "downloadUrl": "https://www.wavesfactory.com/free-vst-plugins"
+        },
+        "Cassette": {
+          "updateUrl": "https://www.wavesfactory.com/audio-plugins/cassette/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/cassette/"
+        },
+        "Echo Cat": {
+          "updateUrl": "https://www.wavesfactory.com/audio-plugins/echo-cat/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/echo-cat/"
+        },
+        "Equalizer": {
+          "updateUrl": "https://www.wavesfactory.com/audio-plugins/equalizer/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/equalizer/"
+        },
+        "Quantum": {
+          "updateUrl": "https://www.wavesfactory.com/audio-plugins/quantum/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/quantum/"
+        },
+        "Spectre": {
+          "updateUrl": "https://www.wavesfactory.com/audio-plugins/spectre/",
+          "versionRegex": "Changelog[\\s\\S]{0,80}?Version\\s+(\\d+\\.\\d+(?:\\.\\d+)?)",
+          "downloadUrl": "https://www.wavesfactory.com/audio-plugins/spectre/"
         }
       }
     },
