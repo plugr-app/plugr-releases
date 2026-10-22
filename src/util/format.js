@@ -41,7 +41,7 @@ export function displayCategory(item) {
 // 'manual-check' is a "real" status in the sense that it represents an
 // intentional user choice (saved a URL but knows auto-detect won't work),
 // so it should NOT fall back to 'managed' or 'unknown'.
-const REAL_UPDATE_STATUSES = new Set(['outdated', 'current', 'ahead', 'manual-check']);
+const REAL_UPDATE_STATUSES = new Set(['outdated', 'current', 'ahead', 'manual-check', 'not-applicable']);
 export function deriveUpdateStatus(item, update) {
   if (update && update.status && REAL_UPDATE_STATUSES.has(update.status)) {
     return update.status;

@@ -10042,6 +10042,24 @@
           "updateUrl": "https://versionhistory.googleapis.com/v1/chrome/platforms/mac/channels/stable/versions",
           "versionRegex": "\"version\"\\s*:\\s*\"(\\d+\\.\\d+\\.\\d+\\.\\d+)\"",
           "downloadUrl": "https://www.google.com/chrome/"
+        },
+        "Docs": {
+          "notCheckable": true
+        },
+        "Sheets": {
+          "notCheckable": true
+        },
+        "Slides": {
+          "notCheckable": true
+        },
+        "Chat": {
+          "notCheckable": true
+        },
+        "Copper": {
+          "notCheckable": true
+        },
+        "Password Manager": {
+          "notCheckable": true
         }
       }
     },
@@ -10125,5 +10143,31 @@
         }
       }
     }
+  },
+  "notCheckable": {
+    "_comment": "Artifacts that are not updatable products, so 'no source' is the CORRECT answer and they must not count as gaps or reach the community feed. Vendor-independent: an uninstaller is an uninstaller whoever shipped it. See CLAUDE.md 6f-quinquies.",
+    "names": [
+      "AAX Shell",
+      "AU Shell",
+      "VST3 Shell",
+      "VST Shell",
+      "DigiTest",
+      "AvidAudioServer",
+      "AvidAudioServerLauncher",
+      "Commandline",
+      "c4dpy",
+      "Genuine Software Integrity Service",
+      "BackblazeRestore",
+      "TracklibConnect",
+      "Musio Connect",
+      "AdobeCleanUpUtility",
+      "Logi Options+ Driver Installer",
+      "AcousticaARA",
+      "Synthesizer V Studio 2 ARA Plugin"
+    ],
+    "namePatterns": [
+      "^uninstall\\b",
+      "\\buninstall(?:er)?$"
+    ]
   }
 }

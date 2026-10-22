@@ -59,10 +59,13 @@ function loadRegistry() {
  * or after the user adds entries via the in-app flow) take effect
  * without restarting the Electron main process.
  */
+let notCheckableRe = null;
+
 function invalidateRegistryCache() {
   cachedRegistry = null;
   cachedDevPrefixes = null;
   cachedAliasEntries = null;
+  notCheckableRe = null;
 }
 
 function getDeveloperPrefixes() {
@@ -362,6 +365,14 @@ function lookupRegistry({ identifier, pluginName, developerName }) {
     // "ahead". Declared here (developer- or product-level, unioned) so the
     // checker can decline to compare instead of guessing. This is NOT a
     // source field: it applies whichever level the source came from.
+    // Items that are not update-checkable AT ALL: uninstallers, AAX/AU/VST3
+    // format shells, DigiTest, c4dpy, driver installers, the Chrome-generated
+    // Workspace PWA shims. For these "no source" is the CORRECT answer, not a
+    // gap — but they were counting as gaps in the UI and, now that gap
+    // reporting is live, streaming into the community feed as noise from
+    // every user who has them. Product-level only: it is a property of the
+    // specific artifact, never of a whole vendor.
+    notCheckable: Boolean(productEntry && productEntry.notCheckable),
     placeholderVersions: [
       ...((devEntry && devEntry.placeholderVersions) || []),
       ...((productEntry && productEntry.placeholderVersions) || []),
@@ -370,7 +381,27 @@ function lookupRegistry({ identifier, pluginName, developerName }) {
   };
 }
 
+// Vendor-independent "this is not an updatable product" test, backed by the
+// registry's top-level `notCheckable` block. It is keyed on the item NAME
+// rather than a developer entry on purpose: several of these artifacts
+// (`Uninstall Fresh Air`, `DigiTest`, `BackblazeRestore`) carry no bundle
+// identifier and resolve to no developer at all, so a productMatcher could
+// never reach them. Patterns are anchored; exact names are case-insensitive.
+function isNotCheckableName(name) {
+  const n = String(name || '').trim();
+  if (!n) return false;
+  const reg = loadRegistry();
+  const spec = (reg && reg.notCheckable) || {};
+  if ((spec.names || []).some((x) => String(x).toLowerCase() === n.toLowerCase())) return true;
+  if (!notCheckableRe) {
+    const pats = spec.namePatterns || [];
+    notCheckableRe = pats.length ? new RegExp(pats.join('|'), 'i') : /$^/;
+  }
+  return notCheckableRe.test(n);
+}
+
 module.exports = {
+  isNotCheckableName,
   loadRegistry,
   findDeveloperByIdentifier,
   findProductEntry,

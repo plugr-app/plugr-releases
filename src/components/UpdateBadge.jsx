@@ -12,6 +12,7 @@ const LABELS = {
   managed: 'Managed',
   'manual-check': 'Check manually',
   ignored: 'Update ignored',
+  'not-applicable': 'Not applicable',
 };
 
 // Extract the leading major-version integer from a version string. Returns

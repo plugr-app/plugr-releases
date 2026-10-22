@@ -867,6 +867,7 @@ code {
  * back to the base .badge greys which looked unintentional. */
 .badge.badge-unknown,
 .badge.badge-pending,
+.badge.badge-not-applicable,
 .badge.badge-no-source {
   background: var(--bg-2);
   color: var(--muted);

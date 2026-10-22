@@ -3073,6 +3073,9 @@ export default function App() {
       // the card itself already surfaces companion app and saved URL.
       if (updateFilter === 'unknown') {
         if (realStatus === 'outdated' || realStatus === 'current' || realStatus === 'ahead') return false;
+        // Not-applicable items are a definitive answer, not an unanswered
+        // one — keep them out of Unchecked so the bucket stays actionable.
+        if (u && u.status === 'not-applicable') return false;
       }
     }
     if (!skip.cleanup && cleanupFilter !== 'all') {
@@ -3205,6 +3208,10 @@ export default function App() {
       const reg = it.registry || {};
       if (reg.updateUrl) return false;
       if (it.sparkleFeedUrl) return false;
+      // Declared not update-checkable: uninstallers, format shells, helper
+      // binaries. "No source" is the right answer for these, so reporting
+      // them would spam the community feed with non-gaps.
+      if (reg.notCheckable) return false;
       // Companion-managed plugins ARE still gaps (Josh, 2026-10-20): most
       // vendors with an update manager still publish a version number
       // somewhere, and "out of date" is far more useful to a user than

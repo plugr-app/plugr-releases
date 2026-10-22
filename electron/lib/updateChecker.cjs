@@ -15,6 +15,7 @@
 const semver = require('semver');
 const { checkSparkleFeed } = require('./sparkle.cjs');
 const { stripHtml } = require('./discoverUpdateSource.cjs');
+const { isNotCheckableName } = require('./registryLookup.cjs');
 
 const FETCH_TIMEOUT_MS = 8000;
 const MAX_CONCURRENT = 6;
@@ -252,6 +253,18 @@ async function checkUpdatesForItems(items, opts = {}) {
       } catch { /* fall through to URL+regex if available */ }
     }
 
+    // Declared not update-checkable (see registryLookup.notCheckable).
+    // Answered before every source branch so it holds whether or not the
+    // entry also carries a URL.
+    if (reg.notCheckable || isNotCheckableName(item.name)) {
+      emitProgress(item);
+      return {
+        id: item.id,
+        status: 'not-applicable',
+        homepage: reg.homepage,
+        message: 'Not an updatable product — nothing to check',
+      };
+    }
     if (!item.registry) {
       emitProgress(item);
       return { id: item.id, status: 'no-source', message: 'No registry entry for this plugin' };
