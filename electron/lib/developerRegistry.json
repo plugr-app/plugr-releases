@@ -211,7 +211,12 @@
     "Kontakt": "Native Instruments",
     "Mini V3": "Arturia",
     "Wurli V2": "Arturia",
-    "AvidAudioServer": "Avid"
+    "AvidAudioServer": "Avid",
+    "Comeback Kid": "Baby Audio",
+    "Crystalline": "Baby Audio",
+    "Parallel Aggressor": "Baby Audio",
+    "Super VHS": "Baby Audio",
+    "TAIP": "Baby Audio"
   },
   "developers": {
     "FabFilter": {
@@ -415,7 +420,10 @@
         },
         "Trash": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://www.izotope.com/downloads",
+          "versionRegex": "Trash[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.izotope.com/downloads"
         },
         "Dialogue Match": {
           "category": "Effect",
@@ -450,8 +458,9 @@
         "Vinyl": {
           "category": "Effect",
           "subcategory": "Creative",
-          "updateUrl": "https://www.izotope.com/en/products/downloads/vinyl",
-          "versionRegex": "Vinyl[\\s\\S]{0,300}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.izotope.com/pages/release-notes/vinyl",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.izotope.com/pages/release-notes/vinyl"
         },
         "Vocal Doubler": {
           "category": "Effect",
@@ -3667,6 +3676,11 @@
         "PA-Installation": {
           "updateUrl": "https://www.plugin-alliance.com/pages/installation-manager",
           "downloadUrl": "https://www.plugin-alliance.com/pages/installation-manager"
+        },
+        "bx_limiter True Peak": {
+          "updateUrl": "https://www.plugin-alliance.com/products/bx_limiter-true-peak",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/bx_limiter-true-peak"
         }
       }
     },
@@ -5177,7 +5191,10 @@
       "productMatchers": {
         "Parallel Aggressor": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://babyaudio.com/downloads",
+          "downloadUrl": "https://babyaudio.com/downloads",
+          "versionRegex": "Parallel[\\s\\-_:.]*Aggressor[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "IHNY-2": {
           "category": "Effect",
@@ -5189,7 +5206,10 @@
         },
         "Crystalline": {
           "category": "Effect",
-          "subcategory": "Reverb"
+          "subcategory": "Reverb",
+          "updateUrl": "https://babyaudio.com/downloads",
+          "downloadUrl": "https://babyaudio.com/downloads",
+          "versionRegex": "Crystalline[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Spaced Out": {
           "category": "Effect",
@@ -5201,7 +5221,10 @@
         },
         "Comeback Kid": {
           "category": "Effect",
-          "subcategory": "Delay"
+          "subcategory": "Delay",
+          "updateUrl": "https://babyaudio.com/downloads",
+          "downloadUrl": "https://babyaudio.com/downloads",
+          "versionRegex": "Comeback[\\s\\-_:.]*Kid[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Atoms": {
           "category": "Instrument",
@@ -5213,7 +5236,20 @@
         },
         "Transit 2": {
           "category": "Effect",
-          "subcategory": "Creative"
+          "subcategory": "Creative",
+          "updateUrl": "https://babyaud.io/downloads",
+          "versionRegex": "Transit[\\s\\-_:.]*2[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://babyaud.io/downloads"
+        },
+        "Super VHS": {
+          "updateUrl": "https://babyaudio.com/downloads",
+          "downloadUrl": "https://babyaudio.com/downloads",
+          "versionRegex": "Super[\\s\\-_:.]*VHS[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "TAIP": {
+          "updateUrl": "https://babyaudio.com/downloads",
+          "downloadUrl": "https://babyaudio.com/downloads",
+          "versionRegex": "TAIP[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         }
       }
     },
@@ -5611,7 +5647,9 @@
         },
         "DeClickDialogue": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/restoration-suite",
+          "downloadUrl": "https://acondigital.com/products/restoration-suite"
         },
         "DePlosive": {
           "category": "Effect",
@@ -5645,11 +5683,15 @@
         },
         "Dither": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/mix-and-mastering-suite",
+          "downloadUrl": "https://acondigital.com/products/mix-and-mastering-suite"
         },
         "Dynamics": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://acondigital.com/products/mix-and-mastering-suite",
+          "downloadUrl": "https://acondigital.com/products/mix-and-mastering-suite"
         },
         "Extract Dialogue": {
           "category": "Effect",
@@ -5665,7 +5707,9 @@
         },
         "Limit": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://acondigital.com/products/mix-and-mastering-suite",
+          "downloadUrl": "https://acondigital.com/products/mix-and-mastering-suite"
         },
         "Remix": {
           "category": "Effect",
@@ -5703,23 +5747,33 @@
         },
         "DeClick2": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/restoration-suite",
+          "downloadUrl": "https://acondigital.com/products/restoration-suite"
         },
         "DeClip2": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/restoration-suite",
+          "downloadUrl": "https://acondigital.com/products/restoration-suite"
         },
         "DeHum2": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/restoration-suite",
+          "downloadUrl": "https://acondigital.com/products/restoration-suite"
         },
         "DeNoise2": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://acondigital.com/products/restoration-suite",
+          "downloadUrl": "https://acondigital.com/products/restoration-suite"
         },
         "Verberate2": {
           "category": "Effect",
-          "subcategory": "Reverb"
+          "subcategory": "Reverb",
+          "updateUrl": "https://acondigital.com/products/verberate",
+          "downloadUrl": "https://acondigital.com/products/verberate"
         },
         "Vitalize": {
           "category": "Effect",
@@ -5758,6 +5812,10 @@
         "Phono Filter": {
           "updateUrl": "https://acondigital.com/products/acoustica/acoustica-features",
           "downloadUrl": "https://acondigital.com/products/acoustica/acoustica-features"
+        },
+        "MultibandDynamics": {
+          "updateUrl": "https://acondigital.com/products/mix-and-mastering-suite",
+          "downloadUrl": "https://acondigital.com/products/mix-and-mastering-suite"
         }
       }
     },
@@ -5958,8 +6016,9 @@
         "Lindell 354E": {
           "category": "Effect",
           "subcategory": "Dynamics",
-          "updateUrl": "https://www.plugin-alliance.com/products/254e",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.plugin-alliance.com/products/354e",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/354e"
         },
         "Lindell 80 Bus": {
           "category": "Effect",
@@ -5970,14 +6029,16 @@
         "Lindell 80 Channel": {
           "category": "Effect",
           "subcategory": "Multi-Effect",
-          "updateUrl": "https://www.plugin-alliance.com/products/254e",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.plugin-alliance.com/products/80-series",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/80-series"
         },
         "Lindell TE-100": {
           "category": "Effect",
           "subcategory": "Distortion",
-          "updateUrl": "https://www.plugin-alliance.com/products/254e",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.plugin-alliance.com/products/te-100",
+          "versionRegex": "angelog\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.plugin-alliance.com/products/te-100"
         },
         "PEX-500": {
           "category": "Effect",
@@ -6308,6 +6369,11 @@
           "versionRegex": "Syntorus[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Effect",
           "subcategory": "Modulation"
+        },
+        "Decimort2": {
+          "updateUrl": "https://d16.pl/downloads",
+          "versionRegex": "Decimort[\\s\\-_:.]*2[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://d16.pl/downloads"
         }
       }
     },
@@ -6392,8 +6458,9 @@
           "versionRegex": "\\d+\\s+Retro\\s+Color\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "XO": {
-          "updateUrl": "https://www.xlnaudio.com/products/xo",
-          "versionRegex": "XO[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.xlnaudio.com/release_notes?filter=xo",
+          "versionRegex": "Release\\s+Date\\s+XO\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.xlnaudio.com/release_notes?filter=xo"
         },
         "Addictive Keys": {
           "updateUrl": "https://www.xlnaudio.com/release_notes?filter=addictive_keys",
@@ -6406,6 +6473,11 @@
         "Life DAW Recorder": {
           "category": "Effect",
           "subcategory": "Utility"
+        },
+        "Life": {
+          "updateUrl": "https://www.xlnaudio.com/release_notes?filter=life",
+          "versionRegex": "Life[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.xlnaudio.com/release_notes?filter=life"
         }
       }
     },
@@ -6846,7 +6918,8 @@
           "category": "Effect",
           "subcategory": "Distortion",
           "updateUrl": "https://www.waproduction.com/plugins/view/venom",
-          "versionRegex": "Venom[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "versionRegex": "Update\\s+log\\s+v\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.waproduction.com/plugins/view/venom"
         },
         "VINAI XTT": {
           "category": "Effect",
@@ -6985,6 +7058,11 @@
         "SessionDock": {
           "updateUrl": "https://www.waproduction.com/plugins/view/sessiondock",
           "downloadUrl": "https://www.waproduction.com/plugins/view/sessiondock"
+        },
+        "Rocket Typist": {
+          "updateUrl": "https://www.witt-software.com/releasenotes/?app=rockettypist",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.witt-software.com/releasenotes/?app=rockettypist"
         }
       }
     },
@@ -7640,6 +7718,16 @@
         "StereoTool": {
           "updateUrl": "https://www.flux.audio/download",
           "downloadUrl": "https://www.flux.audio/download"
+        },
+        "Flux Center": {
+          "updateUrl": "https://www.flux.audio/download/",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.flux.audio/download/"
+        },
+        "MiRA": {
+          "updateUrl": "https://www.flux.audio/products/mira",
+          "versionRegex": "MiRA[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.flux.audio/products/mira"
         }
       }
     },
@@ -7671,7 +7759,10 @@
         },
         "Riffer": {
           "category": "MIDI",
-          "subcategory": null
+          "subcategory": null,
+          "updateUrl": "https://audiomodern.com/riffer",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://audiomodern.com/riffer"
         }
       }
     },
@@ -8750,8 +8841,9 @@
           "downloadUrl": "https://www.ujam.com/usynth"
         },
         "UJAM": {
-          "updateUrl": "https://www.ujam.com",
-          "versionRegex": "UJAM[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.ujam.com/ujam-app/",
+          "versionRegex": "rent\\s+version:\\s+v\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://www.ujam.com/ujam-app/"
         },
         "BM-DOPE": {
           "updateUrl": "https://support.ujam.com/hc/en-us/articles/20650731038492-Changelog-Beatmaker",
@@ -9170,7 +9262,20 @@
       "productMatchers": {
         "The Scream": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://cytomic.com/plug-ins/",
+          "versionRegex": "te:\\s+TheScream_v\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://cytomic.com/plug-ins/"
+        },
+        "The Drop": {
+          "updateUrl": "https://cytomic.com/plug-ins/",
+          "versionRegex": "date:\\s+TheDrop_v\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://cytomic.com/plug-ins/"
+        },
+        "The Glue": {
+          "updateUrl": "https://cytomic.com/plug-ins/",
+          "versionRegex": "date:\\s+TheGlue_v\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://cytomic.com/plug-ins/"
         }
       }
     },
@@ -9395,8 +9500,9 @@
           "downloadUrl": "https://www.apple.com/safari"
         },
         "Logic Pro": {
-          "updateUrl": "https://www.apple.com/logic-pro",
-          "versionRegex": "Logic[\\s\\-_:.]*Pro[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://support.apple.com/en-us/109503",
+          "versionRegex": "gic\\s+Pro\\s+for\\s+Mac\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://support.apple.com/en-us/109503"
         },
         "Apple Configurator": {
           "updateUrl": "https://support.apple.com/en-us/109517",
@@ -9591,11 +9697,27 @@
         },
         "Pi": {
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "updateUrl": "https://soundradix.com/downloads",
+          "versionRegex": "Pi[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://soundradix.com/downloads"
         },
         "POWAIR": {
           "category": "Effect",
-          "subcategory": "Dynamics"
+          "subcategory": "Dynamics",
+          "updateUrl": "https://soundradix.com/downloads",
+          "versionRegex": "POWAIR[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://soundradix.com/downloads"
+        },
+        "SurferEQ": {
+          "updateUrl": "https://soundradix.com/downloads",
+          "versionRegex": "SurferEQ[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://soundradix.com/downloads"
+        },
+        "DrumLeveler": {
+          "updateUrl": "https://soundradix.com/downloads",
+          "versionRegex": "Drum[\\s\\-_:.]*Leveler[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://soundradix.com/downloads"
         }
       }
     },
@@ -9762,6 +9884,16 @@
         "Adobe Premiere Pro 2024": {
           "updateUrl": "https://helpx.adobe.com/premiere/desktop/whats-new/release-notes.html",
           "versionRegex": "y\\s+\\d+\\s+\\(version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "After Effects": {
+          "updateUrl": "https://helpx.adobe.com/after-effects/desktop/what-s-new/release-notes-after-effects.html",
+          "versionRegex": "elease\\s+\\(version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://helpx.adobe.com/after-effects/desktop/what-s-new/release-notes-after-effects.html"
+        },
+        "Media Encoder 2026": {
+          "updateUrl": "https://helpx.adobe.com/media-encoder/desktop/introduction/release-notes.html",
+          "versionRegex": "elease\\s+\\(version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "downloadUrl": "https://helpx.adobe.com/media-encoder/desktop/introduction/release-notes.html"
         }
       }
     },
@@ -9810,7 +9942,13 @@
         },
         "VerberateImmersive2": {
           "category": "Effect",
-          "subcategory": "Reverb"
+          "subcategory": "Reverb",
+          "updateUrl": "https://acondigital.com/products/verberate-immersive",
+          "downloadUrl": "https://acondigital.com/products/verberate-immersive"
+        },
+        "DeFilter": {
+          "updateUrl": "https://acondigital.com/products/defilter",
+          "downloadUrl": "https://acondigital.com/products/defilter"
         }
       }
     },
@@ -10071,6 +10209,112 @@
         "REW": {
           "updateUrl": "https://www.roomeqwizard.com/",
           "downloadUrl": "https://www.roomeqwizard.com/"
+        }
+      }
+    },
+    "Shane Dunne and John Lehmkuhl": {
+      "homepage": "https://pluginguru.com",
+      "productMatchers": {
+        "Unify": {
+          "updateUrl": "https://pluginguru.com",
+          "downloadUrl": "https://pluginguru.com",
+          "versionRegex": "Unify[\\s\\S]{0,60}?v(\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      }
+    },
+    "Meterplugs": {
+      "homepage": "https://meterplugs.com",
+      "productMatchers": {
+        "Loudness Penalty": {
+          "updateUrl": "https://meterplugs.com/downloads",
+          "downloadUrl": "https://meterplugs.com/downloads",
+          "versionRegex": "Loudness\\s+Penalty[\\s\\S]{0,60}?v?(\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      }
+    },
+    "Divideframe": {
+      "homepage": "https://divideframe.com",
+      "productMatchers": {
+        "Divide Frame": {
+          "updateUrl": "https://divideframe.com/?p=downloads",
+          "downloadUrl": "https://divideframe.com/?p=downloads",
+          "versionRegex": "Divide[\\s\\-_:.]*Frame[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        }
+      }
+    },
+    "Rogueamoeba": {
+      "homepage": "https://rogueamoeba.com",
+      "productMatchers": {
+        "Loopback": {
+          "updateUrl": "https://rogueamoeba.com/support/releasenotes/?product=Loopback",
+          "downloadUrl": "https://rogueamoeba.com/support/releasenotes/?product=Loopback",
+          "versionRegex": "k\\s+Release\\s+Notes\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        }
+      }
+    },
+    "Plugr": {
+      "homepage": "https://plugr.co",
+      "productMatchers": {
+        "Plugr": {
+          "updateUrl": "https://plugr.co/changelog.html",
+          "downloadUrl": "https://plugr.co/changelog.html"
+        }
+      }
+    },
+    "Nightbirdsevolve": {
+      "homepage": "https://www.nightbirdsevolve.com",
+      "productMatchers": {
+        "Meta": {
+          "updateUrl": "https://www.nightbirdsevolve.com/meta/releasenotes/",
+          "downloadUrl": "https://www.nightbirdsevolve.com/meta/releasenotes/",
+          "versionRegex": "Meta[\\s\\S]{0,60}?v?(\\d+\\.\\d+(?:\\.\\d+)?)"
+        }
+      }
+    },
+    "Dreamtonics": {
+      "homepage": "https://dreamtonics.com",
+      "productMatchers": {
+        "Synthesizer V Studio 2 Pro": {
+          "updateUrl": "https://dreamtonics.com",
+          "downloadUrl": "https://dreamtonics.com"
+        }
+      }
+    },
+    "VLC authors and VideoLAN": {
+      "homepage": "https://www.videolan.org",
+      "productMatchers": {
+        "VLC": {
+          "updateUrl": "https://www.videolan.org",
+          "downloadUrl": "https://www.videolan.org"
+        }
+      }
+    },
+    "AlphaTheta": {
+      "homepage": "https://rekordbox.com",
+      "productMatchers": {
+        "rekordbox": {
+          "updateUrl": "https://rekordbox.com/en/download/",
+          "downloadUrl": "https://rekordbox.com/en/download/",
+          "versionRegex": "e\\s+Download\\s+ver\\.\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        }
+      }
+    },
+    "Lain Bailey": {
+      "homepage": "https://obsproject.com",
+      "productMatchers": {
+        "OBS Studio": {
+          "updateUrl": "https://github.com/obsproject/obs-studio/releases",
+          "downloadUrl": "https://github.com/obsproject/obs-studio/releases",
+          "versionRegex": "ta\\s+\\d+\\s+OBS\\s+Studio\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        }
+      }
+    },
+    "Nordvpn": {
+      "homepage": "https://nordvpn.com",
+      "productMatchers": {
+        "NordVPN": {
+          "updateUrl": "https://nordvpn.com/blog/nordvpn-mac-release-notes",
+          "downloadUrl": "https://nordvpn.com/blog/nordvpn-mac-release-notes"
         }
       }
     }
