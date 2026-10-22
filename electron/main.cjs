@@ -28,7 +28,7 @@ protocol.registerSchemesAsPrivileged([
   },
 ]);
 const { scanLibrary } = require('./lib/scanners.cjs');
-const { checkUpdatesForItems, testSource } = require('./lib/updateChecker.cjs');
+const { checkUpdatesForItems, testSource, compareVersions } = require('./lib/updateChecker.cjs');
 const { loadCache, saveCache, clearCache, cacheFilePath } = require('./lib/cache.cjs');
 const {
   loadProjectStore,
@@ -1334,6 +1334,52 @@ function deriveHomepageFromIdentifier(identifier) {
 // Bulk auto-discover: run discoverUpdateSource on every item that doesn't
 // already have an update source. Falls back to an identifier-derived
 // homepage when the registry has nothing for that developer.
+/**
+ * Verify-on-save for BULK discover — the same check a person performs by
+ * hand on the single-plugin screen, which the bulk path never ran.
+ *
+ * Why it exists: on 2026-10-22 one bulk run wrote 67 sources and every one
+ * was wrong — star ratings out of Waves' JSON-LD, "requires macOS 10.13"
+ * strings, a sibling product's version. Nothing downstream catches a
+ * confident wrong answer, and a user addition silently outranks the bundled
+ * registry from then on, so the acceptance test has to live here.
+ *
+ * Two gates, both of which a human applies instinctively:
+ *   1. Re-run the SAVED pattern against the page. The pattern is a
+ *      generalisation of the ad-hoc match that found the number, so it can
+ *      easily match something else — or nothing — on the very next read.
+ *   2. Compare against the installed build. A "latest" far BELOW what is
+ *      installed is the signature of a scraped rating or a requirement
+ *      string: Waves at 17.1.42 does not have a newest release of 4.88.
+ *      `ahead` by a whole major is rejected; a patch-level ahead is left
+ *      alone because vendor pages genuinely lag their own releases.
+ */
+async function verifyDiscoveredSource(result, item) {
+  let probe;
+  try {
+    probe = await testSource(result.url, result.versionRegex);
+  } catch (err) {
+    return { ok: false, why: 'probe-threw' };
+  }
+  if (!probe || !probe.ok || !probe.version) return { ok: false, why: 'pattern-did-not-reproduce' };
+
+  const installed = item && item.version;
+  if (!installed) return { ok: true, version: probe.version };
+
+  const cmp = compareVersions(installed, probe.version);
+  if (cmp === 'unknown') return { ok: false, why: 'not-comparable' };
+  if (cmp === 'ahead') {
+    const majorOf = (v) => {
+      const m = String(v || '').match(/^\s*v?(\d+)/);
+      return m ? parseInt(m[1], 10) : null;
+    };
+    const i = majorOf(installed);
+    const f = majorOf(probe.version);
+    if (i != null && f != null && f < i) return { ok: false, why: 'behind-installed' };
+  }
+  return { ok: true, version: probe.version };
+}
+
 ipcMain.handle('updates:discoverAll', async (_event, items) => {
   try {
     // Server-side gate — bulk discover is a paid feature. The
@@ -1364,6 +1410,10 @@ ipcMain.handle('updates:discoverAll', async (_event, items) => {
     const total = candidates.length;
     let done = 0;
     let foundCount = 0;
+    // Candidates that LOOKED like a find but failed verification. Counted so
+    // the toast can report them: silently dropping them would make a run
+    // that rejected everything look identical to one that found nothing.
+    let rejectedUnverified = 0;
     const newAdditions = {};
 
     // Process candidates in parallel batches. With ~3 candidate URLs per
@@ -1383,14 +1433,19 @@ ipcMain.handle('updates:discoverAll', async (_event, items) => {
         try {
           const result = await discoverUpdateSource({ ...it, manualHomepage: homepage });
           if (result && result.url && result.versionRegex) {
-            const key = it.identifier || it.id;
-            newAdditions[key] = {
-              updateUrl: result.url,
-              versionRegex: result.versionRegex,
-              addedAt: new Date().toISOString(),
-              addedBy: 'auto-discover-bulk',
-            };
-            foundCount++;
+            const verdict = await verifyDiscoveredSource(result, it);
+            if (verdict.ok) {
+              const key = it.identifier || it.id;
+              newAdditions[key] = {
+                updateUrl: result.url,
+                versionRegex: result.versionRegex,
+                addedAt: new Date().toISOString(),
+                addedBy: 'auto-discover-bulk',
+              };
+              foundCount++;
+            } else {
+              rejectedUnverified++;
+            }
           }
         } catch (_e) { /* per-item errors silent */ }
         done++;
@@ -1476,6 +1531,11 @@ ipcMain.handle('updates:discoverAll', async (_event, items) => {
               ...it, manualHomepage: tryUrl, registry: { ...(it.registry || {}), homepage: tryUrl },
             });
             if (test && test.url && test.versionRegex) {
+              // The template pass guesses a URL from a sibling's shape, so
+              // it is MORE speculative than direct discovery, not less —
+              // it must clear the same gate.
+              const verdict = await verifyDiscoveredSource(test, it);
+              if (!verdict.ok) { rejectedUnverified++; continue; }
               const k = it.identifier || it.id;
               newAdditions[k] = {
                 updateUrl: test.url,
@@ -1517,6 +1577,7 @@ ipcMain.handle('updates:discoverAll', async (_event, items) => {
         total,
         foundCount,
         templatePassFound,
+        rejectedUnverified,
         skippedNoIdentifier,
         skippedAlreadyHaveSource: list.length - total - skippedNoIdentifier,
         additions: newAdditions,

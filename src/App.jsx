@@ -1900,6 +1900,7 @@ export default function App() {
       }
 
       const skip = data.skippedAlreadyHaveSource || 0;
+      const rejected = data.rejectedUnverified || 0;
       const noId = data.skippedNoIdentifier || 0;
       const tplFound = data.templatePassFound || 0;
       const directFound = (data.foundCount || 0) - tplFound;
@@ -1909,12 +1910,19 @@ export default function App() {
         title: data.foundCount > 0
           ? `Found ${data.foundCount} new source${data.foundCount === 1 ? '' : 's'}`
           : 'No new sources found',
-        message:
+        message: [
           data.foundCount > 0
             ? (tplFound > 0
-              ? `${directFound} direct · ${tplFound} via URL templates · ${skip} already had sources.`
-              : `${data.foundCount} new · ${skip} already had sources.`)
-            : `Checked ${data.total} plugins · ${skip} already had sources.`,
+              ? `${directFound} direct · ${tplFound} via URL templates`
+              : `${data.foundCount} new`)
+            : `Checked ${data.total} plugins`,
+          // Say so out loud. A run that found a dozen numbers and threw them
+          // all away should not look like a run that found nothing — and a
+          // high reject count is the signal that these pages publish no
+          // version rather than that the search was unlucky.
+          rejected > 0 ? `${rejected} rejected as unverifiable` : null,
+          `${skip} already had sources`,
+        ].filter(Boolean).join(' · ') + '.',
         persistent: true,
       });
     } catch (err) {
