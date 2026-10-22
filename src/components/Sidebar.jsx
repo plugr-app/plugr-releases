@@ -56,11 +56,42 @@ const CLEANUP_OPTIONS = [
   { value: 'superseded', label: 'Old versions' },
 ];
 
+// macOS compatibility, reframed from "will it load" to "how will it load".
+//
+// The old three rows read Compatible 4,489 / May not work 0 / Unknown 5 on a
+// 4,498-item library, which looks broken. It wasn't: on Apple Silicon with a
+// current macOS the "won't load" set is close to empty BY CONSTRUCTION — the
+// only ways in are a bundle demanding a newer macOS than you run, or one
+// with no x86_64 slice at all. So that row reads 0 for nearly everyone.
+//
+// The fact worth surfacing was already in the data and being thrown away:
+// 165 of those "Compatible" files were Intel-only, loading solely through
+// Rosetta. A natively-running arm64 host doesn't list them at all, and
+// macOS 28 removes Rosetta outright — so the useful framing is temporal,
+// not binary. "Won't load" isn't a dead row either; it fills up the moment
+// a user crosses onto macOS 28.
 const COMPAT_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'incompatible', label: 'May not work on this Mac' },
-  { value: 'ok', label: 'Compatible' },
-  { value: 'unknown', label: 'Unknown' },
+  { value: 'all', label: 'All', hint: 'Every plugin, whatever its architecture.' },
+  {
+    value: 'incompatible',
+    label: 'Won’t load',
+    hint: 'This build cannot run on your Mac at all — it needs a newer macOS than you have, or it was built for an architecture your Mac can’t execute.',
+  },
+  {
+    value: 'rosetta',
+    label: 'Stops working on macOS 28',
+    hint: 'Intel-only. It runs today through Rosetta translation, but a DAW running natively on Apple Silicon won’t even list it — and macOS 28 removes Rosetta, after which these stop loading for good. Worth checking whether the developer has shipped a universal build.',
+  },
+  {
+    value: 'ok',
+    label: 'Native',
+    hint: 'Built for Apple Silicon (or universal), and your macOS is new enough. Nothing to do.',
+  },
+  {
+    value: 'unknown',
+    label: 'Unknown',
+    hint: 'The bundle declares no minimum macOS and its architecture couldn’t be read, so Plugr won’t guess either way.',
+  },
 ];
 
 export default function Sidebar({
@@ -268,11 +299,12 @@ export default function Sidebar({
   // how many would land in each compat bucket given their other filters.
   const compatItems = itemsForCompat || items;
   const compatCounts = useMemo(() => {
-    const c = { all: compatItems.length, ok: 0, incompatible: 0, unknown: 0 };
+    const c = { all: compatItems.length, ok: 0, incompatible: 0, rosetta: 0, unknown: 0 };
     for (const it of compatItems) {
       const s = it.osCompat && it.osCompat.status;
       if (s === 'ok') c.ok++;
       else if (s === 'incompatible') c.incompatible++;
+      else if (s === 'rosetta') c.rosetta++;
       else c.unknown++;
     }
     return c;
@@ -645,11 +677,14 @@ export default function Sidebar({
         >
           {COMPAT_OPTIONS.map((opt) => {
             const count = compatCounts[opt.value] || 0;
+            const active = (compatFilter || 'all') === opt.value;
+            if (count === 0 && opt.value !== 'all' && !active) return null;
             return (
               <button
                 key={opt.value}
-                className={`row pickable ${(compatFilter || 'all') === opt.value ? 'active' : ''}`}
+                className={`row pickable ${active ? 'active' : ''}`}
                 onClick={() => onCompatFilterChange(opt.value)}
+                title={filterHints ? opt.hint : undefined}
                 type="button"
               >
                 <span className="row-label">{opt.label}</span>

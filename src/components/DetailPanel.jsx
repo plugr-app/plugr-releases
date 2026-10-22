@@ -528,9 +528,11 @@ export default function DetailPanel({
         </div>
       )}
 
-      {item.osCompat && item.osCompat.status === 'incompatible' && (
-        <div className="detail-cleanup os-warn">
-          <div className="cleanup-title">macOS compatibility</div>
+      {item.osCompat && (item.osCompat.status === 'incompatible' || item.osCompat.status === 'rosetta') && (
+        <div className={`detail-cleanup os-warn${item.osCompat.status === 'rosetta' ? ' soon' : ''}`}>
+          <div className="cleanup-title">
+            {item.osCompat.status === 'rosetta' ? 'Intel-only — ends with Rosetta' : 'macOS compatibility'}
+          </div>
           <div className="cleanup-body">{item.osCompat.message}</div>
         </div>
       )}

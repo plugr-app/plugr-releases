@@ -426,6 +426,12 @@ function compareOsVersions(a, b) {
  *      bundle has no architecture the current Mac can run (Apple Silicon
  *      can run arm64 natively and x86_64 through Rosetta; Intel can only
  *      run x86_64), that's also a definite 'incompatible'.
+ *   2b. x86_64-only on Apple Silicon is its own status, 'rosetta' — NOT
+ *      plain 'ok'. It loads today only through Rosetta 2 translation, and a
+ *      natively-running arm64 host (Logic, Live) does not show it at all.
+ *      Apple ships full Rosetta for the last time in macOS 27; macOS 28
+ *      (2027) removes it, at which point these stop loading outright — so
+ *      on macOS 28+ the same bundle is reported 'incompatible'.
  *   3. If both checks pass with positive evidence → 'ok'.
  *   4. If we only have one signal (e.g. arch is fine but no min declared,
  *      or min is fine but no arch readable) → 'ok'.
@@ -477,12 +483,26 @@ function applyOsCompat(items, currentSystemVersion, currentArch) {
           continue;
         }
         if (!haveArm && haveX64) {
-          it.osCompat = {
-            status: 'ok',
-            message: `x86_64 only — will run via Rosetta translation on Apple Silicon.`,
-            note: 'rosetta',
-          };
-          // Fall through to OK confirmation below. Already set; continue.
+          // Intel-only on Apple Silicon. Two different answers depending on
+          // whether this Mac still HAS Rosetta: macOS 27 is the last release
+          // with full translation, macOS 28 drops it. Reporting these as
+          // plain 'ok' hid the single most actionable compatibility fact a
+          // producer has right now — 165 files across 106 products in one
+          // 4,498-item library — because a natively-running arm64 host does
+          // not merely run them slowly, it does not list them at all.
+          const rosettaGone = currentSystemVersion
+            && compareOsVersions(currentSystemVersion, '28.0') >= 0;
+          it.osCompat = rosettaGone
+            ? {
+              status: 'incompatible',
+              message: `Intel-only (x86_64). macOS ${currentSystemVersion} no longer includes Rosetta, so this will not load.`,
+              reason: 'rosetta-removed',
+            }
+            : {
+              status: 'rosetta',
+              message: `Intel-only (x86_64). Runs today through Rosetta, but a natively-running Apple Silicon host won't list it — and macOS 28 removes Rosetta entirely.`,
+              note: 'rosetta',
+            };
           continue;
         }
       } else if (currentArch === 'x64') {

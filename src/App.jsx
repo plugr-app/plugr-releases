@@ -3150,10 +3150,12 @@ export default function App() {
       if (cleanupFilter === 'superseded' && (!dup || dup.status !== 'superseded')) return false;
     }
     if (!skip.compat && compatFilter !== 'all') {
-      const status = (it.osCompat && it.osCompat.status) || 'unknown';
-      if (compatFilter === 'incompatible' && status !== 'incompatible') return false;
-      if (compatFilter === 'ok' && status !== 'ok') return false;
-      if (compatFilter === 'unknown' && status !== 'unknown') return false;
+      // 'rosetta' (Intel-only, still translatable today) is its own status —
+      // it used to be folded into 'ok', which is how 165 files that a native
+      // Apple Silicon host won't even list sat under "Compatible".
+      const raw = (it.osCompat && it.osCompat.status) || 'unknown';
+      const status = (raw === 'ok' || raw === 'incompatible' || raw === 'rosetta') ? raw : 'unknown';
+      if (status !== compatFilter) return false;
     }
     if (!skip.search && search.trim()) {
       const q = search.trim().toLowerCase();

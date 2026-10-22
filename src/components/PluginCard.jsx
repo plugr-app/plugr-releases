@@ -99,7 +99,14 @@ export default function PluginCard({ item, update, selected, onClick, onContextM
           </div>
         )}
         {item.osCompat && item.osCompat.status === 'incompatible' && (
-          <div className="card-os-warning" title={item.osCompat.message}>! macOS too old for this build</div>
+          <div className="card-os-warning" title={item.osCompat.message}>
+            {item.osCompat.reason === 'rosetta-removed' ? '! Intel-only — macOS has no Rosetta' : '! won’t run on this Mac'}
+          </div>
+        )}
+        {/* Intel-only but still translatable. A warning, not an error: it
+            works today and stops working on macOS 28. */}
+        {item.osCompat && item.osCompat.status === 'rosetta' && (
+          <div className="card-os-warning soon" title={item.osCompat.message}>Intel-only — stops working on macOS 28</div>
         )}
       </div>
     </button>

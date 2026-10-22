@@ -230,6 +230,9 @@ function LibraryView({
                 {it.osCompat && it.osCompat.status === 'incompatible' && (
                   <span className="os-pill compact" title={it.osCompat.message}>!os</span>
                 )}
+                {it.osCompat && it.osCompat.status === 'rosetta' && (
+                  <span className="os-pill compact soon" title={it.osCompat.message}>intel</span>
+                )}
                 {Array.isArray(it.tags) && it.tags.length > 0 && (
                   <span
                     title={it.tags.map((t) => `#${t}`).join(', ')}
