@@ -276,11 +276,13 @@
         },
         "FabFilter Pro-C 2": {
           "updateUrl": "https://www.fabfilter.com/support/downloads",
-          "downloadUrl": "https://www.fabfilter.com/support/downloads"
+          "downloadUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Pro-C\\s+(2\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}"
         },
         "FabFilter Pro-C 2 (Mono)": {
           "updateUrl": "https://www.fabfilter.com/support/downloads",
-          "downloadUrl": "https://www.fabfilter.com/support/downloads"
+          "downloadUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Pro-C\\s+(2\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}"
         },
         "FabFilter Pro-L 2": {
           "updateUrl": "https://www.fabfilter.com/download",
@@ -324,12 +326,14 @@
           "versionRegex": "ualizer\\s+plug-in\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Twin 2": {
-          "updateUrl": "https://www.fabfilter.com/download",
-          "versionRegex": "hesizer\\s+plug-in\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Twin\\s+(2\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads"
         },
         "Pro-C 2": {
           "updateUrl": "https://www.fabfilter.com/support/downloads",
-          "downloadUrl": "https://www.fabfilter.com/support/downloads"
+          "downloadUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Pro-C\\s+(2\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}"
         },
         "Pro-Q 3": {
           "updateUrl": "https://www.fabfilter.com/support/downloads",
@@ -352,6 +356,27 @@
         },
         "Pro-C 2 (Mono)": {
           "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Pro-C\\s+(2\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}"
+        },
+        "Pro-L 1": {
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Pro-L\\s+(1\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads"
+        },
+        "Pro-R 1": {
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Pro-R\\s+(1\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads"
+        },
+        "Timeless 2": {
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Timeless\\s+(2\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads"
+        },
+        "Saturn 1": {
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "versionRegex": "Saturn\\s+(1\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}",
           "downloadUrl": "https://www.fabfilter.com/support/downloads"
         }
       }
@@ -466,7 +491,7 @@
         },
         "Nectar 3": {
           "updateUrl": "https://www.izotope.com/en/products/downloads/nectar-4-advanced",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.izotope.com/en/products/downloads/nectar-4-advanced"
         },
         "Neutron 5": {
           "updateUrl": "https://www.izotope.com/pages/release-notes/neutron",
@@ -918,9 +943,9 @@
         },
         "COSMOS": {
           "updateUrl": "https://www.waves.com/cosmos",
-          "versionRegex": "COSMOS[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "Application",
-          "subcategory": "Application"
+          "subcategory": "Application",
+          "downloadUrl": "https://www.waves.com/cosmos"
         },
         "Waves Central": {
           "updateUrl": "https://www.waves.com/downloads",
@@ -2265,7 +2290,8 @@
         },
         "Mini V3": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/mini-v",
-          "downloadUrl": "https://www.arturia.com/support/downloads-manuals/product/mini-v"
+          "downloadUrl": "https://www.arturia.com/support/downloads-manuals/product/mini-v",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Prophet V3": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/prophet-v",
@@ -2297,7 +2323,8 @@
         },
         "Wurli V2": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/wurli-v",
-          "downloadUrl": "https://www.arturia.com/support/downloads-manuals/product/wurli-v"
+          "downloadUrl": "https://www.arturia.com/support/downloads-manuals/product/wurli-v",
+          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Filter M12": {
           "updateUrl": "https://www.arturia.com/support/downloads-manuals/product/m12-filter",
@@ -3967,7 +3994,7 @@
           "category": "Application",
           "subcategory": "DAW",
           "updateUrl": "https://kb.avid.com/pkb/articles/en_US/Knowledge/Pro-Tools-Release-Notes",
-          "versionRegex": "n:\\s+Pro\\s+Tools\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://kb.avid.com/pkb/articles/en_US/Knowledge/Pro-Tools-Release-Notes"
         },
         "Sibelius": {
           "category": "Application",
@@ -4164,6 +4191,10 @@
         "White Boost": {
           "category": "Effect",
           "subcategory": "Distortion"
+        },
+        "Link": {
+          "updateUrl": "https://kb.avid.com/pkb/articles/User_Guide/Avid-Link-Documentation",
+          "downloadUrl": "https://kb.avid.com/pkb/articles/User_Guide/Avid-Link-Documentation"
         }
       },
       "updateUrl": "https://www.avid.com/pro-tools/whats-new",
@@ -5205,8 +5236,9 @@
         "Auto-Tune Pro": {
           "category": "Effect",
           "subcategory": "Pitch",
-          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41115597486356-Auto-Tune-Pro-X-Release-Notes",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41117430548628-AutoTune-Pro-11-Release-Notes",
+          "versionRegex": "AutoTune\\s+Pro\\s+11\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/41117430548628-AutoTune-Pro-11-Release-Notes"
         },
         "Auto-Tune": {
           "category": "Effect",
@@ -5238,11 +5270,17 @@
         },
         "Aspire": {
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969208008980-Aspire-Release-Notes",
+          "versionRegex": "Aspire\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47969208008980-Aspire-Release-Notes"
         },
         "Choir": {
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969216549012-Choir-Release-Notes",
+          "versionRegex": "Choir\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47969216549012-Choir-Release-Notes"
         },
         "Duo": {
           "category": "Effect",
@@ -5264,11 +5302,17 @@
         },
         "Warm": {
           "category": "Effect",
-          "subcategory": "Distortion"
+          "subcategory": "Distortion",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969258718228-Warm-Release-Notes",
+          "versionRegex": "Warm\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47969258718228-Warm-Release-Notes"
         },
         "Harmony Engine": {
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969228097300-Harmony-Engine-Release-Notes",
+          "versionRegex": "Harmony\\s+Engine\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47969228097300-Harmony-Engine-Release-Notes"
         },
         "Metamorph": {
           "category": "Effect",
@@ -5285,28 +5329,32 @@
           "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Auto-Tune EFX+": {
-          "updateUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBQGQwhlJToYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBTrsUFlJToLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJBL2hjL2VuLXVzL2FydGljbGVzLzQxMTE1ODYwNTM0ODA0LUF1dG8tVHVuZS1FRlgtMTAtSGVscC1QYWdlBjsIVDoJcmFua2kG--cc9c7fa6df49d5c5586505aba84a635e5089a0ec",
-          "downloadUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBQGQwhlJToYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBTrsUFlJToLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJBL2hjL2VuLXVzL2FydGljbGVzLzQxMTE1ODYwNTM0ODA0LUF1dG8tVHVuZS1FRlgtMTAtSGVscC1QYWdlBjsIVDoJcmFua2kG--cc9c7fa6df49d5c5586505aba84a635e5089a0ec"
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41116824103700-Auto-Tune-EFX-10-Release-Notes",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/41116824103700-Auto-Tune-EFX-10-Release-Notes",
+          "versionRegex": "Auto-Tune\\s+EFX\\+\\s+10\\s+\\((\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Harmony Engine 4x": {
-          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41108335074580-Harmony-Engine-Help-Page",
-          "versionRegex": "Harmony[\\s\\-_:.]*Engine[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969228097300-Harmony-Engine-Release-Notes",
+          "versionRegex": "Harmony\\s+Engine\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47969228097300-Harmony-Engine-Release-Notes"
         },
         "Auto-Tune Hybrid": {
-          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41115437724436-SoundSoap-Release-Notes",
-          "versionRegex": "ap\\.\\s+SoundSoap\\s+\\(\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47967906101268-Auto-Tune-Hybrid-Release-Notes",
+          "versionRegex": "Auto-Tune\\s+Hybrid\\s+(\\d+\\.\\d+\\.\\d+)",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47967906101268-Auto-Tune-Hybrid-Release-Notes"
         },
         "Auto-Tune SoundSoap": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41115437724436-SoundSoap-Release-Notes",
           "versionRegex": "Auto-Tune[\\s\\-_:.]*SoundSoap[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "AVOX ASPIRE": {
-          "updateUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBSBmrOgKzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBRzD%2B9kJToLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI7L2hjL2VuLXVzL2FydGljbGVzLzQ3OTY5MjA4MDA4OTgwLUFzcGlyZS1SZWxlYXNlLU5vdGVzBjsIVDoJcmFua2kK--f56e6dcbb66c50f20a35fe2431c3bfe131db90ac",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969208008980-Aspire-Release-Notes",
           "category": "Effect",
           "subcategory": "Pitch",
-          "downloadUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBSBmrOgKzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBRzD%2B9kJToLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI7L2hjL2VuLXVzL2FydGljbGVzLzQ3OTY5MjA4MDA4OTgwLUFzcGlyZS1SZWxlYXNlLU5vdGVzBjsIVDoJcmFua2kK--f56e6dcbb66c50f20a35fe2431c3bfe131db90ac"
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47969208008980-Aspire-Release-Notes",
+          "versionRegex": "Aspire\\s+\\((\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Auto-Tune Vocal Compressor": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41117241499028-Vocal-Compressor-Release-Notes",
@@ -5333,10 +5381,11 @@
           "subcategory": "Dynamics"
         },
         "AVOX CHOIR": {
-          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969283082132-Throat-Release-Notes",
-          "versionRegex": "pdated\\s+Throat\\s+\\(\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969216549012-Choir-Release-Notes",
+          "versionRegex": "Choir\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
           "category": "Effect",
-          "subcategory": "Pitch"
+          "subcategory": "Pitch",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47969216549012-Choir-Release-Notes"
         },
         "AVOX THROAT": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969283082132-Throat-Release-Notes",
@@ -5345,18 +5394,19 @@
           "subcategory": "Pitch"
         },
         "AVOX WARM": {
-          "updateUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBREoLagKzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJQHFLigKzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI5L2hjL2VuLXVzL2FydGljbGVzLzQ3OTY5MjU4NzE4MjI4LVdhcm0tUmVsZWFzZS1Ob3RlcwY7CFQ6CXJhbmtpBw%3D%3D--e088f4a6487b5cd27586f8c9266fb74e60487922",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969258718228-Warm-Release-Notes",
           "category": "Effect",
           "subcategory": "Distortion",
-          "downloadUrl": "https://help.antarestech.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBREoLagKzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJQHFLigKzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI5L2hjL2VuLXVzL2FydGljbGVzLzQ3OTY5MjU4NzE4MjI4LVdhcm0tUmVsZWFzZS1Ob3RlcwY7CFQ6CXJhbmtpBw%3D%3D--e088f4a6487b5cd27586f8c9266fb74e60487922"
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47969258718228-Warm-Release-Notes",
+          "versionRegex": "Warm\\s+\\((\\d+\\.\\d+\\.\\d+)\\)"
         },
         "Vocal De-Esser": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47968350562196-Vocal-De-Esser-Release-Notes",
           "versionRegex": "Vocal\\s+De-Esser\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Auto-Tune Central": {
-          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47968350562196-Vocal-De-Esser-Release-Notes",
-          "versionRegex": "Auto-Tune[\\s\\-_:.]*Central[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.antarestech.com/downloads",
+          "downloadUrl": "https://www.antarestech.com/downloads"
         },
         "Vocal Prep": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47968175080724-Vocal-Prep-Release-Notes",
@@ -5381,6 +5431,11 @@
         "Auto-Tune Vocodist": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969287023764-Vocodist-Release-Notes",
           "versionRegex": "Vocodist \\((\\d+\\.\\d+\\.\\d+)\\)"
+        },
+        "Auto-Tune Pro X": {
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41115597486356-Auto-Tune-Pro-X-Release-Notes",
+          "versionRegex": "Auto-Tune\\s+Pro\\s+X\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/41115597486356-Auto-Tune-Pro-X-Release-Notes"
         }
       }
     },
@@ -7138,7 +7193,7 @@
         },
         "Softube Central": {
           "updateUrl": "https://www.softube.com/us/release-notes",
-          "versionRegex": "tes\\s+for\\s+version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.softube.com/us/release-notes"
         },
         "Acoustic Feedback": {
           "category": "Effect",
@@ -9148,6 +9203,10 @@
         "Nexus": {
           "updateUrl": "https://refx.com/nexus/version/",
           "versionRegex": "Windows\\s+macOS\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+        },
+        "Cloud": {
+          "updateUrl": "https://www.refx.com/support/",
+          "downloadUrl": "https://www.refx.com/support/"
         }
       }
     },
@@ -9341,7 +9400,7 @@
         },
         "Safari": {
           "updateUrl": "https://www.apple.com/safari",
-          "versionRegex": "Safari[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.apple.com/safari"
         },
         "Logic Pro": {
           "updateUrl": "https://www.apple.com/logic-pro",
@@ -9735,7 +9794,7 @@
         },
         "OneDrive": {
           "updateUrl": "https://learn.microsoft.com/en-us/officeupdates/release-notes-office-for-mac",
-          "versionRegex": "\\d+,\\s+\\d+\\s+Version\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://learn.microsoft.com/en-us/officeupdates/release-notes-office-for-mac"
         }
       }
     },
