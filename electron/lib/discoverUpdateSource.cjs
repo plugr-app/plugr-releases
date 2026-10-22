@@ -442,6 +442,13 @@ function scoreMatch(text, idx, version, beforeContext, afterContext) {
   // the context checks above never fire.
   const segs = String(version).split(/[._\-]/).slice(0, 3);
   if (segs.some((seg) => /^\d{5,}$/.test(seg))) return 0;
+  // System-requirement numbers. "requires macOS 10.13 or later" sits on
+  // almost every download page, right next to the product name, and reads
+  // as a perfectly well-formed version. It accounted for five of the 67 bad
+  // sources a bulk run wrote on 2026-10-22 — Setapp "10.13", Splice "12.3",
+  // Splice Bridge "10.5". The plausibility check cannot catch these because
+  // they point UPWARD from the installed version.
+  if (/\b(?:mac\s*os|macos|os\s*x|windows|win|ios|requires?|compatible\s+with|or\s+later|minimum)\s*:?\s*$/i.test(beforeContext)) return 0;
 
   // Strongest signal: a "version" / "build" / "release" keyword right before.
   for (const kw of VERSION_KEYWORDS) {
