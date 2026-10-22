@@ -14,7 +14,7 @@ export default function Toolbar({
   search, onSearchChange, searchRef,
   sortBy, onSortChange,
   view, onViewChange,
-  outdatedCount, totalCount,
+  outdatedCount, totalCount, coverage,
   scannedAt, updatesCheckedAt, totalBytes,
   progress,
   onBrandClick,
@@ -27,6 +27,12 @@ export default function Toolbar({
   if (totalCount > 0) subBits.push(`${totalCount} items`);
   if (totalBytes) subBits.push(formatBytes(totalBytes));
   if (outdatedCount > 0) subBits.push(`${outdatedCount} updates`);
+  // Coverage, stated positively. The sidebar used to show a single
+  // "Unknown" row in the four figures, which read as "Plugr has no idea
+  // about a quarter of your library" when in fact it had a page for all
+  // but a couple of hundred. Leading with the share it can check
+  // automatically is the honest headline.
+  if (coverage && coverage.total > 0) subBits.push(`${coverage.pct}% auto-checked`);
   if (scannedAt) subBits.push(`scanned ${formatRelativeTime(scannedAt)}`);
   // NOTE: the progress strip used to render here, but that meant it
   // only showed when the Library tab was mounted — invisible during
@@ -38,7 +44,15 @@ export default function Toolbar({
       {/* Brand block moved to TabBar (always-visible across tabs).
        *  Library-stats summary kept here, but in a slimmer form so the
        *  empty space doesn't read as a missing header. */}
-      <div className="toolbar-meta" title={updatesCheckedAt ? `Updates checked ${formatRelativeTime(updatesCheckedAt)}` : ''}>
+      <div
+        className="toolbar-meta"
+        title={[
+          coverage && coverage.total > 0
+            ? `Plugr checks ${coverage.auto} of ${coverage.total} plugins automatically. The rest either publish no machine-readable version (open their page to check by hand) or publish none at all.`
+            : null,
+          updatesCheckedAt ? `Updates checked ${formatRelativeTime(updatesCheckedAt)}` : null,
+        ].filter(Boolean).join('\n')}
+      >
         {subBits.length > 0 ? subBits.join(' · ') : 'Library empty'}
       </div>
 

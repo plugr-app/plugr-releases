@@ -1116,7 +1116,7 @@ function fixGenericAppNames(items) {
  * passes may further mutate the name. This is the safety net.
  */
 function enrichAllRegistryByDeveloperName(items) {
-  const { applyDeveloperAlias, loadRegistry, findDeveloperByIdentifier } = require('./registryLookup.cjs');
+  const { applyDeveloperAlias, loadRegistry, findDeveloperByIdentifier, isNotCheckableName } = require('./registryLookup.cjs');
   // Build a name-keyed override map once. developerByName lets the
   // registry force-reattribute a plugin based on its name regardless
   // of the bundle ID. Useful when a vendor distributes plugins under
@@ -1250,6 +1250,14 @@ function enrichAllRegistryByDeveloperName(items) {
         };
       }
     }
+
+    // Stamp "this is not an updatable product" onto the ITEM, not just the
+    // registry entry, so the renderer can act on it without waiting for an
+    // update check to have run — it drives hiding, and a freshly scanned
+    // library has no update results yet. Covers both routes: the product
+    // matcher's own flag and the registry's global name list (which is the
+    // only one that can reach the identifier-less artifacts).
+    it.notCheckable = Boolean((it.registry || {}).notCheckable || isNotCheckableName(it.name));
   }
 }
 

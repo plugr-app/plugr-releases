@@ -3,23 +3,51 @@ import { formatBytes, naturalCompare } from '../util/format.js';
 
 const FORMAT_ORDER = ['VST3', 'AU', 'VST2', 'AAX', 'CLAP', 'App'];
 
+// Update-status buckets, named for what the USER does about them rather
+// than for Plugr's internal status string.
+//
+// This replaced a single "Unknown" row that reached 1,270 items on a
+// 4,498-plugin library — and 1,011 of those had a page Plugr could open.
+// Lumping them together implied Plugr had no idea about a quarter of the
+// library, when the truth was "this vendor publishes no machine-readable
+// version, here is where to look". That is a resolved state; only ~200
+// items are genuine gaps. The counts are the only thing visible before you
+// click in, so the collapse had to go.
+//
+// `hint` is shown as a tooltip when the Filter hints setting is on (default
+// on): "Check manually" in particular means nothing until you've read it.
 const UPDATE_OPTIONS = [
-  { value: 'all', label: 'All' },
-  { value: 'outdated', label: 'Updates available' },
-  { value: 'current', label: 'Up to date' },
-  // Plugins handled exclusively by a companion app (Native Access, Waves
-  // Central, etc.) with no public version-check URL available — Plugr
-  // can't detect whether they're outdated. Note: when a plugin has BOTH
-  // a companion app AND a version source configured, it lands in the
-  // normal 'outdated' / 'current' / 'ahead' buckets instead (with a
-  // 'via <companion>' chip alongside the update status).
-  // Single Unknown bucket lumps together: no source, companion-managed,
-  // and saved-URL-but-can't-auto-parse. Per-card UpdateBadge still
-  // distinguishes these visually so the user can see which is which
-  // when viewing the bucket — the prior 3-way split was redundant
-  // since the detail panel already surfaces companion + URL.
-  { value: 'ignored', label: 'Ignored' },
-  { value: 'unknown', label: 'Unknown' },
+  { value: 'all', label: 'All', hint: 'Every plugin, whatever its update status.' },
+  {
+    value: 'outdated',
+    label: 'Updates available',
+    hint: 'A newer version is published than the one you have installed. A “Major upgrade” chip means the jump is to a new major version, which is usually a paid upgrade rather than a free patch.',
+  },
+  {
+    value: 'current',
+    label: 'Up to date',
+    hint: 'You have the version the developer publishes — or a newer one, which happens if you run betas or pre-release builds.',
+  },
+  {
+    value: 'manual',
+    label: 'Check manually',
+    hint: 'The developer doesn’t publish a version number Plugr can read, so it can’t compare for you — but it does know where to look. Open the plugin and use its update page to check by hand.',
+  },
+  {
+    value: 'nosource',
+    label: 'No source yet',
+    hint: 'Plugr has nowhere to look — this developer publishes no version anywhere it can find. Try “Find missing sources”, or share the gap so the next person gets it filled in.',
+  },
+  {
+    value: 'failed',
+    label: 'Check failed',
+    hint: 'A source is set but the last check broke — the page moved, changed layout, or refused the request. Usually worth re-running Check for Updates.',
+  },
+  {
+    value: 'ignored',
+    label: 'Ignored',
+    hint: 'Updates you’ve muted, either for one specific version or for the plugin entirely.',
+  },
 ];
 
 const CLEANUP_OPTIONS = [
@@ -53,7 +81,7 @@ export default function Sidebar({
   // Pass null/empty Map when tagging isn't enabled / no tags exist
   // and the section will hide itself.
   activeTag, onSelectTag, tagCounts,
-  updateFilter, onUpdateFilterChange,
+  updateFilter, onUpdateFilterChange, filterHints = true,
   updateStatusCounts,
   cleanupFilter, onCleanupFilterChange,
   favoritesOnly, onFavoritesOnlyChange,
@@ -292,7 +320,7 @@ export default function Sidebar({
   if (activeDeveloper) activeChips.push({ key: 'dev', label: activeDeveloper, onClear: () => onSelectDeveloper(null) });
   if (activeTag) activeChips.push({ key: 'tag', label: `#${activeTag}`, onClear: () => onSelectTag && onSelectTag(null) });
   if (updateFilter && updateFilter !== 'all') {
-    const labels = { outdated: 'Updates available', current: 'Up to date', ignored: 'Ignored', unknown: 'Unchecked / unknown' };
+    const labels = Object.fromEntries(UPDATE_OPTIONS.map((o) => [o.value, o.label]));
     activeChips.push({ key: 'upd', label: labels[updateFilter] || updateFilter, onClear: () => onUpdateFilterChange('all') });
   }
   if (cleanupFilter && cleanupFilter !== 'all') {
@@ -541,11 +569,16 @@ export default function Sidebar({
       >
         {UPDATE_OPTIONS.map((opt) => {
           const count = (updateStatusCounts && updateStatusCounts[opt.value]) || 0;
+          // An empty bucket is noise — most libraries never have a failed
+          // check or an ignored update. Keep "All" and whatever is currently
+          // selected, so the row you picked can't vanish under you.
+          if (count === 0 && opt.value !== 'all' && updateFilter !== opt.value) return null;
           return (
             <button
               key={opt.value}
               className={`row pickable ${updateFilter === opt.value ? 'active' : ''}`}
               onClick={() => onUpdateFilterChange(opt.value)}
+              title={filterHints ? opt.hint : undefined}
               type="button"
             >
               <span className="row-label">{opt.label}</span>
@@ -553,12 +586,15 @@ export default function Sidebar({
             </button>
           );
         })}
-        {onDiscoverAll && (updateStatusCounts && updateStatusCounts.unknown > 0) && (
+        {/* Hung off "No source yet", not the old lump: offering to crawl
+            1,270 plugins when 1,011 of them already had a source was a very
+            long search for things Plugr already knew. */}
+        {onDiscoverAll && (updateStatusCounts && updateStatusCounts.nosource > 0) && (
           <button
             className="row pickable discover-all-row"
             onClick={onDiscoverAll}
             type="button"
-            title="Visit each developer's website looking for update sources for any plugin currently 'unchecked'."
+            title={`Visit each developer's website looking for an update source for the ${updateStatusCounts.nosource} plugin${updateStatusCounts.nosource === 1 ? '' : 's'} that don't have one.`}
           >
             <span className="row-label">⚡ Find missing sources</span>
           </button>

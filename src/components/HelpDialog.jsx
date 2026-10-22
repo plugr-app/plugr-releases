@@ -10,6 +10,8 @@ export default function HelpDialog({
   customFolders, onAddCustomFolder, onRemoveCustomFolder,
   api, pushToast,
   defaultTabPref, onDefaultTabPrefChange,
+  filterHints, onFilterHintsChange,
+  showNonCheckable, onShowNonCheckableChange,
   // License tab plumbing — fed by App.jsx so this dialog stays a
   // pure renderer of state (no IPC of its own beyond LicenseSection).
   entitlements, onEntitlementsChanged, onOpenUpgrade,
@@ -45,6 +47,10 @@ export default function HelpDialog({
             <PreferencesTab
               defaultTabPref={defaultTabPref}
               onDefaultTabPrefChange={onDefaultTabPrefChange}
+              filterHints={filterHints}
+              onFilterHintsChange={onFilterHintsChange}
+              showNonCheckable={showNonCheckable}
+              onShowNonCheckableChange={onShowNonCheckableChange}
               api={api}
               pushToast={pushToast}
             />
@@ -73,7 +79,7 @@ export default function HelpDialog({
 // Preferences — default-tab choice + support actions + diagnostics.
 // Three sections separated by short headings; layout stays inside a
 // single .help-prose container so all settings are scrollable together.
-function PreferencesTab({ defaultTabPref, onDefaultTabPrefChange, currencyPref, onCurrencyPrefChange, api, pushToast }) {
+function PreferencesTab({ defaultTabPref, onDefaultTabPrefChange, currencyPref, onCurrencyPrefChange, api, pushToast, filterHints, onFilterHintsChange, showNonCheckable, onShowNonCheckableChange }) {
   const options = [
     { id: 'library',  label: 'Plugins & Apps',
       hint: 'Always open the software organizer when Plugr launches (Default)' },
@@ -182,6 +188,39 @@ function PreferencesTab({ defaultTabPref, onDefaultTabPrefChange, currencyPref, 
             </button>
           );
         })}
+      </div>
+
+      {/* Library display ────────────────────────────────────────── */}
+      <h3 style={{ marginTop: 28 }}>Library display</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={filterHints !== false}
+            onChange={(e) => onFilterHintsChange && onFilterHintsChange(e.target.checked)}
+            style={{ marginTop: 3 }}
+          />
+          <span>
+            <span style={{ fontWeight: 600 }}>Explain the filters on hover</span>
+            <span style={{ display: 'block', fontSize: 12, opacity: 0.65, marginTop: 2 }}>
+              Hovering an Update status filter shows a short explanation of what it means — what “Check manually” is telling you, and what to do about “No source yet”.
+            </span>
+          </span>
+        </label>
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={!!showNonCheckable}
+            onChange={(e) => onShowNonCheckableChange && onShowNonCheckableChange(e.target.checked)}
+            style={{ marginTop: 3 }}
+          />
+          <span>
+            <span style={{ fontWeight: 600 }}>Show items that can’t be update-checked</span>
+            <span style={{ display: 'block', fontSize: 12, opacity: 0.65, marginTop: 2 }}>
+              Uninstallers, AAX/AU/VST3 format shells and helper binaries aren’t products, so Plugr hides them rather than reporting an update status it can’t have. Turn this on to see them in the library — they’re always available under Hidden.
+            </span>
+          </span>
+        </label>
       </div>
 
       {/* Background & startup ──────────────────────────────────── */}

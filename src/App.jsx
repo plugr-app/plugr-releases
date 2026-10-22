@@ -297,6 +297,43 @@ function applyRegistryCompanions(items) {
   });
 }
 
+// Which update bucket an item belongs to. ONE function so the sidebar
+// counts and the library filter can never disagree — they were two separate
+// inline expressions, which is how `not-applicable` ended up counted in the
+// "unknown" row it had been deliberately excluded from.
+//
+// The buckets are named for what the user DOES, not for Plugr's internal
+// status, because the old single "Unknown" row conflated a question Plugr
+// had not answered with an answer Plugr had given. Of 1,270 items in it,
+// 1,011 had a page to open — that is a resolved state, not an unknown one.
+//   outdated  — an update is available
+//   current   — up to date (or ahead of what the vendor publishes)
+//   ignored   — outdated, but the user muted this version or the plugin
+//   manual    — no machine-readable version, but Plugr has the page
+//   nosource  — nothing published anywhere; Discover or the community feed
+//   failed    — a source exists and broke; worth retrying
+// Returns null for items that belong in no bucket (not-applicable), which
+// are hidden by default anyway.
+function updateBucketOf(item, u) {
+  const status = u && u.status;
+  if (!status) return 'nosource';
+  if (status === 'not-applicable') return null;
+  if (status === 'outdated') {
+    const muted = item.ignoreAllUpdates
+      || (item.ignoredUpdateVersion && item.ignoredUpdateVersion === u.latestVersion);
+    return muted ? 'ignored' : 'outdated';
+  }
+  if (status === 'current' || status === 'ahead') return 'current';
+  if (status === 'parse-failed' || status === 'error') return 'failed';
+  // manual-check always has a URL by construction; `unknown` means Plugr
+  // could not COMPARE (a placeholder or absent installed version) and may
+  // still have fetched the vendor's number, so it belongs with the
+  // check-by-hand group whenever there is somewhere to look.
+  const reg = item.registry || {};
+  if (u.updateUrl || reg.updateUrl || item.sparkleFeedUrl) return 'manual';
+  return 'nosource';
+}
+
 function applyOverrides(items, overrides) {
   if (!overrides || Object.keys(overrides).length === 0) return items;
   return items.map((it) => {
@@ -1130,6 +1167,16 @@ export default function App() {
   // same one-or-the-other UX. Default false → hidden items are excluded
   // from every other bucket, exactly as the user asked.
   const [showHidden, setShowHidden] = useState(false);
+  // Show one-line explanations on the sidebar's filter rows. ON by
+  // default: the bucket names are short by necessity and "Check manually"
+  // is not self-explanatory until you have read it once.
+  const [filterHints, setFilterHints] = useState(true);
+  // Items Plugr declared not update-checkable (uninstallers, format shells,
+  // helper binaries — see registryLookup.notCheckable) are hidden by
+  // default. They are not products, so counting them anywhere implies a
+  // judgement Plugr cannot make and the user cannot act on. This setting
+  // brings them back into the library for anyone who wants to see them.
+  const [showNonCheckable, setShowNonCheckable] = useState(false);
   const [sortBy, setSortBy] = useState('name');
   const [sortDir, setSortDir] = useState('asc');
   const [view, setView] = useState('grid');
@@ -1246,6 +1293,8 @@ export default function App() {
             setColumnWidths(cached.data.columnWidths);
           }
           if (cached.data.compatFilter) setCompatFilter(cached.data.compatFilter);
+          if (typeof cached.data.filterHints === 'boolean') setFilterHints(cached.data.filterHints);
+          if (typeof cached.data.showNonCheckable === 'boolean') setShowNonCheckable(cached.data.showNonCheckable);
           if (cached.data.userDeveloperCompanions) setDevCompanions(cached.data.userDeveloperCompanions);
           if (cached.data.userCategories && typeof cached.data.userCategories === 'object') {
             setUserCategories(cached.data.userCategories);
@@ -2775,6 +2824,14 @@ export default function App() {
     setView(next);
     await api.setPrefs({ view: next });
   }, []);
+  const applyFilterHints = useCallback(async (next) => {
+    setFilterHints(next);
+    await api.setPrefs({ filterHints: next });
+  }, []);
+  const applyShowNonCheckable = useCallback(async (next) => {
+    setShowNonCheckable(next);
+    await api.setPrefs({ showNonCheckable: next });
+  }, []);
 
   // Add or remove a user-defined companion app for a developer.
   const setDevCompanion = useCallback(async (developer, companion) => {
@@ -3029,11 +3086,16 @@ export default function App() {
     // hidden items show, no matter what other filters are picked. The
     // `skip.hidden` escape hatch is used by the Hidden bucket's own
     // counter so it can show its own count regardless of the toggle.
+    // Items Plugr declared not update-checkable behave as hidden unless the
+    // user opts in. They are uninstallers, AAX/AU/VST3 shells and helper
+    // binaries, so leaving them visible put ~36 non-products into every
+    // count and made the update buckets read as if Plugr had failed on them.
+    const effHidden = it.hidden || (it.notCheckable && !showNonCheckable);  // keep in step with isHidden()
     if (!skip.hidden) {
       if (showHidden) {
-        if (!it.hidden) return false;
+        if (!effHidden) return false;
       } else {
-        if (it.hidden) return false;
+        if (effHidden) return false;
       }
     }
     if (favoritesOnly && !it.favorite) return false;
@@ -3053,29 +3115,15 @@ export default function App() {
       if (!Array.isArray(it.tags) || !it.tags.includes(activeTag)) return false;
     }
     if (!skip.update && updateFilter !== 'all') {
-      const u = effectiveUpdates[it.id];
-      // "Real" check results: outdated, current, ahead, AND manual-check.
-      // Ahead means the installed version is newer than what the registry
-      // knows about. Manual-check means the user saved a URL knowing
-      // Plugr can't auto-detect — that's still an intentional decision,
-      // not "unchecked". All of these should NOT fall into Unchecked or
-      // Managed buckets.
-      const realStatus = u && (u.status === 'outdated' || u.status === 'current' || u.status === 'ahead' || u.status === 'manual-check') ? u.status : null;
-      const itemIsIgnored = realStatus === 'outdated' && (
-        it.ignoreAllUpdates || (it.ignoredUpdateVersion && it.ignoredUpdateVersion === u.latestVersion)
-      );
-      if (updateFilter === 'outdated' && (realStatus !== 'outdated' || itemIsIgnored)) return false;
-      if (updateFilter === 'current' && realStatus !== 'current' && realStatus !== 'ahead') return false;
-      if (updateFilter === 'ignored' && !itemIsIgnored) return false;
-      // Unknown bucket — everything that doesn't have a definitive
-      // outdated/current/ahead answer. Used to be three separate
-      // buckets (managed / manual-check / unchecked); collapsed since
-      // the card itself already surfaces companion app and saved URL.
+      // One classifier for the filter AND the sidebar counts — see
+      // updateBucketOf(). `unknown` is still accepted as a filter value so a
+      // persisted selection from the old single bucket keeps working; it maps
+      // onto everything that is not a definitive outdated/current answer.
+      const bucket = updateBucketOf(it, effectiveUpdates[it.id]);
       if (updateFilter === 'unknown') {
-        if (realStatus === 'outdated' || realStatus === 'current' || realStatus === 'ahead') return false;
-        // Not-applicable items are a definitive answer, not an unanswered
-        // one — keep them out of Unchecked so the bucket stays actionable.
-        if (u && u.status === 'not-applicable') return false;
+        if (bucket !== 'manual' && bucket !== 'nosource' && bucket !== 'failed') return false;
+      } else if (bucket !== updateFilter) {
+        return false;
       }
     }
     if (!skip.cleanup && cleanupFilter !== 'all') {
@@ -3114,7 +3162,7 @@ export default function App() {
       }
     }
     return true;
-  }, [showHidden, favoritesOnly, activeFormats, activeCategory, activeDeveloper, activeTag, updateFilter, cleanupFilter, compatFilter, search, effectiveUpdates, projectFilter, projectMatch]);
+  }, [showHidden, showNonCheckable, favoritesOnly, activeFormats, activeCategory, activeDeveloper, activeTag, updateFilter, cleanupFilter, compatFilter, search, effectiveUpdates, projectFilter, projectMatch]);
 
   const filteredItems = useMemo(() => {
     let items = displayedItems.filter((it) => matchesFilters(it));
@@ -3167,9 +3215,18 @@ export default function App() {
   // based on the Hidden toggle so the totals match what's actually in the
   // main view: when Hidden is off (the normal case), hidden plugins are
   // gone from those counts too.
+  // One predicate for "effectively hidden", used by the main filter, the
+  // sidebar totals, the favourites count and the Hidden row's badge — they
+  // used to each test `it.hidden` directly, which would have left the
+  // auto-hidden non-checkable items counted in some places and not others.
+  const isHidden = useCallback(
+    (it) => Boolean(it.hidden || (it.notCheckable && !showNonCheckable)),
+    [showNonCheckable],
+  );
+
   const sidebarItems = useMemo(
-    () => displayedItems.filter((it) => showHidden ? it.hidden : !it.hidden),
-    [displayedItems, showHidden],
+    () => displayedItems.filter((it) => showHidden ? isHidden(it) : !isHidden(it)),
+    [displayedItems, showHidden, isHidden],
   );
 
   const selected = useMemo(
@@ -3799,31 +3856,38 @@ export default function App() {
     // Count over the projection that respects every active filter EXCEPT
     // the update filter itself — so the user can see how many would land
     // in each update bucket given their other active filters.
-    const c = { all: itemsForUpdateSidebar.length, outdated: 0, current: 0, ignored: 0, unknown: 0 };
+    const c = {
+      all: itemsForUpdateSidebar.length,
+      outdated: 0, current: 0, ignored: 0, manual: 0, nosource: 0, failed: 0,
+    };
     for (const it of itemsForUpdateSidebar) {
-      const u = effectiveUpdates[it.id];
-      const isReal = u && (u.status === 'outdated' || u.status === 'current' || u.status === 'ahead');
-      const isIgnored = isReal && u.status === 'outdated' && (
-        it.ignoreAllUpdates || (it.ignoredUpdateVersion && it.ignoredUpdateVersion === u.latestVersion)
-      );
-      if (isIgnored) c.ignored++;
-      else if (isReal && u.status === 'outdated') c.outdated++;
-      else if (isReal && (u.status === 'current' || u.status === 'ahead')) c.current++;
-      else c.unknown++;
+      const b = updateBucketOf(it, effectiveUpdates[it.id]);
+      if (b && b in c) c[b]++;
     }
     return c;
   }, [itemsForUpdateSidebar, effectiveUpdates]);
 
+  // How much of the library Plugr can answer WITHOUT the user doing
+  // anything. Shown in the toolbar because the honest headline is coverage,
+  // not the size of the tail: a single "unknown" row reading 1,270 implied
+  // Plugr had no idea about a quarter of the library when in fact it had a
+  // page for all but ~200 of them.
+  const updateCoverage = useMemo(() => {
+    const auto = updateStatusCounts.outdated + updateStatusCounts.current + updateStatusCounts.ignored;
+    const total = updateStatusCounts.all;
+    return { auto, total, pct: total ? Math.round((auto / total) * 100) : 0 };
+  }, [updateStatusCounts]);
+
   const favoritesCount = useMemo(
-    () => displayedItems.reduce((n, it) => n + (it.favorite && !it.hidden ? 1 : 0), 0),
-    [displayedItems],
+    () => displayedItems.reduce((n, it) => n + (it.favorite && !isHidden(it) ? 1 : 0), 0),
+    [displayedItems, isHidden],
   );
 
   // Total hidden items in the library, regardless of any other active
   // filter. Drives the "Hidden" sidebar row's count badge.
   const hiddenCount = useMemo(
-    () => displayedItems.reduce((n, it) => n + (it.hidden ? 1 : 0), 0),
-    [displayedItems],
+    () => displayedItems.reduce((n, it) => n + (isHidden(it) ? 1 : 0), 0),
+    [displayedItems, isHidden],
   );
 
   // List of every developer name currently in the library. Drives the
@@ -4310,6 +4374,7 @@ export default function App() {
         view={view}
         onViewChange={applyView}
         outdatedCount={updateStatusCounts.outdated}
+        coverage={updateCoverage}
         totalCount={library.items.length}
         scannedAt={library.scannedAt}
         updatesCheckedAt={updatesCheckedAt}
@@ -4336,6 +4401,7 @@ export default function App() {
           updateFilter={updateFilter}
           onUpdateFilterChange={setUpdateFilter}
           updateStatusCounts={updateStatusCounts}
+          filterHints={filterHints}
           cleanupFilter={cleanupFilter}
           onCleanupFilterChange={setCleanupFilter}
           favoritesOnly={favoritesOnly}
@@ -4673,6 +4739,10 @@ export default function App() {
           pushToast={pushToast}
           defaultTabPref={defaultTabPref}
           onDefaultTabPrefChange={updateDefaultTabPref}
+          filterHints={filterHints}
+          onFilterHintsChange={applyFilterHints}
+          showNonCheckable={showNonCheckable}
+          onShowNonCheckableChange={applyShowNonCheckable}
           currencyPref={currencyPref}
           onCurrencyPrefChange={updateCurrencyPref}
           // License tab needs the current entitlement snapshot, a way to
