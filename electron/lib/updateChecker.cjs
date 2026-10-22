@@ -98,6 +98,31 @@ function leadingPartsMatch(installedParts, latestParts) {
   return true;
 }
 
+// True when the INSTALLED version string isn't the product's own version,
+// so comparing it would produce a confident wrong answer rather than an
+// honest "don't know". Two cases:
+//   * a vendor-declared placeholder (`placeholderVersions` on the registry
+//     entry) — every `com.arturia.aax.*` bundle reports the AAX wrapper's
+//     1.4.6 across all 76 Arturia products, while the VST3/AU/VST copies of
+//     the same plugins report the real one. That one string produced 55
+//     false "outdated" and 20 false "ahead" in a single library.
+//   * an all-zero version (0, 0.0, 0.0.0), which means the scanner found no
+//     version at all — not that the plugin is ancient. Focusrite's Red 2 EQ
+//     and Red 3 Compressor report 0.0.0 and were being called outdated.
+// Callers report `unknown` and still surface the fetched version, so the
+// user sees what the vendor publishes and can compare by hand.
+const NONINFORMATIVE_MESSAGE =
+  'This copy does not report its own version — compare against the page by hand';
+
+function isNonInformativeVersion(reg, installed) {
+  const v = String(installed || '').trim();
+  if (!v) return true;
+  if (/^v?0+(?:\.0+)*$/i.test(v)) return true;
+  return ((reg && reg.placeholderVersions) || []).some(
+    (p) => String(p).trim().toLowerCase() === v.toLowerCase(),
+  );
+}
+
 function compareVersions(installed, latest) {
   if (!installed || !latest) return 'unknown';
   // Pre-split both strings into numeric tuples — we use this for the
@@ -209,11 +234,14 @@ async function checkUpdatesForItems(items, opts = {}) {
         const sp = await checkSparkleFeed(sparkleUrl);
         if (sp && sp.latest && sp.latest.version) {
           const latest = sp.latest.version;
-          const cmp = compareVersions(item.version, latest);
+          const cmp = isNonInformativeVersion(reg, item.version)
+            ? 'unknown'
+            : compareVersions(item.version, latest);
           emitProgress(item);
           return {
             id: item.id,
             status: cmp,
+            message: cmp === 'unknown' ? NONINFORMATIVE_MESSAGE : undefined,
             latestVersion: latest,
             installedVersion: item.version,
             homepage: reg.homepage,
@@ -287,11 +315,14 @@ async function checkUpdatesForItems(items, opts = {}) {
           via: viaRender ? 'render' : undefined,
         };
       }
-      const cmp = compareVersions(item.version, latest);
+      const cmp = isNonInformativeVersion(reg, item.version)
+        ? 'unknown'
+        : compareVersions(item.version, latest);
       emitProgress(item);
       return {
         id: item.id,
         status: cmp,
+        message: cmp === 'unknown' ? NONINFORMATIVE_MESSAGE : undefined,
         latestVersion: latest,
         installedVersion: item.version,
         // Marks a result that only exists because the page was rendered in
@@ -313,11 +344,14 @@ async function checkUpdatesForItems(items, opts = {}) {
           const rendered = await renderOnce(reg.updateUrl);
           const latest = extractVersion(rendered, reg.versionRegex);
           if (latest) {
-            const cmp = compareVersions(item.version, latest);
+            const cmp = isNonInformativeVersion(reg, item.version)
+              ? 'unknown'
+              : compareVersions(item.version, latest);
             emitProgress(item);
             return {
               id: item.id,
               status: cmp,
+            message: cmp === 'unknown' ? NONINFORMATIVE_MESSAGE : undefined,
               latestVersion: latest,
               installedVersion: item.version,
               via: 'render',

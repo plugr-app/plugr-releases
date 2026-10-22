@@ -5,3 +5,6 @@ dist/
 *.log
 .DS_Store
 _to_delete/
+
+# Scratch copies of the live library cache pulled for analysis
+.tmp-*.json

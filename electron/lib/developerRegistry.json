@@ -275,12 +275,12 @@
           "versionRegex": "FabFilter[\\s\\-_:.]*Micro[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "FabFilter Pro-C 2": {
-          "updateUrl": "https://www.fabfilter.com/download",
-          "versionRegex": "pressor\\s+plug-in\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads"
         },
         "FabFilter Pro-C 2 (Mono)": {
-          "updateUrl": "https://www.fabfilter.com/download",
-          "versionRegex": "pressor\\s+plug-in\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads"
         },
         "FabFilter Pro-L 2": {
           "updateUrl": "https://www.fabfilter.com/download",
@@ -328,8 +328,8 @@
           "versionRegex": "hesizer\\s+plug-in\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Pro-C 2": {
-          "updateUrl": "https://www.fabfilter.com/download",
-          "versionRegex": "pressor\\s+plug-in\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads"
         },
         "Pro-Q 3": {
           "updateUrl": "https://www.fabfilter.com/support/downloads",
@@ -348,6 +348,10 @@
         "Pro-Q 2": {
           "updateUrl": "https://www.fabfilter.com/support/downloads",
           "versionRegex": "Pro-Q\\s+(2\\.\\d+)\\s+[A-Z][a-z]{2}\\s+\\d{1,2},\\s+\\d{4}",
+          "downloadUrl": "https://www.fabfilter.com/support/downloads"
+        },
+        "Pro-C 2 (Mono)": {
+          "updateUrl": "https://www.fabfilter.com/support/downloads",
           "downloadUrl": "https://www.fabfilter.com/support/downloads"
         }
       }
@@ -827,8 +831,8 @@
           "subcategory": "Multi-Effect"
         },
         "Kontakt 5": {
-          "updateUrl": "https://www.native-instruments.com/ni-tech-manuals/ksp-manual/en/version-history",
-          "versionRegex": "History\\s+Kontakt\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.native-instruments.com/en/products/komplete/samplers/kontakt-8/",
+          "downloadUrl": "https://www.native-instruments.com/en/products/komplete/samplers/kontakt-8/"
         },
         "Native Access": {
           "updateUrl": "https://community.native-instruments.com/discussion/4823",
@@ -2359,7 +2363,10 @@
           "updateUrl": "https://www.arturia.com/support/downloads-manuals",
           "downloadUrl": "https://www.arturia.com/support/downloads-manuals"
         }
-      }
+      },
+      "placeholderVersions": [
+        "1.4.6"
+      ]
     },
     "Kilohearts": {
       "homepage": "https://kilohearts.com",
@@ -2684,7 +2691,11 @@
           "subcategory": "Modulation"
         },
         "SpaceBlender": {},
-        "SuperPlate": {}
+        "SuperPlate": {},
+        "Remove Soundtoys": {
+          "updateUrl": "https://www.soundtoys.com/release-log/",
+          "downloadUrl": "https://www.soundtoys.com/release-log/"
+        }
       },
       "updateUrl": "https://www.soundtoys.com/release-log/",
       "versionRegex": "Soundtoys\\s+v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)\\s+Update"
@@ -3755,8 +3766,8 @@
         "FL Studio": {
           "category": "Application",
           "subcategory": "DAW",
-          "updateUrl": "https://www.image-line.com",
-          "versionRegex": "FL[\\s\\-_:.]*Studio[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "updateUrl": "https://www.image-line.com/fl-studio/",
+          "downloadUrl": "https://www.image-line.com/fl-studio/"
         },
         "Sytrus": {
           "category": "Instrument",
@@ -3813,6 +3824,10 @@
         "ToxicBiohazard": {
           "category": "Instrument",
           "subcategory": "Synth"
+        },
+        "FL Studio VSTi": {
+          "updateUrl": "https://www.image-line.com/fl-studio/",
+          "downloadUrl": "https://www.image-line.com/fl-studio/"
         }
       }
     },
@@ -5749,15 +5764,15 @@
         },
         "Things Flip EQ": {
           "updateUrl": "https://www.audiothing.net/effects/things-tilt/",
-          "versionRegex": "\\d{4}/\\d{2}/\\d{2}:\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
+          "versionRegex": "Changelog\\s*\\+?\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
         },
         "ThingsFlipEQ": {
           "updateUrl": "https://www.audiothing.net/effects/things-tilt/",
-          "versionRegex": "\\d{4}/\\d{2}/\\d{2}:\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
+          "versionRegex": "Changelog\\s*\\+?\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
         },
         "ThingsTexture": {
           "updateUrl": "https://www.audiothing.net/effects/things-texture/",
-          "versionRegex": "\\d{4}/\\d{2}/\\d{2}:\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
+          "versionRegex": "Changelog\\s*\\+?\\s*v(\\d+\\.\\d+(?:\\.\\d+)?)"
         }
       }
     },
@@ -6803,9 +6818,9 @@
         },
         "MIDIQ": {
           "updateUrl": "https://www.waproduction.com/plugins/view/midiq",
-          "versionRegex": "MIDIQ[\\s\\S]{0,120}?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
           "category": "MIDI",
-          "subcategory": null
+          "subcategory": null,
+          "downloadUrl": "https://www.waproduction.com/plugins/view/midiq"
         },
         "Trackspacer": {
           "category": "Effect",
@@ -7068,10 +7083,10 @@
           "subcategory": "Imaging"
         },
         "dearVR pro": {
-          "updateUrl": "https://www.dear-reality.com",
-          "versionRegex": "dearVR[\\s\\-_:.]*pro[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)",
+          "updateUrl": "https://www.sennheiser.com/en-us/immersive/dear-reality",
           "category": "Effect",
-          "subcategory": "Utility"
+          "subcategory": "Utility",
+          "downloadUrl": "https://www.sennheiser.com/en-us/immersive/dear-reality"
         }
       }
     },

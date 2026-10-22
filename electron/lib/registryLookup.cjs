@@ -353,6 +353,19 @@ function lookupRegistry({ identifier, pluginName, developerName }) {
     downloadUrl: useDevSource
       ? (devEntry.downloadUrl || null)
       : (productEntry && productEntry.downloadUrl),
+    // Installed-version strings that are NOT the product's own version.
+    // Some vendors ship one format whose Info.plist carries a fixed
+    // wrapper version: every `com.arturia.aax.*` bundle in a 4498-item
+    // library reports 1.4.6, across all 76 Arturia products, while the
+    // VST3/AU/VST copies of the same plugins report the real one. Comparing
+    // the placeholder produced 55 confident false "outdated" and 20 false
+    // "ahead". Declared here (developer- or product-level, unioned) so the
+    // checker can decline to compare instead of guessing. This is NOT a
+    // source field: it applies whichever level the source came from.
+    placeholderVersions: [
+      ...((devEntry && devEntry.placeholderVersions) || []),
+      ...((productEntry && productEntry.placeholderVersions) || []),
+    ],
     matchedProduct: productEntry && productEntry.matchedKey,
   };
 }
