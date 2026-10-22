@@ -4102,7 +4102,7 @@
         },
         "Avid Link": {
           "updateUrl": "https://kb.avid.com/pkb/articles/User_Guide/Avid-Link-Documentation",
-          "versionRegex": "ls\\s+Avid\\s+Link\\s+\\d+\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://kb.avid.com/pkb/articles/User_Guide/Avid-Link-Documentation"
         },
         "304C": {
           "category": "Effect",
@@ -4191,10 +4191,6 @@
         "White Boost": {
           "category": "Effect",
           "subcategory": "Distortion"
-        },
-        "Link": {
-          "updateUrl": "https://kb.avid.com/pkb/articles/User_Guide/Avid-Link-Documentation",
-          "downloadUrl": "https://kb.avid.com/pkb/articles/User_Guide/Avid-Link-Documentation"
         }
       },
       "updateUrl": "https://www.avid.com/pro-tools/whats-new",
@@ -9198,15 +9194,11 @@
       "productMatchers": {
         "reFX Cloud": {
           "updateUrl": "https://www.refx.com/support/",
-          "versionRegex": "reFX[\\s\\-_:.]*Cloud[\\s\\S]{0,120}?(?<![$€£¥])\\bv?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "downloadUrl": "https://www.refx.com/support/"
         },
         "Nexus": {
           "updateUrl": "https://refx.com/nexus/version/",
           "versionRegex": "Windows\\s+macOS\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
-        },
-        "Cloud": {
-          "updateUrl": "https://www.refx.com/support/",
-          "downloadUrl": "https://www.refx.com/support/"
         }
       }
     },
