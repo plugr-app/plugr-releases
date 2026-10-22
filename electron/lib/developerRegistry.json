@@ -3766,8 +3766,9 @@
         "FL Studio": {
           "category": "Application",
           "subcategory": "DAW",
-          "updateUrl": "https://www.image-line.com/fl-studio/",
-          "downloadUrl": "https://www.image-line.com/fl-studio/"
+          "updateUrl": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/WhatsNew.htm",
+          "downloadUrl": "https://www.image-line.com/fl-studio-download/",
+          "versionRegex": "in\\s+FL\\s+Studio\\s+\\.\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Sytrus": {
           "category": "Instrument",
@@ -3829,7 +3830,11 @@
           "updateUrl": "https://www.image-line.com/fl-studio/",
           "downloadUrl": "https://www.image-line.com/fl-studio/"
         }
-      }
+      },
+      "placeholderVersions": [
+        "1.5.0",
+        "1.0.0"
+      ]
     },
     "Klanghelm": {
       "homepage": "https://klanghelm.com",
