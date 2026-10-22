@@ -83,6 +83,11 @@ const COMPAT_OPTIONS = [
     hint: 'Intel-only. It runs today through Rosetta translation, but a DAW running natively on Apple Silicon won’t even list it — and macOS 28 removes Rosetta, after which these stop loading for good. Worth checking whether the developer has shipped a universal build.',
   },
   {
+    value: 'rosetta-dupe',
+    label: 'Intel leftovers — safe to remove',
+    hint: 'An Intel-only copy of a plugin you already have a native build of, usually a VST2 the developer stopped updating when Steinberg retired the format. It does no work today and nothing is lost when Rosetta goes — you can delete these now.',
+  },
+  {
     value: 'ok',
     label: 'Native',
     hint: 'Built for Apple Silicon (or universal), and your macOS is new enough. Nothing to do.',
@@ -299,12 +304,13 @@ export default function Sidebar({
   // how many would land in each compat bucket given their other filters.
   const compatItems = itemsForCompat || items;
   const compatCounts = useMemo(() => {
-    const c = { all: compatItems.length, ok: 0, incompatible: 0, rosetta: 0, unknown: 0 };
+    const c = { all: compatItems.length, ok: 0, incompatible: 0, rosetta: 0, 'rosetta-dupe': 0, unknown: 0 };
     for (const it of compatItems) {
       const s = it.osCompat && it.osCompat.status;
       if (s === 'ok') c.ok++;
       else if (s === 'incompatible') c.incompatible++;
       else if (s === 'rosetta') c.rosetta++;
+      else if (s === 'rosetta-dupe') c['rosetta-dupe']++;
       else c.unknown++;
     }
     return c;

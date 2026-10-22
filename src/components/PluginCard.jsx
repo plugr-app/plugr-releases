@@ -104,9 +104,26 @@ export default function PluginCard({ item, update, selected, onClick, onContextM
           </div>
         )}
         {/* Intel-only but still translatable. A warning, not an error: it
-            works today and stops working on macOS 28. */}
+            works today and stops working on macOS 28. When a newer version
+            exists we lead with that instead — "update it" is a better first
+            move than "brace yourself", and the newer build is often the
+            universal one. */}
         {item.osCompat && item.osCompat.status === 'rosetta' && (
-          <div className="card-os-warning soon" title={item.osCompat.message}>Intel-only — stops working on macOS 28</div>
+          <div
+            className="card-os-warning soon"
+            title={update && update.status === 'outdated'
+              ? `${item.osCompat.message} A newer version (${update.latestVersion}) is available — it may well be a universal build.`
+              : item.osCompat.message}
+          >
+            {update && update.status === 'outdated'
+              ? 'Intel-only — try the update, it may be universal'
+              : 'Intel-only — stops working on macOS 28'}
+          </div>
+        )}
+        {/* A leftover copy, not a loss: a native build of the same plugin is
+            already installed in another format. Cleanup, not a warning. */}
+        {item.osCompat && item.osCompat.status === 'rosetta-dupe' && (
+          <div className="card-os-warning spare" title={item.osCompat.message}>Intel leftover — safe to remove</div>
         )}
       </div>
     </button>

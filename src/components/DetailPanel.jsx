@@ -528,12 +528,22 @@ export default function DetailPanel({
         </div>
       )}
 
-      {item.osCompat && (item.osCompat.status === 'incompatible' || item.osCompat.status === 'rosetta') && (
-        <div className={`detail-cleanup os-warn${item.osCompat.status === 'rosetta' ? ' soon' : ''}`}>
+      {item.osCompat && ['incompatible', 'rosetta', 'rosetta-dupe'].includes(item.osCompat.status) && (
+        <div className={`detail-cleanup os-warn${item.osCompat.status === 'rosetta' ? ' soon' : ''}${item.osCompat.status === 'rosetta-dupe' ? ' spare' : ''}`}>
           <div className="cleanup-title">
-            {item.osCompat.status === 'rosetta' ? 'Intel-only — ends with Rosetta' : 'macOS compatibility'}
+            {item.osCompat.status === 'rosetta' ? 'Intel-only — ends with Rosetta'
+              : item.osCompat.status === 'rosetta-dupe' ? 'Intel leftover — safe to remove'
+                : 'macOS compatibility'}
           </div>
-          <div className="cleanup-body">{item.osCompat.message}</div>
+          <div className="cleanup-body">
+            {item.osCompat.message}
+            {/* The one move that can actually fix an Intel-only plugin is
+                updating it, so say so where we know a newer version exists
+                rather than leaving the user with only bad news. */}
+            {item.osCompat.status === 'rosetta' && update && update.status === 'outdated' && update.latestVersion && (
+              <> {' '}<strong>Version {update.latestVersion} is available</strong> — worth installing, since developers usually went universal in the same release.</>
+            )}
+          </div>
         </div>
       )}
 

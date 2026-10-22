@@ -3154,7 +3154,7 @@ export default function App() {
       // it used to be folded into 'ok', which is how 165 files that a native
       // Apple Silicon host won't even list sat under "Compatible".
       const raw = (it.osCompat && it.osCompat.status) || 'unknown';
-      const status = (raw === 'ok' || raw === 'incompatible' || raw === 'rosetta') ? raw : 'unknown';
+      const status = (raw === 'ok' || raw === 'incompatible' || raw === 'rosetta' || raw === 'rosetta-dupe') ? raw : 'unknown';
       if (status !== compatFilter) return false;
     }
     if (!skip.search && search.trim()) {

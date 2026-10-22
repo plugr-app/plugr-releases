@@ -541,6 +541,45 @@ function applyOsCompat(items, currentSystemVersion, currentArch) {
   }
 }
 
+/** Demote an Intel-only item to 'rosetta-dupe' when a UNIVERSAL copy of the
+ * same plugin is installed in another format.
+ *
+ * Measured on a 4,498-item library: of 115 products carrying an Intel-only
+ * file, 51 already had a universal build of the same plugin — 39 of the
+ * leftovers were VST2, a format Steinberg discontinued in 2018, plus 10 AAX
+ * and 2 AU. Reaktor 6, Battery 4 and iZotope Vinyl are all universal in
+ * VST3/AU/AAX with only the VST2 left on Intel. Counting those as "plugins
+ * you will lose to the Rosetta cutoff" overstated the real figure by ~40%
+ * and would have told users a maintained product was dying.
+ *
+ * Nothing is lost when these stop loading, so they are not a compatibility
+ * warning — they are dead weight the user can delete today.
+ *
+ * Plugin formats and apps are compared SEPARATELY: a universal standalone
+ * app does not rescue an Intel-only plugin (you cannot load an .app in a
+ * DAW), and vice versa.
+ */
+function markRosettaLeftovers(items) {
+  const kindOf = (it) => (it.format === 'App' ? 'app' : 'plugin');
+  const universal = new Set();
+  for (const it of items) {
+    const archs = Array.isArray(it.architectures) ? it.architectures : [];
+    if (archs.includes('arm64') || archs.includes('arm64e')) {
+      universal.add(`${kindOf(it)}|${(it.developer || '').toLowerCase()}|${(it.name || '').toLowerCase()}`);
+    }
+  }
+  for (const it of items) {
+    if (!it.osCompat || it.osCompat.status !== 'rosetta') continue;
+    const key = `${kindOf(it)}|${(it.developer || '').toLowerCase()}|${(it.name || '').toLowerCase()}`;
+    if (!universal.has(key)) continue;
+    it.osCompat = {
+      status: 'rosetta-dupe',
+      message: `Intel-only ${it.format} build, but you also have a native copy of this plugin in another format. Nothing is lost when Rosetta goes — this file is already doing no work.`,
+      note: 'rosetta-leftover',
+    };
+  }
+}
+
 async function scanLibrary(options = {}) {
   // Always reload the registry from disk at the start of a scan. This way
   // edits to developerRegistry.json (or the lookup .cjs files) take effect
@@ -656,6 +695,10 @@ async function scanLibrary(options = {}) {
   // entry attached.
   enrichAllRegistryByDeveloperName(all);
   applyOsCompat(all, systemVersion, systemArch);
+  // Must run AFTER applyOsCompat (it reads osCompat.status) and after the
+  // developer-unification passes, so siblings of one product actually share
+  // a developer name to group on.
+  markRosettaLeftovers(all);
 
   tick(`Detecting duplicates…`);
 

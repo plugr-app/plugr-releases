@@ -1580,6 +1580,19 @@ body.is-col-resizing * { cursor: col-resize !important; }
   border-color: rgba(255,180,84,.25);
 }
 .detail-cleanup.os-warn.soon .cleanup-title { color: var(--warn); }
+/* "Intel leftover": a native copy of the same plugin is already installed,
+   so nothing is at stake — housekeeping, not a warning. Muted grey so it
+   never competes with the amber deadline or the red failure. */
+.os-pill.spare {
+  background: var(--bg-2);
+  color: var(--muted);
+}
+.card-os-warning.spare {
+  color: var(--muted);
+  background: var(--bg-2);
+  border-color: var(--line-2);
+}
+.detail-cleanup.os-warn.spare .cleanup-title { color: var(--muted); }
 
 /* Row name ellipsis */
 .row-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
