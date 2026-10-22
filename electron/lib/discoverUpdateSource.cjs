@@ -435,6 +435,13 @@ function scoreMatch(text, idx, version, beforeContext, afterContext) {
   if (PRICE_PREFIX.test(beforeContext)) return 0;
   if (PRICE_KEYWORD_BEFORE.test(beforeContext)) return 0;
   if (RATING_SUFFIX.test(afterContext)) return 0;
+  // Shape sanity. Real version segments are short; a 5+ digit minor or
+  // patch is a star rating, an ID or a price in disguise. This is what let
+  // Waves' JSON-LD aggregateRating through on 2026-10-22 — "4.6991525"
+  // carries no rating words nearby because it sits inside a JSON blob, so
+  // the context checks above never fire.
+  const segs = String(version).split(/[._\-]/).slice(0, 3);
+  if (segs.some((seg) => /^\d{5,}$/.test(seg))) return 0;
 
   // Strongest signal: a "version" / "build" / "release" keyword right before.
   for (const kw of VERSION_KEYWORDS) {
@@ -444,7 +451,10 @@ function scoreMatch(text, idx, version, beforeContext, afterContext) {
   if (/\bv\s*$/i.test(beforeContext)) return 70;
   // Build-style versions like "1.0.5_b240508" or "1.5.1.b1234" are almost
   // always real and rarely confused with prices.
-  if (/[._\-][a-z]?\d{3,}/i.test(version)) return 65;
+  // Build suffix. A LETTER is required after a dot separator: "1.5.1.b1234"
+  // is a build, but "4.882" is just a two-segment number and must not earn
+  // a build's trust — that misread is how ratings scored 65.
+  if (/(?:[_\-][a-z]?\d{3,}|\.[a-z]\d{3,})/i.test(version)) return 65;
   if (/[a-z]\d+/i.test(version)) return 60;
   // Three-segment versions are usually trustworthy.
   if (/^\d+\.\d+\.\d+/.test(version)) return 50;
@@ -845,6 +855,31 @@ function rankLinksFor(name, links, baseUrl) {
  *   message: string,
  * }>}
  */
+/**
+ * Reject a discovered version that cannot plausibly belong to the installed
+ * product. Only guards the DOWNWARD direction: a higher number is just an
+ * update, but a number far BELOW the installed major means the page is about
+ * something else — a rating, a different product, an archive index.
+ *
+ * Added after a bulk discover on 2026-10-22 wrote 67 sources of which 51
+ * were junk: Waves plugins at 17.1.42 "found" at 4.88, FLUX BitterSweet at
+ * 25.08.0 found at 2.2, UVI Falcon at 26.0.7 found at 10.14. Each was a
+ * number sitting near the product name on a page that publishes no version.
+ *
+ * Deliberately generous — two whole majors — so a legitimate legacy-line
+ * reading (Pro-Q 3.29 against an installed 3.21) is never touched.
+ */
+function isPlausibleFind(foundVersion, installedVersion) {
+  const majorOf = (v) => {
+    const m = String(v || '').match(/^\s*v?(\d+)/);
+    return m ? parseInt(m[1], 10) : null;
+  };
+  const f = majorOf(foundVersion);
+  const i = majorOf(installedVersion);
+  if (f == null || i == null) return true;   // nothing to compare — allow
+  return f >= i - 1;
+}
+
 async function discoverUpdateSource(item) {
   const tried = [];
   const candidates = collectCandidateUrls(item);
@@ -856,7 +891,7 @@ async function discoverUpdateSource(item) {
     try { html = await fetchText(url); } catch { continue; }
     const text = stripHtml(html);
     const found = findVersionInText(text, item.name);
-    if (found) {
+    if (found && isPlausibleFind(found.version, item.version)) {
       return {
         url,
         versionRegex: found.regex,
@@ -881,7 +916,7 @@ async function discoverUpdateSource(item) {
         try { html = await fetchText(link.url); } catch { continue; }
         const text = stripHtml(html);
         const found = findVersionInText(text, item.name);
-        if (found) {
+        if (found && isPlausibleFind(found.version, item.version)) {
           return {
             url: link.url,
             versionRegex: found.regex,

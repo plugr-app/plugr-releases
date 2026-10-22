@@ -25,11 +25,15 @@ DEFAULT_CACHE = '~/Library/Application Support/plugr/library-cache.json'
 p = argparse.ArgumentParser()
 p.add_argument('--target', action='append', default=[], metavar='DEVELOPER|NAME',
                help="repeatable; exact scanned developer and name, pipe-separated")
+p.add_argument('--added-by', metavar='TAG',
+               help="select by the addition's addedBy tag, e.g. auto-discover-bulk")
+p.add_argument('--added-on', metavar='YYYY-MM-DD',
+               help="select additions whose addedAt starts with this date")
 p.add_argument('--cache', default=DEFAULT_CACHE)
 p.add_argument('--apply', action='store_true')
 a = p.parse_args()
-if not a.target:
-    p.error('at least one --target is required')
+if not a.target and not a.added_by and not a.added_on:
+    p.error('give at least one of --target, --added-by, --added-on')
 
 targets = set()
 for t in a.target:
@@ -58,6 +62,24 @@ for it in items:
 missing = [t for t, n in matched.items() if n == 0]
 if missing:
     sys.exit('no item matches: ' + ', '.join(f'{d}|{n}' for d, n in missing))
+
+# Provenance selection. The reason this exists: a bulk discover can write
+# dozens of sources in one go, and when its matching misfires the only sane
+# remedy is "undo that run" -- naming the products one by one is hopeless.
+# On 2026-10-22 one run wrote 67 additions of which 51 were junk.
+if a.added_by or a.added_on:
+    owner = {}
+    for it in items:
+        for k in (it.get('identifier'), it.get('id')):
+            if k and k in ura:
+                owner.setdefault(k, (it.get('developer'), it.get('name'), it.get('format')))
+    for k, e in ura.items():
+        if a.added_by and e.get('addedBy') != a.added_by:
+            continue
+        if a.added_on and not str(e.get('addedAt') or '').startswith(a.added_on):
+            continue
+        who = owner.get(k, ('(uninstalled)', k, None))
+        keys.setdefault(k, []).append(who)
 
 print(f'cache {cache}')
 print(f'userRegistryAdditions before: {len(ura)}  |  keys to remove: {len(keys)}')
