@@ -1850,9 +1850,23 @@ export default function App() {
     // can still discover one-at-a-time via the Discover button on
     // each plugin's detail panel.
     if (!requirePaid('bulkOperations', 'Bulk discover sources')) return;
-    setProgress({ phase: 'discoverAll', current: 0, total: 1, message: 'Looking for update sources…' });
+    // Send ONLY the plugins that actually need a source. This used to pass
+    // the whole library and lean on main's `skippedAlreadyHaveSource`
+    // counter to ignore most of it — on a 4,498-item library that shipped
+    // every item across IPC, reported the whole library as the total, and
+    // then re-checked all 4,498 afterwards, to find sources for the ~200
+    // that lacked one. Same classifier as the sidebar bucket the button
+    // now hangs off, so the count in its tooltip is the work it does.
+    const candidates = displayedItems.filter(
+      (it) => !isHidden(it) && updateBucketOf(it, effectiveUpdates[it.id]) === 'nosource',
+    );
+    if (candidates.length === 0) {
+      pushToast({ kind: 'info', message: 'Every plugin already has an update source — nothing to look for.' });
+      return;
+    }
+    setProgress({ phase: 'discoverAll', current: 0, total: candidates.length, message: `Looking for update sources for ${candidates.length} plugins…` });
     try {
-      const res = await api.discoverAllUpdates(displayedItems);
+      const res = await api.discoverAllUpdates(candidates);
       if (!res.ok) throw new Error(res.error || 'Discover failed');
       const data = res.data || { foundCount: 0, total: 0, mergedAdditions: registryAdditions };
       const newAdditions = data.mergedAdditions || registryAdditions;
@@ -1861,13 +1875,17 @@ export default function App() {
       // Build the items list with the freshly-saved additions applied so
       // the immediate update check picks them up. Don't rely on React
       // state propagation here.
+      // Re-check only the candidates. Re-checking the whole library here
+      // meant a bulk discover for a couple of hundred plugins dragged all
+      // 4,498 through a network check it had no reason to repeat.
+      const candidateIds = new Set(candidates.map((it) => it.id));
       const itemsForCheck = applyRegistryAdditions(
         applyCommunityAdditions(
           applyOverrides(library.items, overrides),
           communityAdditions,
         ),
         newAdditions,
-      );
+      ).filter((it) => candidateIds.has(it.id));
 
       setChecking(true);
       try {
