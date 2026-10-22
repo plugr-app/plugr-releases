@@ -551,7 +551,11 @@ function findVersionInText(text, name) {
     savedPattern = `${tolerantName}[\\s\\S]{0,120}?(?<![$€£¥])\\bv?${VERSION_CAPTURE}`;
   }
 
-  return { version: best.version, regex: savedPattern };
+  // `trust` rides along so CALLERS can set their own bar. A human reviewing
+  // one result can accept weak evidence because they are looking at the
+  // number; an unattended bulk run that writes straight into user data
+  // cannot. See BULK_TRUST_FLOOR in main.cjs.
+  return { version: best.version, regex: savedPattern, trust: best.trust };
 }
 
 /**
@@ -903,6 +907,7 @@ async function discoverUpdateSource(item) {
         url,
         versionRegex: found.regex,
         latestVersion: found.version,
+        trust: found.trust,
         tried,
         message: `Found "${item.name} v${found.version}" on the page.`,
       };
@@ -928,6 +933,7 @@ async function discoverUpdateSource(item) {
             url: link.url,
             versionRegex: found.regex,
             latestVersion: found.version,
+            trust: found.trust,
             tried,
             message: `Found "${item.name} v${found.version}" via the developer's product link.`,
           };

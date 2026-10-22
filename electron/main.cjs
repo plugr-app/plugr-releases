@@ -1344,7 +1344,17 @@ function deriveHomepageFromIdentifier(identifier) {
  * confident wrong answer, and a user addition silently outranks the bundled
  * registry from then on, so the acceptance test has to live here.
  *
- * Two gates, both of which a human applies instinctively:
+ * Three gates. The first is the one that actually matters, and it was added
+ * only AFTER a verified run proved the other two insufficient: on 2026-10-22
+ * the version/installed comparison alone let 10 of 11 bad finds through,
+ * because the junk pointed UPWARD, not downward. Splice took "12.3" from
+ * "Splice is now in Ableton Live 12.3+" — another product's version sitting
+ * beside the name. Claude took "5.5" from "Introducing Claude Haiku 5.5".
+ * Setapp took a macOS requirement. None of those are comparable-but-wrong;
+ * they are simply numbers near a word, which is all name-proximity matching
+ * can ever establish.
+ *
+ * Gates:
  *   1. Re-run the SAVED pattern against the page. The pattern is a
  *      generalisation of the ad-hoc match that found the number, so it can
  *      easily match something else — or nothing — on the very next read.
@@ -1354,7 +1364,21 @@ function deriveHomepageFromIdentifier(identifier) {
  *      `ahead` by a whole major is rejected; a patch-level ahead is left
  *      alone because vendor pages genuinely lag their own releases.
  */
+// Minimum evidence for an UNATTENDED write. 100 = a version/release/build
+// keyword immediately before the number; 70 = a literal "v" against it.
+// Anything below is mere proximity to the product name, which on a marketing
+// page matches model names, partner products and system requirements. The
+// single-plugin Discover screen keeps the lower bar on purpose — a person is
+// looking at the number there and can judge it.
+//
+// Evidence for the threshold, from the one unbiased sample available (a bulk
+// run whose output had not yet been pruned): of 11 sources written, the ONE
+// keyword-backed find was the only correct one, and all 10 proximity-only
+// finds were wrong.
+const BULK_TRUST_FLOOR = 70;
+
 async function verifyDiscoveredSource(result, item) {
+  if ((result.trust || 0) < BULK_TRUST_FLOOR) return { ok: false, why: 'weak-evidence' };
   let probe;
   try {
     probe = await testSource(result.url, result.versionRegex);
