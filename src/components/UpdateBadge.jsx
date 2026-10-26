@@ -1,5 +1,5 @@
 import React from 'react';
-import { deriveUpdateStatus, companionAppDisplayName } from '../util/format.js';
+import { deriveUpdateStatus, companionAppDisplayName, isMajorUpgrade, isUpdateMuted } from '../util/format.js';
 
 const LABELS = {
   outdated: 'Update available',
@@ -15,19 +15,6 @@ const LABELS = {
   'not-applicable': 'Not applicable',
 };
 
-// Extract the leading major-version integer from a version string. Returns
-// null when no leading integer can be parsed (so we don't flag bogus cases).
-//   '2'         -> 2
-//   '2.6.4'     -> 2
-//   'v3.0.1'    -> 3
-//   '1.0.5_b240508' -> 1
-//   'abc'       -> null
-function majorOf(v) {
-  if (!v) return null;
-  const m = String(v).match(/^\s*v?(\d+)\b/i);
-  return m ? parseInt(m[1], 10) : null;
-}
-
 // `verbose` opts into the longer "Managed by X" / "via X" form. The
 // card view stays terse ("Managed", gear icon) so cramped footers
 // don't overflow; the full DetailPanel passes verbose=true because
@@ -42,9 +29,7 @@ export default function UpdateBadge({ item, update, compact = false, verbose = f
   const companion = companionAppDisplayName(item);
   const updateDismissed = status === 'outdated' && item &&
     update && item.dismissedUpdateVersion === update.latestVersion;
-  const isIgnored = status === 'outdated' && item && update && (
-    item.ignoreAllUpdates || (item.ignoredUpdateVersion && item.ignoredUpdateVersion === update.latestVersion)
-  );
+  const isIgnored = status === 'outdated' && isUpdateMuted(item, update);
   const displayStatus = updateDismissed ? 'current' : isIgnored ? 'ignored' : status;
 
   // Pure "managed" state: no real check result, just a companion-app
@@ -71,16 +56,13 @@ export default function UpdateBadge({ item, update, compact = false, verbose = f
   // These are almost always paid upgrades to a new product line rather
   // than a free patch — flag them visually so the user can spot the
   // difference at a glance. Heuristic: latest's major ≥ installed's + 1.
-  const installedMajor = item ? majorOf(item.version) : null;
-  const latestMajor = update ? majorOf(update.latestVersion) : null;
-  const isMajorUpgrade = displayStatus === 'outdated' &&
-    installedMajor != null && latestMajor != null && latestMajor >= installedMajor + 1;
+  const showMajorChip = displayStatus === 'outdated' && isMajorUpgrade(item, update);
   return (
     <span className={`badge-row ${compact ? 'compact' : ''}`}>
       <span className={`badge badge-${displayStatus} ${compact ? 'compact' : ''}`} title={(update && update.message) || label}>
         {displayStatus === 'outdated' && update && update.latestVersion ? `→ v${update.latestVersion}` : label}
       </span>
-      {isMajorUpgrade && (
+      {showMajorChip && (
         <span
           className={`badge-major-chip ${compact ? 'compact' : ''}`}
           title={`Installed v${item.version} vs latest v${update.latestVersion} — major version jump, usually a paid upgrade rather than a free patch.`}

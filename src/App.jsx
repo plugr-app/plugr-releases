@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
-import { naturalCompare } from './util/format.js';
+import { naturalCompare, isMajorUpgrade, isUpdateMuted } from './util/format.js';
 import { isUncategorized } from './util/taxonomy.js';
 import Toolbar, { VolumeControl } from './components/Toolbar.jsx';
 import Sidebar from './components/Sidebar.jsx';
@@ -319,9 +319,7 @@ function updateBucketOf(item, u) {
   if (!status) return 'nosource';
   if (status === 'not-applicable') return null;
   if (status === 'outdated') {
-    const muted = item.ignoreAllUpdates
-      || (item.ignoredUpdateVersion && item.ignoredUpdateVersion === u.latestVersion);
-    return muted ? 'ignored' : 'outdated';
+    return isUpdateMuted(item, u) ? 'ignored' : 'outdated';
   }
   if (status === 'current' || status === 'ahead') return 'current';
   if (status === 'parse-failed' || status === 'error') return 'failed';
@@ -401,6 +399,9 @@ function applyOverrides(items, overrides) {
     }
     if (o.ignoreAllUpdates) {
       next.ignoreAllUpdates = true;
+    }
+    if (o.ignoreMajorUpgrades) {
+      next.ignoreMajorUpgrades = true;
     }
     // "Not the same plugin" — the user declared this item's detected
     // duplicate/superseded family WRONG (product-line reboots like
@@ -3396,15 +3397,16 @@ export default function App() {
       const bulkOutdated = sel.filter((it) => {
         const u = effectiveUpdates[it.id];
         if (!u || u.status !== 'outdated' || !u.latestVersion) return false;
-        if (it.ignoreAllUpdates) return false;
-        return it.ignoredUpdateVersion !== u.latestVersion;
+        return !isUpdateMuted(it, u);
       });
       const bulkIgnoring = sel.filter((it) => {
         if (it.ignoreAllUpdates) return true;
         const u = effectiveUpdates[it.id];
-        return !!(u && u.status === 'outdated' && u.latestVersion
-          && it.ignoredUpdateVersion === u.latestVersion);
+        return !!(u && u.status === 'outdated' && isUpdateMuted(it, u));
       });
+      // Of the not-yet-silenced ones, which are major (usually paid)
+      // upgrades — the case Josh actually ignores for.
+      const bulkMajor = bulkOutdated.filter((it) => isMajorUpgrade(it, effectiveUpdates[it.id]));
       items = [
         { group: true, label: `${sel.length} plugins selected` },
         { divider: true },
@@ -3429,6 +3431,17 @@ export default function App() {
               }
             },
           },
+          ...(bulkMajor.length > 0 ? [{
+            label: bulkMajor.length === bulkOutdated.length
+              ? 'Ignore major upgrades'
+              : `Ignore major upgrades (${bulkMajor.length})`,
+            action: async () => {
+              for (const it of bulkMajor) {
+                // eslint-disable-next-line no-await-in-loop
+                await setItemOverride(it.id, { ignoreMajorUpgrades: true });
+              }
+            },
+          }] : []),
           {
             label: 'Ignore all updates for these',
             action: async () => {
@@ -3450,6 +3463,7 @@ export default function App() {
                 await setItemOverride(it.id, {
                   ignoreAllUpdates: null,
                   ignoredUpdateVersion: null,
+                  ignoreMajorUpgrades: null,
                 });
               }
             },
@@ -3558,7 +3572,8 @@ export default function App() {
       // outdated result; the undo shows whenever an ignore is in force.
       const upd = effectiveUpdates[item.id];
       const updOutdated = !!(upd && upd.status === 'outdated' && upd.latestVersion);
-      const updIgnored = !!(item.ignoreAllUpdates || (updOutdated && item.ignoredUpdateVersion && item.ignoredUpdateVersion === upd.latestVersion));
+      const updIgnored = !!(item.ignoreAllUpdates || (updOutdated && isUpdateMuted(item, upd)));
+      const updIsMajor = updOutdated && isMajorUpgrade(item, upd);
 
       items = [
         { label: 'Copy plugin name', action: () => copy(item.name) },
@@ -3574,6 +3589,14 @@ export default function App() {
             label: 'Ignore this update',
             action: () => setItemOverride(item.id, { ignoredUpdateVersion: upd.latestVersion }),
           },
+          // Offered only on a genuine major jump. Broader than pinning
+          // one version (survives point releases of the major you don't
+          // want) and narrower than going permanently silent (clears
+          // itself once the installed major catches up).
+          ...(updIsMajor ? [{
+            label: 'Ignore major upgrades',
+            action: () => setItemOverride(item.id, { ignoreMajorUpgrades: true }),
+          }] : []),
           {
             label: 'Ignore all updates',
             action: () => setItemOverride(item.id, { ignoreAllUpdates: true }),
@@ -3581,10 +3604,16 @@ export default function App() {
         ] : []),
         ...(updIgnored ? [
           {
-            label: item.ignoreAllUpdates ? 'Stop ignoring updates' : 'Stop ignoring this update',
-            action: () => setItemOverride(item.id, item.ignoreAllUpdates
-              ? { ignoreAllUpdates: null, ignoredUpdateVersion: null }
-              : { ignoredUpdateVersion: null }),
+            label: item.ignoreAllUpdates
+              ? 'Stop ignoring updates'
+              : item.ignoreMajorUpgrades
+                ? 'Stop ignoring major upgrades'
+                : 'Stop ignoring this update',
+            action: () => setItemOverride(item.id, {
+              ignoreAllUpdates: null,
+              ignoredUpdateVersion: null,
+              ignoreMajorUpgrades: null,
+            }),
           },
         ] : []),
         {

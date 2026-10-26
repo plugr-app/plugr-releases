@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import UpdateBadge from './UpdateBadge.jsx';
 import FormatTag from './FormatTag.jsx';
-import { formatBytes, displaySubcategory, displayCategory } from '../util/format.js';
+import { formatBytes, displaySubcategory, displayCategory, isMajorUpgrade, isUpdateMuted } from '../util/format.js';
 
 // Sentinel used in the category/subcategory dropdowns to mean "let me type
 // a custom name". When the user selects it, we prompt for the value and
@@ -65,9 +65,10 @@ export default function DetailPanel({
   const isFormatLag = lagSiblings.length > 0;
   const formatLagAcknowledged = isFormatLag && item.formatLagAcknowledgedAt === update.latestVersion;
   const updateDismissed = !!(update && update.latestVersion && item.dismissedUpdateVersion === update.latestVersion);
-  const isIgnored = !!(update && update.status === 'outdated' && (
-    item.ignoreAllUpdates || (item.ignoredUpdateVersion && item.ignoredUpdateVersion === update.latestVersion)
-  ));
+  const isIgnored = !!(update && update.status === 'outdated' && isUpdateMuted(item, update));
+  // A whole major ahead — for most vendors a paid upgrade, which is the
+  // case the "Ignore major upgrades" action exists for.
+  const majorUpgradeAvailable = !!(update && update.status === 'outdated' && isMajorUpgrade(item, update));
   const lagSiblingFormats = lagSiblings.map((m) => m.format);
   const lagFormatsLabel = lagSiblingFormats.length === 1
     ? lagSiblingFormats[0]
@@ -343,7 +344,7 @@ export default function DetailPanel({
           <span className="detail-status-text">
             installed <code>v{item.version || '?'}</code> · latest <code>v{update.latestVersion}</code>
             {isIgnored && (
-              <> · <span style={{ opacity: 0.65 }}>{item.ignoreAllUpdates ? 'All updates ignored' : 'Update ignored'}</span>{' · '}<button type="button" className="linkish" onClick={() => onSetOverride(item.ignoreAllUpdates ? { ignoreAllUpdates: null, ignoredUpdateVersion: null } : { ignoredUpdateVersion: null })}>Undo</button></>
+              <> · <span style={{ opacity: 0.65 }}>{item.ignoreAllUpdates ? 'All updates ignored' : item.ignoreMajorUpgrades ? 'Major upgrades ignored' : 'Update ignored'}</span>{' · '}<button type="button" className="linkish" onClick={() => onSetOverride({ ignoreAllUpdates: null, ignoredUpdateVersion: null, ignoreMajorUpgrades: null })}>Undo</button></>
             )}
             {updateDismissed && (
               <> · <button type="button" className="linkish" title="Re-enable update detection for this app" onClick={() => onSetOverride({ dismissedUpdateVersion: null })}>Undo dismiss</button></>
@@ -413,6 +414,12 @@ export default function DetailPanel({
         {update && update.status === 'outdated' && !updateDismissed && !isIgnored && !formatLagAcknowledged && (
           <span className="detail-status-text muted">
             <button type="button" className="linkish" title="Ignore this update — removes it from Updates available until a newer version is detected" onClick={() => onSetOverride({ ignoredUpdateVersion: update.latestVersion })}>Ignore this update</button>
+            {majorUpgradeAvailable && (
+              <>
+                {' · '}
+                <button type="button" className="linkish" title="Stay quiet while the only newer release is a whole major version ahead — usually a paid upgrade. Unlike ignoring one version, this survives point releases of the upgrade you don't want, and clears itself if you ever buy it." onClick={() => onSetOverride({ ignoreMajorUpgrades: true })}>Ignore major upgrades</button>
+              </>
+            )}
             {' · '}
             <button type="button" className="linkish" title="Never show update alerts for this plugin — ignores all versions, not just this one" onClick={() => onSetOverride({ ignoreAllUpdates: true })}>Ignore all</button>
           </span>

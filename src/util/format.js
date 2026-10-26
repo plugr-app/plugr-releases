@@ -146,3 +146,49 @@ export function cleanUrl(input) {
   if (out.endsWith('?')) out = out.slice(0, -1);
   return out;
 }
+
+/**
+ * Major version number, or null when the string doesn't start with one.
+ *   '2' -> 2 · '2.6.4' -> 2 · 'v3.0.1' -> 3 · '1.0.5_b240508' -> 1 · 'abc' -> null
+ */
+export function majorOf(v) {
+  if (!v) return null;
+  const m = String(v).match(/^\s*v?(\d+)\b/i);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+/**
+ * True when the published version is a WHOLE major ahead of what's
+ * installed — the "Major upgrade" case, which for most audio vendors
+ * means a paid upgrade rather than a free patch. Status-agnostic on
+ * purpose: callers decide whether they only care while outdated.
+ */
+export function isMajorUpgrade(item, update) {
+  const installedMajor = majorOf(item && item.version);
+  const latestMajor = majorOf(update && update.latestVersion);
+  return installedMajor != null && latestMajor != null && latestMajor >= installedMajor + 1;
+}
+
+/**
+ * The single source of truth for "the user has silenced this update".
+ * Three ways to mute, in increasing breadth:
+ *
+ *   ignoredUpdateVersion  — this exact version string only. NOTE this
+ *     un-mutes the moment the vendor ships a point release, because the
+ *     pin no longer matches the new latestVersion.
+ *   ignoreMajorUpgrades   — anything a whole major ahead of what's
+ *     installed. Survives point releases within that unwanted major
+ *     (5.0 → 5.0.1 → 5.1 all stay quiet), and clears itself if the user
+ *     ever buys the upgrade, because the installed major catches up.
+ *   ignoreAllUpdates      — permanently silent, whatever ships.
+ *
+ * Previously this rule was written out by hand in five places; a fourth
+ * copy was one edit away from drifting.
+ */
+export function isUpdateMuted(item, update) {
+  if (!item || !update) return false;
+  if (item.ignoreAllUpdates) return true;
+  if (item.ignoredUpdateVersion && item.ignoredUpdateVersion === update.latestVersion) return true;
+  if (item.ignoreMajorUpgrades && isMajorUpgrade(item, update)) return true;
+  return false;
+}

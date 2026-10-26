@@ -994,6 +994,11 @@ ipcMain.handle('overrides:set', async (_event, { id, patch }) => {
       // "Not the same plugin" duplicate-group unlink — only persist
       // when explicitly true so an undo (null/false) collapses away.
       if (!overrides[id].notDuplicate) delete overrides[id].notDuplicate;
+      // Ignore flags: only persist when explicitly true so an undo
+      // (null/false) collapses the entry away instead of leaving a
+      // falsy key behind that future reads have to special-case.
+      if (!overrides[id].ignoreMajorUpgrades) delete overrides[id].ignoreMajorUpgrades;
+      if (!overrides[id].ignoreAllUpdates) delete overrides[id].ignoreAllUpdates;
       if (overrides[id].category === null) delete overrides[id].category;
       if (overrides[id].subcategory === null) delete overrides[id].subcategory;
       if (overrides[id].developer === null || overrides[id].developer === '') delete overrides[id].developer;
