@@ -89,7 +89,6 @@ export default function PluginCard({ item, update, selected, onClick, onContextM
               marginTop: '4px',
               borderRadius: '4px',
               background: 'transparent',
-              padding: '2px 0',
               color: 'var(--accent, #6ec1ff)',
               alignSelf: 'flex-start',
               fontWeight: 500,
