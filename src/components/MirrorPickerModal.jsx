@@ -39,7 +39,11 @@ function isCandidateOf(other, item) {
   return hasSavedSource || hasSparkle || true;
 }
 
-export default function MirrorPickerModal({ item, allItems, onClose, onPick }) {
+// targetCount > 1 means the picker was opened from a multi-selection:
+// the chosen parent is applied to every selected plugin. `item` is
+// still a real item (the first of the selection) because the list
+// filtering and default sort key off its developer and name.
+export default function MirrorPickerModal({ item, allItems, onClose, onPick, targetCount = 1 }) {
   const [query, setQuery] = useState('');
   const searchInputRef = useRef(null);
 
@@ -123,7 +127,9 @@ export default function MirrorPickerModal({ item, allItems, onClose, onPick }) {
           <div className="discover-head-text">
             <h2>Mirror updates from another plugin</h2>
             <div className="muted">
-              Pick a plugin whose updates this one should follow. Useful for siblings like Serum FX → Serum, After Effects Render Engine → After Effects.
+              {targetCount > 1
+                ? `Pick a plugin whose updates all ${targetCount} selected plugins should follow. Useful when every format of one plugin should track a single source.`
+                : 'Pick a plugin whose updates this one should follow. Useful for siblings like Serum FX → Serum, After Effects Render Engine → After Effects.'}
             </div>
           </div>
         </div>

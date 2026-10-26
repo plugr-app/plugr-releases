@@ -1125,6 +1125,10 @@ export default function App() {
   // detail panel. The picker reads the current selection from
   // selectedItem and writes back through handleSetMirrorFrom.
   const [mirrorPickerOpen, setMirrorPickerOpen] = useState(false);
+  // When the mirror picker is opened from the MULTI-select menu this
+  // holds the ids it should apply to; null means the ordinary
+  // single-plugin flow driven by `selected`.
+  const [mirrorBulkIds, setMirrorBulkIds] = useState(null);
   // Right-click context menu for library items. Null when closed;
   // when open, holds { x, y, item, items } — caller builds the items
   // list in handleItemContextMenu below. Rendered near the bottom of
@@ -3462,20 +3466,37 @@ export default function App() {
           },
         },
         {
-          label: 'Mark all as favorite',
+          // Every format of one plugin should usually follow ONE source
+          // rather than be configured (or silenced) four times. The
+          // single-item menu has had this; the multi menu hadn't.
+          label: 'Mirror updates from another plugin…',
+          action: () => {
+            setMirrorBulkIds(sel.map((it) => it.id));
+            setMirrorPickerOpen(true);
+          },
+        },
+        {
+          // Toggle, not a one-way set — the single-item menu flips
+          // between Favorite/Unfavorite and the multi menu could only
+          // ever add. "All selected are already favorites" is the only
+          // unambiguous point to offer the inverse; a mixed selection
+          // sets them all, which the next right-click can then undo.
+          label: sel.every((it) => it.favorite) ? 'Remove all from favorites' : 'Mark all as favorite',
           action: async () => {
+            const makeFavorite = !sel.every((it) => it.favorite);
             for (const it of sel) {
               // eslint-disable-next-line no-await-in-loop
-              await setItemOverride(it.id, { favorite: true });
+              await setItemOverride(it.id, { favorite: makeFavorite });
             }
           },
         },
         {
-          label: 'Hide selected',
+          label: sel.every((it) => it.hidden) ? 'Unhide selected' : 'Hide selected',
           action: async () => {
+            const makeHidden = !sel.every((it) => it.hidden);
             for (const it of sel) {
               // eslint-disable-next-line no-await-in-loop
-              await setItemOverride(it.id, { hidden: true });
+              await setItemOverride(it.id, { hidden: makeHidden });
             }
           },
         },
@@ -4956,7 +4977,32 @@ export default function App() {
           onClose={() => setContextMenu(null)}
         />
       )}
-      {mirrorPickerOpen && selected && (
+      {mirrorPickerOpen && mirrorBulkIds && mirrorBulkIds.length > 0 && (
+        <MirrorPickerModal
+          item={displayedItems.find((x) => x.id === mirrorBulkIds[0]) || selected}
+          allItems={displayedItems}
+          targetCount={mirrorBulkIds.length}
+          onClose={() => { setMirrorPickerOpen(false); setMirrorBulkIds(null); }}
+          onPick={async (parent) => {
+            // Skip the parent itself if it happens to be inside the
+            // selection — handleSetMirrorFrom refuses a self-mirror
+            // anyway, but filtering here keeps the toast count honest.
+            const targets = mirrorBulkIds.filter((id) => id !== parent.id);
+            for (const id of targets) {
+              // eslint-disable-next-line no-await-in-loop
+              await handleSetMirrorFrom(id, parent);
+            }
+            setMirrorPickerOpen(false);
+            setMirrorBulkIds(null);
+            pushToast({
+              kind: 'success',
+              message: `${targets.length} plugin${targets.length === 1 ? '' : 's'} will now follow updates from ${parent.name}.`,
+              durationMs: 5000,
+            });
+          }}
+        />
+      )}
+      {mirrorPickerOpen && !mirrorBulkIds && selected && (
         <MirrorPickerModal
           item={selected}
           allItems={displayedItems}
