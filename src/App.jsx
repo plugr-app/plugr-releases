@@ -3384,12 +3384,76 @@ export default function App() {
       const sel = filteredItems.filter((it) => selectedIds.has(it.id));
       const names = sel.map((it) => it.name).join('\n');
       const idents = sel.map((it) => it.identifier).filter(Boolean).join('\n');
+      // Which of the selection can be silenced / un-silenced right now.
+      // Same test the single-item branch uses, applied across the
+      // selection: offer "ignore" only where there is a live outdated
+      // result that isn't already silenced, and offer the undo only
+      // where something IS silenced.
+      const bulkOutdated = sel.filter((it) => {
+        const u = effectiveUpdates[it.id];
+        if (!u || u.status !== 'outdated' || !u.latestVersion) return false;
+        if (it.ignoreAllUpdates) return false;
+        return it.ignoredUpdateVersion !== u.latestVersion;
+      });
+      const bulkIgnoring = sel.filter((it) => {
+        if (it.ignoreAllUpdates) return true;
+        const u = effectiveUpdates[it.id];
+        return !!(u && u.status === 'outdated' && u.latestVersion
+          && it.ignoredUpdateVersion === u.latestVersion);
+      });
       items = [
         { group: true, label: `${sel.length} plugins selected` },
         { divider: true },
         { label: 'Copy names', action: () => copy(names) },
         { label: 'Copy bundle identifiers', action: () => copy(idents), disabled: !idents },
         { divider: true },
+        // Bulk ignore — mirrors the single-item menu's ignore actions.
+        // Josh, 2026-10-26: silencing an update across every format of
+        // the same plugin meant opening the menu once per format,
+        // because these entries existed on the single menu and not the
+        // multi one.
+        ...(bulkOutdated.length > 0 ? [
+          {
+            label: bulkOutdated.length === sel.length
+              ? 'Ignore these updates'
+              : `Ignore these updates (${bulkOutdated.length})`,
+            action: async () => {
+              for (const it of bulkOutdated) {
+                const u = effectiveUpdates[it.id];
+                // eslint-disable-next-line no-await-in-loop
+                await setItemOverride(it.id, { ignoredUpdateVersion: u.latestVersion });
+              }
+            },
+          },
+          {
+            label: 'Ignore all updates for these',
+            action: async () => {
+              for (const it of sel) {
+                // eslint-disable-next-line no-await-in-loop
+                await setItemOverride(it.id, { ignoreAllUpdates: true });
+              }
+            },
+          },
+        ] : []),
+        ...(bulkIgnoring.length > 0 ? [
+          {
+            label: bulkIgnoring.length === sel.length
+              ? 'Stop ignoring updates'
+              : `Stop ignoring updates (${bulkIgnoring.length})`,
+            action: async () => {
+              for (const it of bulkIgnoring) {
+                // eslint-disable-next-line no-await-in-loop
+                await setItemOverride(it.id, {
+                  ignoreAllUpdates: null,
+                  ignoredUpdateVersion: null,
+                });
+              }
+            },
+          },
+        ] : []),
+        ...(bulkOutdated.length > 0 || bulkIgnoring.length > 0
+          ? [{ divider: true }]
+          : []),
         {
           label: 'Bulk edit…',
           action: () => {
