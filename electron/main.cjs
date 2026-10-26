@@ -1595,6 +1595,63 @@ ipcMain.handle('updates:discoverAll', async (_event, items) => {
       phase: 'discoverAll', current: total, total,
       message: `Found ${foundCount} of ${total}.`,
     });
+
+    // Share what the bulk pass found with the community registry (opt-in).
+    //
+    // The single-plugin Discover modal has always submitted its finds, but
+    // this bulk pass never did — and the bulk pass is where virtually every
+    // source actually gets added, so in practice almost nothing ever
+    // reached the community feed. Same consent gate as gap reporting.
+    // Fire-and-forget: the cache write above is already done, so the user's
+    // sources are safe regardless, and the toast shouldn't wait on a few
+    // hundred POSTs. Failures are LOGGED, never swallowed — a silent catch
+    // is what hid an unpublished form for four months (2026-10-26).
+    if ((existing.communityShareConsent || 'unknown') === 'allowed') {
+      const keys = Object.keys(newAdditions);
+      if (keys.length > 0) {
+        const byKey = new Map(
+          candidates.map(({ item: it }) => [it.identifier || it.id, it]),
+        );
+        (async () => {
+          let sent = 0;
+          let failed = 0;
+          for (const key of keys) {
+            const it = byKey.get(key);
+            if (!it) continue;
+            const add = newAdditions[key];
+            try {
+              const res = await community.submitAddition({
+                pluginName: it.name,
+                developer: it.developer,
+                identifier: it.identifier,
+                format: it.format,
+                updateUrl: add.updateUrl,
+                versionRegex: add.versionRegex,
+                appVersion: app.getVersion(),
+              });
+              if (res && res.ok) sent++;
+              else {
+                failed++;
+                if (failed <= 3) {
+                  console.warn(
+                    '[community] bulk share failed for', key, '-',
+                    (res && res.error) || 'no error reported',
+                  );
+                }
+              }
+            } catch (err) {
+              failed++;
+              if (failed <= 3) {
+                console.warn('[community] bulk share threw for', key, '-', err && err.message);
+              }
+            }
+            // Gentle pacing so a 200-find run doesn't hammer the form.
+            await new Promise((r) => setTimeout(r, 250));
+          }
+          console.log(`[community] bulk share: ${sent} sent, ${failed} failed of ${keys.length}`);
+        })();
+      }
+    }
     return {
       ok: true,
       data: {

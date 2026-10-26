@@ -534,8 +534,12 @@ export default function DiscoverModal({
 
   async function submitToCommunity(addition) {
     if (!api.submitToCommunity) return;
+    // Best-effort, but NOT silent. submitAddition resolves {ok:false,error}
+    // instead of throwing, so the old empty catch never fired and a failing
+    // POST was indistinguishable from one that never ran. That hid an
+    // unpublished Google Form for four months (2026-10-26). Log both paths.
     try {
-      await api.submitToCommunity({
+      const res = await api.submitToCommunity({
         pluginName: item.name,
         developer: item.developer,
         identifier: item.identifier,
@@ -545,7 +549,17 @@ export default function DiscoverModal({
         downloadUrl: addition.downloadUrl || undefined,
         detectedVersion: result && result.latestVersion,
       });
-    } catch { /* silent — community submit is best-effort */ }
+      if (res && res.ok) {
+        console.log('[community] shared source for', item.name);
+      } else {
+        console.warn(
+          '[community] share FAILED for', item.name, '-',
+          (res && res.error) || 'no error reported',
+        );
+      }
+    } catch (e) {
+      console.warn('[community] share threw for', item.name, '-', e && e.message);
+    }
   }
 
   // Remove the user-added source entirely. Passing a null addition tells

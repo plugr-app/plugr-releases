@@ -692,6 +692,10 @@ async function deriveRegexFromVersion({ url, knownVersion, name }) {
   // name: "Pro-C 3 Version 3.02" → anchor "Pro-C \d+ Version" → still
   // matches "Pro-C 4 Version 4.00" when FabFilter releases Pro-C 4.
   // Same idea for "Cubase 13 → Cubase 14", "Twin 3 → Twin 4", etc.
+  // Words that carry no product identity — an anchor made only of these
+  // would match almost any release page.
+  const GENERIC_ANCHOR_WORD = /^(?:v|version|versions|release|released|releases|build|builds|update|updated|updates|upgrade|changelog|change|log|rev|revision|latest|current|newest|new|download|downloads|notes|history|for|the|and|installer|installers|setup|plugin|plugins|plug|ins|mac|macos|osx|windows|win|free|trial|available|now|here|click|file|files)$/i;
+
   function buildAnchorCandidates(beforeCtx) {
     const trimmed = beforeCtx.replace(/\s+$/, '');
     if (!trimmed) return [];
@@ -699,10 +703,48 @@ async function deriveRegexFromVersion({ url, knownVersion, name }) {
     // Shortest first — picks the most resilient anchor that still
     // uniquely identifies the version we want.
     for (const width of [15, 25, 40, 60]) {
-      let chunk = trimmed.length > width ? trimmed.slice(-width) : trimmed;
-      // Trim leading partial word to a clean word boundary.
-      const cut = chunk.search(/[A-Za-z0-9]/);
-      if (cut > 0) chunk = chunk.slice(cut);
+      const truncated = trimmed.length > width;
+      let chunk = truncated ? trimmed.slice(-width) : trimmed;
+      // Trim a leading PARTIAL WORD, not merely leading punctuation.
+      //
+      // This used to be `chunk.search(/[A-Za-z0-9]/)`, which only skips
+      // leading NON-alphanumerics. When slice(-width) landed in the
+      // middle of a word the first character was already alphanumeric,
+      // so cut === 0 and the fragment survived into the saved pattern:
+      // "… Decent Sampler v 1.0" at width 15 produced the anchor
+      // `ecent\s+Sampler\s+v` (missing the D) — which is what Plugr
+      // saved for DecentSampler on 2026-10-26. Fragment anchors do
+      // still match, but they are fragile and can anchor in the wrong
+      // place on a page that happens to contain the fragment. Detect
+      // the mid-word cut by inspecting the character we sliced away,
+      // and drop the broken word whole.
+      let droppedPartialWord = false;
+      if (truncated) {
+        const charBefore = trimmed[trimmed.length - width - 1] || '';
+        if (/\w/.test(charBefore) && /\w/.test(chunk[0] || '')) {
+          const space = chunk.search(/\s/);
+          // No whitespace at all means the whole chunk is one partial
+          // word — nothing salvageable at this width. Skip it and let a
+          // wider window produce the anchor instead.
+          if (space === -1) continue;
+          chunk = chunk.slice(space);
+          droppedPartialWord = true;
+        }
+      }
+      // Now strip any leading punctuation/whitespace left over.
+      chunk = chunk.replace(/^[^A-Za-z0-9]+/, '');
+      // Dropping the partial word can leave an anchor with no
+      // distinguishing content — "Steinberg Cubase 13 Version" at width
+      // 15 becomes "13 Version" → `\d+\s+Version`, which would match
+      // almost any page. That is WORSE than the fragment it replaced, so
+      // skip this width and let a wider window keep the product name
+      // ("Cubase\s+\d+\s+Version"). Only applied when we actually cut a
+      // word, so a page whose context genuinely is just "Version" still
+      // behaves as before.
+      if (droppedPartialWord) {
+        const words = chunk.match(/[A-Za-z]+/g) || [];
+        if (words.length > 0 && words.every((w) => GENERIC_ANCHOR_WORD.test(w))) continue;
+      }
       // Require the chunk to contain at least one alphabetic run — pure
       // numbers/punctuation aren't useful as anchors.
       if (!/[A-Za-z]{2,}/.test(chunk)) continue;
