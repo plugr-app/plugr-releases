@@ -2643,10 +2643,23 @@ export default function App() {
       else if ('notes' in patch) { gate = 'pluginNotes'; label = 'Editing notes'; }
     }
     if (!requirePaid(gate, label)) return;
-    const next = { ...overrides };
-    if (patch && patch.__clear) {
-      delete next[id];
-    } else {
+    // MUST be a functional update. This used to read `overrides` from the
+    // render closure and call setOverrides(next) with it, which is fine
+    // for a single edit and silently wrong for every bulk action: each
+    // iteration of a loop started from the SAME stale snapshot and threw
+    // away the previous one, so only the last item in the selection
+    // survived in UI state. The per-item api.setOverride writes all went
+    // to disk correctly, which is why "Mark all as favorite" and "Hide
+    // selected" looked like they half-worked and came good after a
+    // restart. Josh hit it on bulk "Stop ignoring updates" (2026-10-27),
+    // where the stale snapshot still carried every other item's ignore
+    // flags, so everything except one stayed ignored.
+    setOverrides((cur) => {
+      const next = { ...cur };
+      if (patch && patch.__clear) {
+        delete next[id];
+        return next;
+      }
       next[id] = { ...(next[id] || {}), ...(patch || {}) };
       if (next[id].favorite === false) delete next[id].favorite;
       if (next[id].hidden === false) delete next[id].hidden;
@@ -2655,11 +2668,15 @@ export default function App() {
         const _u = updates[id];
         if (_u?.latestVersion && !next[id].acknowledgedLatestVersion) next[id].acknowledgedLatestVersion = _u.latestVersion;
       }
+      // A patch that only nulls things out collapses the entry away.
+      for (const k of Object.keys(next[id])) {
+        if (next[id][k] === null || next[id][k] === undefined) delete next[id][k];
+      }
       if (Object.keys(next[id]).length === 0) delete next[id];
-    }
-    setOverrides(next);
+      return next;
+    });
     await api.setOverride(id, patch);
-  }, [overrides, updates, requirePaid]);
+  }, [updates, requirePaid]);
 
   // Mirror link/unlink. The data layer is already wired (applyOverrides
   // surfaces mirrorFromId; effectiveUpdates resolves it) — these
