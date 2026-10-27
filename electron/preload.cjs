@@ -22,6 +22,9 @@ const MENU_CHANNELS = [
 contextBridge.exposeInMainWorld('pluginHub', {
   scanLibrary: (options) => ipcRenderer.invoke('library:scan', options),
   checkUpdates: (items) => ipcRenderer.invoke('updates:check', items),
+  // Re-read just these items' bundles from disk (version + still-present),
+  // patching the cached library. Not a subset scan — see main.cjs.
+  rescanItems: (ids) => ipcRenderer.invoke('library:rescanItems', ids),
   discoverUpdate: (item) => ipcRenderer.invoke('updates:discover', item),
   deriveSourceFromVersion: (payload) => ipcRenderer.invoke('updates:deriveFromVersion', payload),
   testSource: (payload) => ipcRenderer.invoke('updates:testSource', payload),

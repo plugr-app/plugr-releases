@@ -832,6 +832,67 @@ ipcMain.handle('library:scan', async (_event, options) => {
   }
 });
 
+// Targeted rescan — re-read JUST these bundles from disk and patch the
+// cached library in place. Built for the update workflow: install a new
+// version of a plugin, rescan that one plugin, and its status corrects
+// without sitting through a full-library pass.
+//
+// Deliberately NOT "scanLibrary over a subset". A real scan runs
+// cross-item passes whose answers depend on the WHOLE library —
+// category and developer unification, name propagation, duplicate
+// grouping, Waves shell pairing, Rosetta leftovers. Running those over a
+// handful of selected items would produce confidently wrong
+// relationships (a plugin would look like the only member of its own
+// duplicate family, for one). So this re-reads only what can actually
+// change when a plugin is updated in place — its version, and whether
+// the bundle is still there — and leaves every cross-item relationship
+// for the next full scan.
+ipcMain.handle('library:rescanItems', async (_event, ids) => {
+  try {
+    const wanted = new Set((Array.isArray(ids) ? ids : []).filter(Boolean));
+    if (wanted.size === 0) return { ok: false, error: 'no-items' };
+    const existing = (await loadCache(userDataDir())) || {};
+    const lib = existing.library;
+    if (!lib || !Array.isArray(lib.items)) return { ok: false, error: 'no-library' };
+
+    const fs = require('node:fs');
+    const { readBundleInfo } = require('./lib/plistParser.cjs');
+    const changed = [];
+    const missing = [];
+
+    const items = await Promise.all(lib.items.map(async (it) => {
+      if (!it || !wanted.has(it.id)) return it;
+      if (!it.path) return it;
+      if (!fs.existsSync(it.path)) {
+        missing.push({ id: it.id, name: it.name });
+        return { ...it, missingOnDisk: true };
+      }
+      let info = null;
+      try { info = await readBundleInfo(it.path); } catch { /* unreadable — leave as is */ }
+      if (!info) return it;
+      const next = { ...it };
+      if (next.missingOnDisk) delete next.missingOnDisk;
+      // Only take a version we actually read. A bundle whose plist has
+      // no version must not blank out what we already had.
+      if (info.version != null && String(info.version).trim() !== '') {
+        if (String(info.version) !== String(it.version)) {
+          changed.push({ id: it.id, name: it.name, from: it.version || null, to: info.version });
+        }
+        next.version = info.version;
+      }
+      return next;
+    }));
+
+    const nextLib = { ...lib, items };
+    try { await patchCache({ library: nextLib }); }
+    catch (e) { console.warn('[rescanItems] cache save failed', e && e.message); }
+    return { ok: true, data: { library: nextLib, changed, missing, scanned: wanted.size } };
+  } catch (err) {
+    console.error('library:rescanItems failed', err);
+    return { ok: false, error: String(err && err.message || err) };
+  }
+});
+
 ipcMain.handle('updates:check', async (_event, items) => {
   try {
     const onProgress = (p) => sendToRenderer('progress:updates', p);

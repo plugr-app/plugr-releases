@@ -139,6 +139,7 @@ const api = (typeof window !== 'undefined' && window.pluginHub) || {
   applySharedSource: async () => ({ ok: true, data: { savedCount: 0, total: 0, mergedAdditions: null } }),
   submitToCommunity: async () => ({ ok: false, error: 'browser-preview' }),
   submitCategoryGaps: async () => ({ ok: false, error: 'browser-preview' }),
+  rescanItems: async () => ({ ok: false, error: 'browser-preview' }),
   fetchCommunityAdditions: async () => ({ ok: true, data: null }),
   setCommunityConsent: async () => ({ ok: true }),
   getDeals: async () => ({ ok: true, data: { items: [], fetchedAt: null }, fromCache: false }),
@@ -2678,6 +2679,65 @@ export default function App() {
     await api.setOverride(id, patch);
   }, [updates, requirePaid]);
 
+  // Rescan a specific set of plugins, then re-check just those.
+  //
+  // The update workflow this exists for: install a new version of a
+  // plugin, rescan it, watch it go from "outdated" to "current" without
+  // a full-library pass. Two steps, because they answer different
+  // questions — rescan re-reads the version INSTALLED on disk, the
+  // check re-reads what the developer PUBLISHES. Fixing an "outdated"
+  // after updating needs the first; a full scan is still the only thing
+  // that notices newly installed plugins or formats.
+  const rescanAndCheck = useCallback(async (ids) => {
+    const list = (ids || []).filter(Boolean);
+    if (list.length === 0) return;
+    try {
+      const res = await api.rescanItems(list);
+      if (!res || !res.ok) {
+        pushToast({ kind: 'error', title: "Couldn't rescan", message: (res && res.error) || 'Unknown error' });
+        return;
+      }
+      const { library: nextLib, changed, missing } = res.data || {};
+      if (nextLib) setLibrary(nextLib);
+
+      // Re-check against the freshly read installed versions, not the
+      // stale ones — so pass the items from the library we just got back.
+      const wanted = new Set(list);
+      const itemsForCheck = ((nextLib && nextLib.items) || []).filter((it) => wanted.has(it.id));
+      if (itemsForCheck.length > 0) {
+        const upd = await api.checkUpdates(itemsForCheck);
+        if (upd && upd.ok && upd.data && Array.isArray(upd.data.results)) {
+          setUpdates((prev) => {
+            const next = { ...prev };
+            for (const r of upd.data.results) next[r.id] = r;
+            return next;
+          });
+          if (upd.data.checkedAt) setUpdatesCheckedAt(upd.data.checkedAt);
+        }
+      }
+
+      const changedCount = (changed || []).length;
+      const missingCount = (missing || []).length;
+      let message;
+      if (changedCount === 1) {
+        const c = changed[0];
+        message = `${c.name}: ${c.from || 'unknown'} → ${c.to}`;
+      } else if (changedCount > 1) {
+        message = `${changedCount} of ${list.length} changed version.`;
+      } else {
+        message = list.length === 1
+          ? 'No change — the installed version is the same as before.'
+          : `Rescanned ${list.length} plugins — no version changes.`;
+      }
+      if (missingCount > 0) {
+        message += ` ${missingCount} no longer on disk — run a full scan.`;
+      }
+      pushToast({ kind: missingCount > 0 ? 'warning' : 'success', message, durationMs: 5000 });
+    } catch (e) {
+      pushToast({ kind: 'error', title: "Couldn't rescan", message: String(e && e.message || e) });
+    }
+  }, [pushToast]);
+
   // Mirror link/unlink. The data layer is already wired (applyOverrides
   // surfaces mirrorFromId; effectiveUpdates resolves it) — these
   // handlers just persist the override + nudge local state. We use the
@@ -3430,6 +3490,11 @@ export default function App() {
         { label: 'Copy names', action: () => copy(names) },
         { label: 'Copy bundle identifiers', action: () => copy(idents), disabled: !idents },
         { divider: true },
+        {
+          label: `Rescan ${sel.length} plugins`,
+          action: () => rescanAndCheck(sel.map((it) => it.id)),
+        },
+        { divider: true },
         // Bulk ignore — mirrors the single-item menu's ignore actions.
         // Josh, 2026-10-26: silencing an update across every format of
         // the same plugin meant opening the menu once per format,
@@ -3601,6 +3666,11 @@ export default function App() {
         { label: 'Show in Finder', action: () => api.openInFinder(item.path), disabled: !hasPath },
         { label: "Open developer's website", action: () => api.openExternal(reg.homepage), disabled: !hasHomepage },
         { divider: true },
+        {
+          label: 'Rescan this plugin',
+          action: () => rescanAndCheck([item.id]),
+        },
+        { divider: true },
         ...(updOutdated && !updIgnored ? [
           {
             label: 'Ignore this update',
@@ -3681,7 +3751,7 @@ export default function App() {
       ];
     }
     setContextMenu({ x, y, item, items });
-  }, [filteredItems, selectedIds, registryAdditions, effectiveUpdates, setItemOverride, trashItem]);
+  }, [filteredItems, selectedIds, registryAdditions, effectiveUpdates, setItemOverride, trashItem, rescanAndCheck]);
 
   // Bulk apply: walks the selected items and applies the field changes
   // from the BulkEditPanel. Each change layered as a per-item override
