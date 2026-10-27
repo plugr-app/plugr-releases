@@ -5397,8 +5397,17 @@
           "versionRegex": "dated\\s+VocalEQ\\s+\\(\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "AutoTune": {
-          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/41117430548628-AutoTune-Pro-11-Release-Notes",
-          "versionRegex": "(?:version|release|released|build|rev|updated)\\s*[:#]?\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
+          "category": "Effect",
+          "subcategory": "Pitch",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47967370217620-AutoTune-2026-Release-Notes",
+          "versionRegex": "AutoTune\\s+2026\\s+\\((\\d+\\.\\d+\\.\\d+)\\)",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/articles/47967370217620-AutoTune-2026-Release-Notes"
+        },
+        "AutoTune Advanced": {
+          "category": "Effect",
+          "subcategory": "Pitch",
+          "updateUrl": "https://help.antarestech.com/hc/en-us/sections/47811896963476-Release-Notes",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/sections/47811896963476-Release-Notes"
         },
         "AVOX PUNCH": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47969237400340-Punch-Release-Notes",
