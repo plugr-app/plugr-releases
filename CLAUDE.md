@@ -277,7 +277,8 @@ Measured breakdown of that single row: **1,011 had a page Plugr could open**, 26
 4. **Assume a handed-off step happened if he doesn't respond** and moves on.
 5. **Push policy — gate what PUBLISHES, not what backs up (revised 2026-10-20).** The original rule was "never push, you don't have credentials" (`HANDOFF.md` line 230, v0.2.1, paste-script era). That rationale is **obsolete**: `GH_TOKEN` is in Josh's login env on both Macs and the bridge can reach his shell, so the capability gap is gone. Current rule, by consequence rather than capability:
    - **Claude MAY push the APP repo** (`~/plugr` → `plugr-app/plugr-releases`). It is a private code backup: no deploy, no users affected, nothing public.
-   - **Claude must NEVER push the WEBSITE repo** (GitHub Pages → plugr.co is live within ~1 minute) **or the COMMUNITY REGISTRY** (`additions.json` reaches every user's app within 24h). Those two publish to other people; Josh pushes them himself, every time.
+   - **Claude MAY push `changelog.html` on the WEBSITE repo, unasked, as part of every release (Josh, 2026-10-27: "just always do the changelog update when we do these, you don't need my permission").** Scope is exactly that: the changelog entry for the version being shipped, pushed alongside the version bump, per §9's requirement that the changelog list the shipping version. Commit only `changelog.html` — the Drive folder regularly shows unrelated files as modified (`open-site.command` has, repeatedly) and those are not ours to commit.
+   - **Every OTHER change to the WEBSITE repo still needs Josh's explicit say-so each time** (GitHub Pages → plugr.co is live within ~1 minute), as does the **COMMUNITY REGISTRY** (`additions.json` reaches every user's app within 24h). Those publish to other people.
 6. **Version bumps happen at RELEASE time, not per fix** (Josh's call, 2026-07-12 — supersedes the old auto-bump-per-feature-set rule). During dev, leave the version at the last-released number. When Josh says he's releasing: one `chore: bump vX.Y.Z` commit touching package.json + package-lock.json, then he runs release:mac. Never prompt him to release.
 7. **Never hedge with "if that exists" about his own codebase.** Read the live file and KNOW. If you genuinely can't access something, say exactly that, in one sentence, with the concrete fix.
 8. **Verify after editing** — read the diff, syntax-check. Never claim done without verifying.
@@ -295,7 +296,7 @@ Measured breakdown of that single row: **1,011 had a page Plugr could open**, 26
 3. **Never call the app "Plugin Hub"** in any user-facing string — competitor's name. (Internal `window.pluginHub` bridge name is legacy and fine.)
 4. **Never widen an `identifierPrefix`** below two dot-segments.
 5. **Never change cache schema without bumping `CACHE_VERSION`.**
-6. **Never `git push` the website or community-registry repos** — both are live publishes to other people (see §7.5). The app repo is fine to push.
+6. **Never `git push` the website (except a release's `changelog.html` — see §7.5) or the community-registry repo** — both are live publishes to other people. The app repo is fine to push.
 7. **Never present copy as final** — Josh has strong tone opinions; present options.
 8. **Never write patch scripts against unverified/stale file copies.** (The cardinal sin of June–July 2026.)
 
