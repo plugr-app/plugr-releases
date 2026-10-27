@@ -5446,8 +5446,8 @@
           "versionRegex": "Vocal\\s+De-Esser\\s*v?(\\d+\\.\\d+(?:\\.\\d+)?(?:[._\\-][a-z]?\\d+|[a-z]\\d+)?)"
         },
         "Auto-Tune Central": {
-          "updateUrl": "https://www.antarestech.com/downloads",
-          "downloadUrl": "https://www.antarestech.com/downloads"
+          "updateUrl": "https://help.antarestech.com/hc/en-us/sections/47811896963476-Release-Notes",
+          "downloadUrl": "https://help.antarestech.com/hc/en-us/sections/47811896963476-Release-Notes"
         },
         "Vocal Prep": {
           "updateUrl": "https://help.antarestech.com/hc/en-us/articles/47968175080724-Vocal-Prep-Release-Notes",
